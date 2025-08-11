@@ -1,0 +1,18 @@
+library;
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+
+String url = "http://192.168.86.38:8000/api/v1/";
+String token = "";
+List<dynamic> totalEvents = [];
+List<dynamic> shownEvents = [];
+List<dynamic> totalCategories = [];
+List<List<Uint8List>> totalImages = [];
+List<List<Uint8List>> shownImages = [];
+List<String> savedEvents = [];
+Color backgroundColor = const Color.fromARGB(255, 5, 3, 30);
+Color secondaryColor = Color.fromARGB(255, 255, 183, 13);
+Color secondaryTransitionColor = Color.fromARGB(255, 241, 119, 19);
+Color accentColor = Color.fromARGB(255, 62, 54, 217);
+Color highlightColor = Color.fromARGB(255, 183, 48, 232);
+var fields = {}; 
