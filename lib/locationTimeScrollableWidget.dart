@@ -45,27 +45,23 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
           ),
           Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "${DateFormat('h:mm a').format(widget.startTime)} - ${DateFormat('h:mm a').format(widget.endTime)}",
-                    style:  TextStyle(
-                      color: Colors.white,
-                      fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                  Text(
-                    DateFormat('MMMM d, y').format(widget.startTime),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                ],
+              Text(
+                "${DateFormat('MMMM d, y h:mm a').format(widget.startTime)}",
+                style:  TextStyle(
+                  color: Colors.white,
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                  decoration: TextDecoration.none,
+                ),
               ),
+              Text(
+                "${DateFormat('MMMM d, y h:mm a').format(widget.endTime)}",
+                style:  TextStyle(
+                  color: Colors.white,
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+              SizedBox(height: 10,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -79,7 +75,8 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
                     ),
                   ),
                 ],
-              )
+              ),
+              
             ],
           ),
           GestureDetector(

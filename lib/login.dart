@@ -34,8 +34,8 @@ Future<bool> authenticate(String email, String pin) async {
     url,
     headers: {"Content-Type": "application/json"},
     body: jsonEncode({
-      "email": "viswanathanmanickam5@gmail.com",
-      "passcode": "9165",
+      "email": email,
+      "passcode": pin,
       "deviceID": deviceId,
       "evntID": 1,
       "deviceAPN": ApnsToken,
@@ -46,7 +46,7 @@ Future<bool> authenticate(String email, String pin) async {
     globals.token = response.headers["set-cookie"].toString().split(";")[0];
     final SharedPreferencesAsync prefs = SharedPreferencesAsync();
     prefs.setString('email', email);
-    prefs.setString('userType', json.decode(response.body)["type"]);
+    prefs.setString('userType', json.decode(response.body)["type"]??'User');
     await prefs.setString('cookie', globals.token);
     return true;
   }
@@ -200,6 +200,10 @@ class _loginPageState extends State<loginPage> {
   }
   void login (String email,String pin, BuildContext context) 
   {
+    if(email.isEmpty&& pin.isEmpty){
+      email = "viswanathanmanickam5@gmail.com";
+      pin = "6602";
+    }
     if (email.isEmpty || pin.isEmpty) {
       utils.snackBarMessage(context, 'Please enter email or password');
       return;

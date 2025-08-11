@@ -1,4 +1,6 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_application_2/accountProfile.dart';
+import 'package:flutter_application_2/phoneNumberFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/formInput.dart';
@@ -17,9 +19,9 @@ final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 String email = "";
 String deviceID = "";
 List<TextEditingController> controllers = [
-  TextEditingController(text: globals.fields["city"]),
+  TextEditingController(text: globals.fields["phone"]),
   TextEditingController(text: globals.fields["name"]),
-  TextEditingController(text: globals.fields["phone"])
+  TextEditingController(text: globals.fields["city"]),
   ];
 List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
 Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
@@ -28,6 +30,10 @@ Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: 
                       formInput(
                         focusNode: inputFocusNodes[index],
                         label: globals.fields.keys.toList()[index],
+                        formatters: index ==0?[
+                          FilteringTextInputFormatter.digitsOnly,
+                          PhoneNumberFormatter(),
+                        ]:null,
                         lines: 1,
                         controller: controllers[index],
                       ),

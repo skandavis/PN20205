@@ -178,7 +178,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
                     height: 20,
                   ),
                   announcment(
-                    canDelete: type == "admin" || type == "SuperAdmin",
+                    canDelete: type == "Admin" || type == "SuperAdmin",
                     id: messages[index]["id"],
                     delete: () {
                       setState(() {
@@ -192,7 +192,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
             },
           ),
         ),
-        if (type == "admin" || type == "SuperAdmin")
+        if (type == "Admin" || type == "SuperAdmin")
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

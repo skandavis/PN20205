@@ -23,6 +23,7 @@ class _CheckState extends State<Check> {
         Row(
           children: [
             Checkbox(
+              
               value: widget.isChecked,
               onChanged: (value) {
                 setState(() {
