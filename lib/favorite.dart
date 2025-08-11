@@ -27,9 +27,9 @@ class _FavoriteIconState extends State<FavoriteIcon> {
           globals.totalEvents[widget.event["id"]-1]["favorite"] = favorite;
         });
         if (favorite) {
-          utils.putRoute('events/$id/favoritize');
+          utils.updateNoData('events/$id/favoritize');
         } else {
-          utils.putRoute('events/$id/unfavoritize');
+          utils.updateNoData('events/$id/unfavoritize');
         }
       },
       icon: Icon(

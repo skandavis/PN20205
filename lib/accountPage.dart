@@ -13,15 +13,30 @@ class accountPage extends StatefulWidget {
   @override
   State<accountPage> createState() => _accountPageState();
 }
-
-TextEditingController cityController = TextEditingController(text: globals.fields["city"]);
-TextEditingController nameController = TextEditingController(text: globals.fields["name"]);
-TextEditingController phoneController = TextEditingController(text: globals.fields["name"]);
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 String email = "";
 String deviceID = "";
+List<TextEditingController> controllers = [
+  TextEditingController(text: globals.fields["city"]),
+  TextEditingController(text: globals.fields["name"]),
+  TextEditingController(text: globals.fields["phone"])
+  ];
 List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
-
+Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
+                  return Column(
+                    children: [
+                      formInput(
+                        focusNode: inputFocusNodes[index],
+                        label: globals.fields.keys.toList()[index],
+                        lines: 1,
+                        controller: controllers[index],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * .025,
+                      ),
+                    ],
+                  );
+                });
 class _accountPageState extends State<accountPage> {
   void getDeviceId() async {
     deviceID = (await AppSetId().getIdentifier())!;
@@ -37,9 +52,9 @@ class _accountPageState extends State<accountPage> {
   void sendData() async {
     utils.patchRoute({
       "email": "viswanathanmanickam5@gmail.com",
-      "city": cityController.text,
-      "name": nameController.text,
-      "phoneNumber": phoneController.text,
+      "city": controllers[0].text,
+      "name": controllers[1].text,
+      "phoneNumber":controllers[2].text,
     }, 'device/$deviceID');
   }
 
@@ -50,11 +65,11 @@ class _accountPageState extends State<accountPage> {
         backgroundColor: globals.backgroundColor,
         appBar: AppBar(
           foregroundColor: Colors.white,
-          title: const Text(
+          title: Text(
             "Account",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 28,
+              fontSize:Theme.of(context).textTheme.displaySmall?.fontSize,
             ),
           ),
           backgroundColor: globals.backgroundColor,
@@ -76,20 +91,7 @@ class _accountPageState extends State<accountPage> {
               ),
               SizedBox(
                 height: MediaQuery.sizeOf(context).height*.3,
-                child: ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
-                  return Column(
-                    children: [
-                      formInput(
-                        focusNode: inputFocusNodes[index],
-                        label: globals.fields.keys.toList()[index],
-                        controller: TextEditingController(text:globals.fields.values.toList()[index]),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * .025,
-                      ),
-                    ],
-                  );
-                }),
+                child: inputs,
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * .025,
@@ -97,10 +99,15 @@ class _accountPageState extends State<accountPage> {
               
               GestureDetector(
                 onTap: () {
-                  prefs.setString('city', cityController.text);
-                  prefs.setString('phone', phoneController.text);
-                  prefs.setString('name', nameController.text);
+                  prefs.setString('city', controllers[0].text);
+                  prefs.setString('phone', controllers[1].text);
+                  prefs.setString('name', controllers[2].text);
+                  globals.fields.update('city', (value) => controllers[0].text);
+                  globals.fields.update('phone', (value) => controllers[1].text);
+                  globals.fields.update('name', (value) => controllers[2].text);
                   sendData();
+                  utils.snackBarMessage(context, "Account Details Updated!",color: Colors.green);
+                  Navigator.of(context).pop();
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * .8,

@@ -59,7 +59,7 @@ class _DropDownState extends State<DropDown> {
               borderRadius: BorderRadius.circular(6),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Color.fromARGB(255, 13, 182, 255), width: 2),
+              borderSide: BorderSide(color: globals.iceBlue, width: 2),
               borderRadius: BorderRadius.circular(6),
             ),
           ),
@@ -83,7 +83,7 @@ class _DropDownState extends State<DropDown> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: index < widget.options.length - 1
-                        ? BorderSide(color: Color.fromARGB(255, 13, 182, 255), width: 2)
+                        ? BorderSide(color: globals.iceBlue, width: 2)
                         : BorderSide.none,
                   ),
                 ),

@@ -18,31 +18,24 @@ class _formInputState extends State<formInput> {
   @override
   void initState() {
     super.initState();
-    widget.focusNode.addListener(() {
-        if(widget.focusNode.hasFocus) {
-          setState(() {
-            
-          });
-        }
-        if (!widget.focusNode.hasFocus) {
-          setState(() {
-            
-          });
-        }
-    });
   }
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onChanged: (value) {
+        setState(() {
+          
+        });
+      },
       inputFormatters: widget.formatters,
       maxLines: widget.lines,
       focusNode: widget.focusNode,
       controller: widget.controller,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Color.fromARGB(255, 13, 182, 255),
+          borderSide: BorderSide(
+            color: globals.iceBlue,
             width: 2.0,
           ),
           borderRadius: BorderRadius.circular(15.0),
@@ -58,7 +51,7 @@ class _formInputState extends State<formInput> {
         label: Text(
           widget.label,
           style: TextStyle(
-            color: widget.focusNode.hasFocus? const Color.fromARGB(255, 13, 182, 255):widget.controller.text.isEmpty? Colors.red:  globals.secondaryColor,
+            color: widget.focusNode.hasFocus? globals.iceBlue:widget.controller.text.isEmpty? Colors.red:  globals.secondaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold),
         ),

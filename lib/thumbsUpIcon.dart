@@ -26,9 +26,9 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
               count;
         });
         if (liked) {
-          utils.putRoute('events/$id/like');
+          utils.updateNoData('events/$id/like');
         } else {
-          utils.putRoute('events/$id/unlike');
+          utils.updateNoData('events/$id/unlike');
         }
       },
       child: Container(

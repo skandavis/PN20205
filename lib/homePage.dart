@@ -49,37 +49,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("HERE");
     return messageReciever(
       body: Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: globals.backgroundColor,
+        appBar: AppBar(
+          title: Text(
+            pages[widget.selectedIndex].key,
+            style: TextStyle(
+              fontSize:Theme.of(context).textTheme.displaySmall?.fontSize
+            ),
+          ),
+          backgroundColor: globals.backgroundColor,
+          foregroundColor: Colors.white,
+        ),
         body: Container(
           decoration: const BoxDecoration(),
           clipBehavior: Clip.hardEdge,
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            children: [
-              Container(
-              height: MediaQuery.of(context).size.height * 0.1,
-              alignment: Alignment.bottomCenter,
-              child: Text(
-                  pages[widget.selectedIndex].key,
-                  style:  TextStyle(
-                    fontSize:Theme.of(context).textTheme.displaySmall?.fontSize,
-                    color: Colors.white
-                  ),
-                ),
-              ),
-              Container(
-                decoration: const BoxDecoration(),
-                clipBehavior: Clip.hardEdge,
-                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05,),
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: pages[widget.selectedIndex].value
-              ),
-            ],
-          ),
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: pages[widget.selectedIndex].value
         ),
         // body: DailyCalendarPage(),
         bottomNavigationBar: SizedBox(

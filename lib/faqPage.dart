@@ -24,30 +24,44 @@ class _faqPageState extends State<faqPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        if(questions.isNotEmpty) {
+          return Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: List.generate(questions.length, (index) {
+                return Column(
+                  children: [
+                    const SizedBox(
+                      height: 35,
+                    ),
+                    faqQuestion(
+                      question: questions[index]["question"],
+                      answer: questions[index]["answer"],
+                    )
+                  ],
+                );
+              })
+            ),
+          );
+        } else {
+          return const Column(
           children: [
-            Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: List.generate(questions.length, (index) {
-                  return Column(
-                    children: [
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      faqQuestion(
-                        question: questions[index]["question"],
-                        answer: questions[index]["answer"],
-                      )
-                    ],
-                  );
-                }))
+            Icon(
+              Icons.search_off,
+              size: 128,
+              color: Colors.white,
+            ),
+            Text(
+              "No Notifications Found",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 44
+              ),
+            )
           ],
-        ),
-      ],
-    );
+        );
+        }
   }
 }

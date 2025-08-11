@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -5,119 +6,200 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_application_2/globals.dart' as globals;
 import 'dart:convert'; // For JSON encoding
 
+int timeoutSecs = 3;
 Future<Map<String, dynamic>> getRoute(String route) async {
   try {
-    http.Response response =
-        await http.get(Uri.parse('${globals.url}$route'), headers: {
-      "Content-Type": "application/json",
-      "Cookie": globals.token,
-    });
+    final response = await http
+        .get(
+          Uri.parse('${globals.url}$route'),
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": globals.token,
+          },
+        )
+        .timeout(Duration(seconds: timeoutSecs)); // Add timeout here
 
     return json.decode(response.body) as Map<String, dynamic>;
+  } on TimeoutException {
+    print("GET request to $route timed out");
+    return {}; // Return an empty map on timeout
   } catch (e) {
-    print("Failed to load $route");
-    return {}; // Return an empty JSON object on failure
+    print("Failed to load $route: $e");
+    return {}; // Return an empty map on other failures
   }
 }
 
-void postRoute(Map<String, dynamic> data, String route) async {
+Future<int> updateNoData(String route) async {
   final url = Uri.parse('${globals.url}$route');
-  final response = await http.post(
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      "Cookie": globals.token,
-    },
-    body: json.encode(
-      data,
-    ),
-  );
-  if (response.statusCode == 200) {
-    // Handle success
-    print('Sent successfully!');
-  } else {
-    // Handle error
-    print('Failed to send message. Status code: ${response.statusCode}');
+  try {
+    final response = await http.put(url).timeout(Duration(seconds: timeoutSecs));
+    print("Updated Succesfully!");
+    return response.statusCode;
+  }  on TimeoutException catch (e) {
+    print('Request timed out: $e');
+    return 408; // custom code for timeout
+  } catch (e) {
+    print('Unexpected error: $e');
+    return 500; // generic error code
   }
 }
 
-void putRoute(String route) async {
+
+Future<int> postRoute(Map<String, dynamic> data, String route) async {
   final url = Uri.parse('${globals.url}$route');
-  final response = await http.put(
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      "Cookie": globals.token,
-    },
-  );
-  if (response.statusCode == 200) {
-    // Handle success
-    print('Updated successfully!');
-  } else {
-    // Handle error
-    print('Failed to update. Status code: ${response.statusCode}');
+
+  try {
+    final response = await http
+        .post(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": globals.token,
+          },
+          body: json.encode(data),
+        )
+        .timeout( Duration(seconds: timeoutSecs)); // Add timeout here
+
+    if (response.statusCode == 200) {
+      print('Sent successfully!');
+    } else {
+      print('Failed to send message. Status code: ${response.statusCode}');
+    }
+
+    return response.statusCode;
+  } on TimeoutException {
+    print('Request timed out.');
+    return 408; // HTTP 408 Request Timeout
+  } catch (e) {
+    print('An error occurred: $e');
+    return 500; // Generic server error
   }
 }
 
-void patchRoute(Map<String, dynamic> data, String route) async {
+
+Future<int> putRoute(Map<String, dynamic> data, String route) async {
   final url = Uri.parse('${globals.url}$route');
-  final response = await http.patch(
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      "Cookie": globals.token,
-    },
-    body: json.encode(
-      data,
-    ),
-  );
-  if (response.statusCode == 200) {
-    // Handle success
-    print('Patched successfully!');
-  } else {
-    // Handle error
-    print('Failed to patch data. Status code: ${response.statusCode}');
+  try {
+    final response = await http
+        .put(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": globals.token,
+          },
+          body: json.encode(data),
+        )
+        .timeout( Duration(seconds: timeoutSecs)); // timeoutSecs-second timeout
+
+    if (response.statusCode == 200) {
+      print('Updated successfully!');
+    } else {
+      print('Failed to update. Status code: ${response.statusCode}');
+    }
+
+    return response.statusCode;
+  } on TimeoutException {
+    print('PUT request to $route timed out.');
+    return 408;
+  } catch (e) {
+    print('An error occurred while updating: $e');
+    return 500;
   }
 }
+
+
+Future<int> patchRoute(Map<String, dynamic> data, String route) async {
+  final url = Uri.parse('${globals.url}$route');
+
+  try {
+    final response = await http
+        .patch(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": globals.token,
+          },
+          body: json.encode(data),
+        )
+        .timeout( Duration(seconds: timeoutSecs)); // timeoutSecs-second timeout
+
+    if (response.statusCode == 200) {
+      print('Patched successfully!');
+    } else {
+      print('Failed to patch. Status code: ${response.statusCode}');
+    }
+
+    return response.statusCode;
+  } on TimeoutException {
+    print('PATCH request to $route timed out.');
+    return 408;
+  } catch (e) {
+    print('An error occurred while patching: $e');
+    return 500;
+  }
+}
+
 
 void deleteRoute(String route) async {
   final url = Uri.parse('${globals.url}$route');
-  final response = await http.delete(
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      "Cookie": globals.token,
-    },
-  );
-  if (response.statusCode == 200) {
-    // Handle success
-    print('Deleted successfully!');
-  } else {
-    // Handle error
-    print('Failed to delete data. Status code: ${response.statusCode}');
+  try {
+    final response = await http
+        .delete(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": globals.token,
+          },
+        )
+        .timeout( Duration(seconds: timeoutSecs)); // Apply timeoutSecs-second timeout
+
+    if (response.statusCode == 200) {
+      print('Deleted successfully!');
+    } else {
+      print('Failed to delete data. Status code: ${response.statusCode}');
+    }
+  } on TimeoutException {
+    print('Delete request timed out.');
+  } catch (e) {
+    print('An error occurred while deleting: $e');
   }
 }
 
+
 Future<Uint8List> getImage(String route) async {
   final url = Uri.parse('${globals.url}$route');
-  var imageResponse = await http.get(
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      "Cookie": globals.token,
-    },
-  );
-  if (imageResponse.statusCode == 200) {
-    return imageResponse.bodyBytes;
-  } else {
+
+  try {
+    final imageResponse = await http
+        .get(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": globals.token,
+          },
+        )
+        .timeout( Duration(seconds: timeoutSecs)); // timeoutSecs-second timeout
+
+    if (imageResponse.statusCode == 200) {
+      return imageResponse.bodyBytes;
+    } else {
+      print('Failed to fetch image. Status code: ${imageResponse.statusCode}');
+      return Uint8List(0);
+    }
+  } on TimeoutException {
+    print('Image request to $route timed out.');
+    return Uint8List(0);
+  } catch (e) {
+    print('An error occurred while fetching image: $e');
     return Uint8List(0);
   }
 }
-  void snackBarMessage(BuildContext context, String message)
+
+  void snackBarMessage(BuildContext context, String message,{Color color = Colors.red})
   {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Colors.redAccent,
+        backgroundColor: color,
         content:
             Text(message),
       ),

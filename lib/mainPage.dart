@@ -27,7 +27,7 @@ Future<void> _launchURL(String websiteUrl) async {
 
 class _mainPageState extends State<mainPage> {
   late GoogleMapController mapController;
-  LatLng? center;
+  LatLng center = LatLng(47.3769, 8.5417);
   Map<String, dynamic>? info;
   List<Uint8List> images = []; 
   @override
@@ -48,7 +48,7 @@ class _mainPageState extends State<mainPage> {
         if (locations.isNotEmpty) {
           setState(() {
             center = LatLng(locations.first.latitude, locations.first.longitude);
-            debugPrint(center.toString());
+            mapController.animateCamera(CameraUpdate.newLatLng(center));
           });
         }
       } catch (e) {
@@ -56,7 +56,7 @@ class _mainPageState extends State<mainPage> {
       }
 
       for (var i = 0; i < info!["images"].length; i++) {
-        final eventResponse = utils.getImage('evnt/1/image/${info!["images"][i]["id"]}').then((response) {
+        utils.getImage('evnt/1/image/${info!["images"][i]["id"]}').then((response) {
           setState(() {
             images.add(response);
           });
@@ -131,7 +131,7 @@ class _mainPageState extends State<mainPage> {
                   ),
                   Locationtimescrollablewidget(
                     description: (info?["description"] ?? "Description Loading"),
-                    geolocation: center!,
+                    geolocation: center,
                     startTime: DateTime(2025,6,22,12,30),
                     endTime: DateTime(2025,7,22,19,30), 
                     location: ((info?["address"] ?? "Address Loading")+"\n "+(info?["city"] ?? "City Loading")+", "+(info?["state"] ?? "State Loading")+" "+ (info?["zip"] ?? "Zip Loading").toString())
@@ -165,7 +165,7 @@ class _mainPageState extends State<mainPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FullMapPage(center: center!),
+                      builder: (context) => FullMapPage(center: center),
                     ),
                   );
                 },
@@ -173,7 +173,7 @@ class _mainPageState extends State<mainPage> {
                   child: GoogleMap(
                     onMapCreated: _onMapCreated,
                      initialCameraPosition: CameraPosition(
-                        target: center! , // Fallback
+                        target: center , // Fallback
                         zoom: 11.0,
                       ),
                     zoomControlsEnabled: false,

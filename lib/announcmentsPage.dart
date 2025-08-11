@@ -135,6 +135,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
     prefs.getString("userType").then((value) {
       setState(() {
         type = value!;
+        // type = '';
       });
     });
     super.initState();
