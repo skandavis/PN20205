@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/faqQuestion.dart';
+import 'package:pn2025/faqQuestion.dart';
 import 'utils.dart' as utils;
 
 class faqPage extends StatefulWidget {

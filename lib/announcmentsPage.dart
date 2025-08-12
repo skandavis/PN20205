@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/announcment.dart';
-import 'package:flutter_application_2/checkBox.dart';
+import 'package:pn2025/announcment.dart';
+import 'package:pn2025/checkBox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/globals.dart' as globals;
 
 class announcmentsPage extends StatefulWidget {
   const announcmentsPage({super.key});

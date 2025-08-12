@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_2/DropDown.dart';
-import 'package:flutter_application_2/formInput.dart';
-import 'package:flutter_application_2/phoneNumberFormatter.dart';
+import 'package:pn2025/DropDown.dart';
+import 'package:pn2025/formInput.dart';
+import 'package:pn2025/phoneNumberFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/globals.dart' as globals;
 
 class contactUsPage extends StatefulWidget {
   const contactUsPage({super.key});

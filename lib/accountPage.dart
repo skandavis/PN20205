@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_application_2/accountProfile.dart';
-import 'package:flutter_application_2/phoneNumberFormatter.dart';
+import 'package:pn2025/accountProfile.dart';
+import 'package:pn2025/phoneNumberFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/formInput.dart';
-import 'package:flutter_application_2/messageReciever.dart';
+import 'package:pn2025/formInput.dart';
+import 'package:pn2025/messageReciever.dart';
 import 'package:app_set_id/app_set_id.dart';
 import 'utils.dart' as utils;
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/globals.dart' as globals;
 
 class accountPage extends StatefulWidget {
   const accountPage({super.key});
@@ -25,24 +25,24 @@ List<TextEditingController> controllers = [
   ];
 List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
 Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
-                  return Column(
-                    children: [
-                      formInput(
-                        focusNode: inputFocusNodes[index],
-                        label: globals.fields.keys.toList()[index],
-                        formatters: index ==0?[
-                          FilteringTextInputFormatter.digitsOnly,
-                          PhoneNumberFormatter(),
-                        ]:null,
-                        lines: 1,
-                        controller: controllers[index],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * .025,
-                      ),
-                    ],
-                  );
-                });
+    return Column(
+      children: [
+        formInput(
+          focusNode: inputFocusNodes[index],
+          label: globals.fields.keys.toList()[index],
+          formatters: index ==0?[
+            FilteringTextInputFormatter.digitsOnly,
+            PhoneNumberFormatter(),
+          ]:null,
+          lines: 1,
+          controller: controllers[index],
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * .025,
+        ),
+      ],
+    );
+  });
 class _accountPageState extends State<accountPage> {
   void getDeviceId() async {
     deviceID = (await AppSetId().getIdentifier())!;

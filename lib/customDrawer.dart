@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/announcmentsPage.dart';
-import 'package:flutter_application_2/customDrawerTile.dart';
+import 'package:pn2025/announcmentsPage.dart';
+import 'package:pn2025/customDrawerTile.dart';
 
 class CustomDrawer extends StatelessWidget {
   List<dynamic> users;

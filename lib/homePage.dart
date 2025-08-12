@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/contactUsPage.dart';
-import 'package:flutter_application_2/eventsPage.dart';
-import 'package:flutter_application_2/faqPage.dart';
-import 'package:flutter_application_2/announcmentsPage.dart';
-import 'package:flutter_application_2/mainPage.dart';
-import 'package:flutter_application_2/messageReciever.dart';
-import 'package:flutter_application_2/settingsPage.dart';
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/contactUsPage.dart';
+import 'package:pn2025/eventsPage.dart';
+import 'package:pn2025/faqPage.dart';
+import 'package:pn2025/announcmentsPage.dart';
+import 'package:pn2025/mainPage.dart';
+import 'package:pn2025/messageReciever.dart';
+import 'package:pn2025/settingsPage.dart';
+import 'package:pn2025/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyHomePage extends StatefulWidget {

@@ -1,22 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="flutter_application_2"
+        android:label="pn2025"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-        <!-- android/app/src/main/AndroidManifest.xml -->
-        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-        <uses-permission android:name="android.permission.CAMERA"/>
-        <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAj3JA_dDPXtFt1ml42cjEfDM6dyJQ9hIg" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/splashScreen.dart';
+import 'package:pn2025/splashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_application_2/firebase_options.dart';
+import 'package:pn2025/firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_application_2/globals.dart' as globals;
-import 'package:flutter_application_2/utils.dart' as utils;
+import 'package:pn2025/globals.dart' as globals;
+import 'package:pn2025/utils.dart' as utils;
 
 bool showMainPage = true;
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/attribute.dart';
-import 'package:flutter_application_2/categoryLabel.dart';
-import 'package:flutter_application_2/description.dart';
-import 'package:flutter_application_2/favorite.dart';
-import 'package:flutter_application_2/imageCarousel.dart';
-import 'package:flutter_application_2/thumbsUpIcon.dart';
-import 'package:flutter_application_2/verticalDivider.dart';
+import 'package:pn2025/attribute.dart';
+import 'package:pn2025/categoryLabel.dart';
+import 'package:pn2025/description.dart';
+import 'package:pn2025/favorite.dart';
+import 'package:pn2025/imageCarousel.dart';
+import 'package:pn2025/thumbsUpIcon.dart';
+import 'package:pn2025/verticalDivider.dart';
 import 'dart:typed_data';
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/globals.dart' as globals;
 
 class expandedEventPage extends StatefulWidget {
   dynamic event;

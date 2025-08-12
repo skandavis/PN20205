@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/description.dart';
-import 'package:flutter_application_2/fullMapPage.dart';
-import 'package:flutter_application_2/imageCarousel.dart';
-import 'package:flutter_application_2/locationTimeScrollableWidget.dart';
-import 'package:flutter_application_2/utils.dart' as utils;
+import 'package:pn2025/description.dart';
+import 'package:pn2025/fullMapPage.dart';
+import 'package:pn2025/imageCarousel.dart';
+import 'package:pn2025/locationTimeScrollableWidget.dart';
+import 'package:pn2025/utils.dart' as utils;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

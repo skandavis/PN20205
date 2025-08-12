@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/globals.dart' as globals;
 
 class DropDown extends StatefulWidget {
   final List<String> options;

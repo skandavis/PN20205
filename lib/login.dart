@@ -4,12 +4,12 @@ import 'package:http/http.dart' as http;
 import 'dart:convert'; // For JSON encoding
 import 'dart:io' show Platform;
 import 'package:app_set_id/app_set_id.dart';
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/globals.dart' as globals;
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_application_2/homePage.dart';
-import 'package:flutter_application_2/messageReciever.dart' show messageReciever;
-import 'package:flutter_application_2/sendPasswordPage.dart';
-import 'package:flutter_application_2/submit.dart';
+import 'package:pn2025/homePage.dart';
+import 'package:pn2025/messageReciever.dart' show messageReciever;
+import 'package:pn2025/sendPasswordPage.dart';
+import 'package:pn2025/submit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 class loginPage extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_application_2/globals.dart' as globals;
+import 'package:pn2025/globals.dart' as globals;
 import 'package:url_launcher/url_launcher.dart';
 
 class Locationtimescrollablewidget extends StatefulWidget {
@@ -46,7 +46,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
           Column(
             children: [
               Text(
-                "${DateFormat('MMMM d, y h:mm a').format(widget.startTime)}",
+                DateFormat('MMMM d, y h:mm a').format(widget.startTime),
                 style:  TextStyle(
                   color: Colors.white,
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
@@ -54,7 +54,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
                 ),
               ),
               Text(
-                "${DateFormat('MMMM d, y h:mm a').format(widget.endTime)}",
+                DateFormat('MMMM d, y h:mm a').format(widget.endTime),
                 style:  TextStyle(
                   color: Colors.white,
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
