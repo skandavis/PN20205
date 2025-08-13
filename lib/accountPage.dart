@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
-import 'package:pn2025/accountProfile.dart';
-import 'package:pn2025/phoneNumberFormatter.dart';
+import 'package:PN2025/accountProfile.dart';
+import 'package:PN2025/phoneNumberFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:pn2025/formInput.dart';
-import 'package:pn2025/messageReciever.dart';
+import 'package:PN2025/formInput.dart';
+import 'package:PN2025/messageReciever.dart';
 import 'package:app_set_id/app_set_id.dart';
 import 'utils.dart' as utils;
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 
 class accountPage extends StatefulWidget {
   const accountPage({super.key});
@@ -19,8 +19,8 @@ final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 String email = "";
 String deviceID = "";
 List<TextEditingController> controllers = [
-  TextEditingController(text: globals.fields["phone"]),
   TextEditingController(text: globals.fields["name"]),
+  TextEditingController(text: globals.fields["phone"]),
   TextEditingController(text: globals.fields["city"]),
   ];
 List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
@@ -30,7 +30,7 @@ Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: 
         formInput(
           focusNode: inputFocusNodes[index],
           label: globals.fields.keys.toList()[index],
-          formatters: index ==0?[
+          formatters: index ==1?[
             FilteringTextInputFormatter.digitsOnly,
             PhoneNumberFormatter(),
           ]:null,
@@ -58,9 +58,10 @@ class _accountPageState extends State<accountPage> {
   void sendData() async {
     utils.patchRoute({
       "email": "viswanathanmanickam5@gmail.com",
-      "city": controllers[0].text,
-      "name": controllers[1].text,
-      "phoneNumber":controllers[2].text,
+      "name": controllers[0].text,
+      "phoneNumber":controllers[1].text,
+      "city": controllers[2].text,
+
     }, 'device/$deviceID');
   }
 
@@ -105,12 +106,12 @@ class _accountPageState extends State<accountPage> {
               
               GestureDetector(
                 onTap: () {
-                  prefs.setString('city', controllers[0].text);
+                  prefs.setString('name', controllers[0].text);
                   prefs.setString('phone', controllers[1].text);
-                  prefs.setString('name', controllers[2].text);
-                  globals.fields.update('city', (value) => controllers[0].text);
+                  prefs.setString('city', controllers[2].text);
+                  globals.fields.update('name', (value) => controllers[0].text);
                   globals.fields.update('phone', (value) => controllers[1].text);
-                  globals.fields.update('name', (value) => controllers[2].text);
+                  globals.fields.update('city', (value) => controllers[2].text);
                   sendData();
                   utils.snackBarMessage(context, "Account Details Updated!",color: Colors.green);
                   Navigator.of(context).pop();

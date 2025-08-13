@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pn2025/selectableCategoryLabel.dart';
-import 'package:pn2025/event.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/selectableCategoryLabel.dart';
+import 'package:PN2025/event.dart';
+import 'package:PN2025/globals.dart' as globals;
 import 'dart:typed_data';
 import 'utils.dart' as utils;
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 
 class selectableCategoryLabel extends StatefulWidget {
   String label;

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pn2025/homePage.dart';
-import 'package:pn2025/introPage.dart';
+import 'package:PN2025/homePage.dart';
+import 'package:PN2025/introPage.dart';
 
 class SplashScreen extends StatefulWidget {
   bool showMainPage;

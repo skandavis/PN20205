@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app_set_id/app_set_id.dart';
-import 'package:pn2025/login.dart';
-import 'package:pn2025/submit.dart';
-import 'package:pn2025/messageReciever.dart';
+import 'package:PN2025/login.dart';
+import 'package:PN2025/submit.dart';
+import 'package:PN2025/messageReciever.dart';
 
 import 'utils.dart' as utils;
 

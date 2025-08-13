@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pn2025/announcment.dart';
-import 'package:pn2025/checkBox.dart';
+import 'package:PN2025/announcment.dart';
+import 'package:PN2025/checkBox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 
 class announcmentsPage extends StatefulWidget {
   const announcmentsPage({super.key});
@@ -12,13 +12,15 @@ class announcmentsPage extends StatefulWidget {
   State<announcmentsPage> createState() => _announcmentsPageState();
 }
 
-TextEditingController messageController = TextEditingController();
-List<dynamic> messages = [];
-bool isPush = false;
-String type = '';
-final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+
 
 class _announcmentsPageState extends State<announcmentsPage> {
+  TextEditingController messageController = TextEditingController();
+  static List<dynamic> messages = [];
+  bool isPush = false;
+  static String type = '';
+  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+
   void updateIsPush() {
     setState(() {
       isPush = !isPush;
@@ -45,6 +47,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
               height: MediaQuery.sizeOf(context).height * .18,
               width: MediaQuery.sizeOf(context).width * .8,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TextField(
                     cursorColor: Colors.white,
@@ -127,17 +130,24 @@ class _announcmentsPageState extends State<announcmentsPage> {
 
   @override
   void initState() {
-    utils.getRoute('notifications').then((value) {
-      setState(() {
-        messages = value['notifications'];
+    if(messages.isEmpty)
+    {
+        utils.getRoute('notifications').then((value) {
+        setState(() {
+          messages = value['notifications'];
+        });
+        debugPrint("notifcatio loaded");
       });
-    });
-    prefs.getString("userType").then((value) {
-      setState(() {
-        type = value!;
-        // type = '';
+    }
+    if(type.isEmpty)
+    {
+      prefs.getString("userType").then((value) {
+        setState(() {
+          type = value!;
+          // type = '';
+        });
       });
-    });
+    }
     super.initState();
   }
 

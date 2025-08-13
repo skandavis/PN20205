@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:pn2025/expandedEventPage.dart';
-import 'package:pn2025/favorite.dart';
-import 'package:pn2025/globals.dart' as globals;
-import 'package:pn2025/imageCarousel.dart';
+import 'package:PN2025/expandedEventPage.dart';
+import 'package:PN2025/favorite.dart';
+import 'package:PN2025/globals.dart' as globals;
+import 'package:PN2025/imageCarousel.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 
 class eventCard extends StatefulWidget {

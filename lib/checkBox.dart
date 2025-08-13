@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:PN2025/globals.dart' as globals;
 
 class Check extends StatefulWidget {
   bool isChecked = false;
   final String name;
-  Function() onChange;
-  Color color;
-  Check(
-      {super.key,
-      required this.name,
-      required this.onChange,
-      required this.color});
+  final Function() onChange;
+  final Color color;
+
+  Check({
+    super.key,
+    required this.name,
+    required this.onChange,
+    required this.color,
+  });
 
   @override
   State<Check> createState() => _CheckState();
@@ -20,25 +23,30 @@ class _CheckState extends State<Check> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Row(
-          children: [
-            Checkbox(
-              
-              value: widget.isChecked,
-              onChanged: (value) {
-                setState(() {
-                  widget.isChecked = !widget.isChecked;
-                });
-                widget.onChange();
-              },
-            ),
-            Text(
-              widget.name,
-              style: TextStyle(
-                color: widget.color,
-              ),
-            )
-          ],
+        Transform.scale(
+          scale: 1.25, // 🔧 Increase this value to make checkbox bigger
+          child: Checkbox(
+            autofocus: true,
+            activeColor: globals.secondaryColor,
+            side: BorderSide(color: Colors.white),
+            value: widget.isChecked,
+            onChanged: (value) {
+              setState(() {
+                widget.isChecked = !widget.isChecked;
+              });
+              widget.onChange();
+            },
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+        SizedBox(width: 8),
+        Text(
+          widget.name,
+          style: TextStyle(
+            color: widget.color,
+            fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize, // 🔧 Increase font size as needed
+          ),
         ),
       ],
     );

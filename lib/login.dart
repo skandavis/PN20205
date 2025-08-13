@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // For JSON encoding
 import 'dart:io' show Platform;
 import 'package:app_set_id/app_set_id.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:pn2025/homePage.dart';
-import 'package:pn2025/messageReciever.dart' show messageReciever;
-import 'package:pn2025/sendPasswordPage.dart';
-import 'package:pn2025/submit.dart';
+import 'package:PN2025/homePage.dart';
+import 'package:PN2025/messageReciever.dart' show messageReciever;
+import 'package:PN2025/sendPasswordPage.dart';
+import 'package:PN2025/submit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 class loginPage extends StatefulWidget {
@@ -26,32 +28,45 @@ TextEditingController email = TextEditingController();
 final FocusNode emailFocus = FocusNode();
 final FocusNode pinFocus = FocusNode();
 
-Future<bool> authenticate(String email, String pin) async {
+Future<int> authenticate(String email, String pin) async {
   debugPrint("deviceId: $deviceId");
   debugPrint("ApnsID: $ApnsToken");
-  var url = Uri.parse('${globals.url}authenticate');
-  var response = await http.post(
-    url,
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({
-      "email": email,
-      "passcode": pin,
-      "deviceID": deviceId,
-      "evntID": 1,
-      "deviceAPN": ApnsToken,
-    }),
-  );
-  if (response.statusCode == 200) {
-    debugPrint("Success");
-    globals.token = response.headers["set-cookie"].toString().split(";")[0];
-    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-    prefs.setString('email', email);
-    prefs.setString('userType', json.decode(response.body)["type"]??'User');
-    await prefs.setString('cookie', globals.token);
-    return true;
+  try {
+    var url = Uri.parse('${globals.url}authenticate');
+
+    // Create a 3-second timeout for the HTTP request
+    var response = await http
+        .post(
+          url,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "email": email,
+            "passcode": pin,
+            "deviceID": deviceId,
+            "evntID": 1,
+            "deviceAPN": ApnsToken,
+          }),
+        )
+        .timeout(Duration(seconds: 3)); // Timeout after 3 seconds
+
+    if (response.statusCode == 200) {
+      debugPrint("Success");
+      globals.token = response.headers["set-cookie"].toString().split(";")[0];
+      final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+      prefs.setString('email', email);
+      prefs.setString('userType', json.decode(response.body)["type"]??'User');
+      await prefs.setString('cookie', globals.token);
+      return response.statusCode;
+    }
+    else{
+      return 401;
+    }
+  } on TimeoutException catch (_) {
+    return 408;
+  } catch (e) {
+    debugPrint("Fail");
+    return 500;
   }
-  debugPrint("Fail");
-  return false;
 }
 
 class _loginPageState extends State<loginPage> {
@@ -215,20 +230,28 @@ class _loginPageState extends State<loginPage> {
     }
     if (isValidEmail(email)) {
       authenticate(email, pin)
-          .then((checked){
-        if (checked) {
-          loadEvents();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage(
-                selectedIndex: 0,
-              ),
-            ),
-          );
-          return;
-        } 
-        utils.snackBarMessage(context, 'PIN is invalid for $email');
+          .then((statusCode){
+            switch(statusCode)
+            {
+              case 200:
+                loadEvents();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(
+                      selectedIndex: 0,
+                    ),
+                  ),
+                );
+                break;
+              case 401:
+                utils.snackBarMessage(context, 'PIN is invalid for $email');
+                break;
+              case 400:
+                utils.snackBarMessage(context, 'Server Timed Out!');
+              default:
+                utils.snackBarMessage(context, 'Server Error!');
+            }
       });
     } else {
       utils.snackBarMessage(context, '$email is an invalid email');

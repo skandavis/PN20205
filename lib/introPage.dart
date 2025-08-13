@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pn2025/login.dart';
-import 'package:pn2025/messageReciever.dart';
-import 'package:pn2025/globals.dart' as globals;
-import 'package:pn2025/sendPasswordPage.dart';
+import 'package:PN2025/login.dart';
+import 'package:PN2025/messageReciever.dart';
+import 'package:PN2025/globals.dart' as globals;
+import 'package:PN2025/sendPasswordPage.dart';
 
 class introPage extends StatefulWidget {
   const introPage({super.key});

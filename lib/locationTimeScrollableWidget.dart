@@ -2,7 +2,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 import 'package:url_launcher/url_launcher.dart';
 
 class Locationtimescrollablewidget extends StatefulWidget {

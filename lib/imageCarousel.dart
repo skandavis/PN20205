@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 
 class ImageCarousel extends StatefulWidget {
   List<Uint8List>? images;

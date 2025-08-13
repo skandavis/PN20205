@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pn2025/accountPage.dart';
-import 'package:pn2025/introPage.dart';
-import 'package:pn2025/settingsOption.dart';
+import 'package:PN2025/accountPage.dart';
+import 'package:PN2025/introPage.dart';
+import 'package:PN2025/settingsOption.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 
 class settingsPage extends StatefulWidget {
   const settingsPage({super.key});

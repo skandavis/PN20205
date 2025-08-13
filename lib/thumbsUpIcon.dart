@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/globals.dart' as globals;
 import 'utils.dart' as utils;
 
 class thumbsUpIcon extends StatefulWidget {

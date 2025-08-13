@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pn2025/contactUsPage.dart';
-import 'package:pn2025/eventsPage.dart';
-import 'package:pn2025/faqPage.dart';
-import 'package:pn2025/announcmentsPage.dart';
-import 'package:pn2025/mainPage.dart';
-import 'package:pn2025/messageReciever.dart';
-import 'package:pn2025/settingsPage.dart';
-import 'package:pn2025/globals.dart' as globals;
+import 'package:PN2025/contactUsPage.dart';
+import 'package:PN2025/eventsPage.dart';
+import 'package:PN2025/faqPage.dart';
+import 'package:PN2025/announcmentsPage.dart';
+import 'package:PN2025/mainPage.dart';
+import 'package:PN2025/messageReciever.dart';
+import 'package:PN2025/settingsPage.dart';
+import 'package:PN2025/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -32,11 +32,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     setState(() {
-      prefs.getString("phone").then((value) {
-        globals.fields.addAll({"phone":value});
-      });
       prefs.getString("name").then((value) {
         globals.fields.addAll({"name":value});
+      });
+      prefs.getString("phone").then((value) {
+        globals.fields.addAll({"phone":value});
       });
       prefs.getString("city").then((value) {
         globals.fields.addAll({"city":value});

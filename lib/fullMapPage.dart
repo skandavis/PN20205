@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:pn2025/globals.dart' as globals;
-import 'package:pn2025/messageReciever.dart';
+import 'package:PN2025/globals.dart' as globals;
+import 'package:PN2025/messageReciever.dart';
 
 class FullMapPage extends StatelessWidget {
   final LatLng center;

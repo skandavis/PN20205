@@ -1,4 +1,4 @@
-package com.example.pn2025
+package com.example.PN2025
 
 import io.flutter.embedding.android.FlutterActivity
 
