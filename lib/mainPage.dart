@@ -15,15 +15,25 @@ class mainPage extends StatefulWidget {
   @override
   State<mainPage> createState() => _mainPageState();
 }
+
+Future<void> _launchURL(String websiteUrl) async {
+  final Uri url = Uri.parse(websiteUrl);
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url, mode: LaunchMode.externalApplication);
+  } else {
+    throw 'Could not launch $websiteUrl';
+  }
+}
+
 class _mainPageState extends State<mainPage> {
   late GoogleMapController mapController;
   LatLng center = LatLng(47.3769, 8.5417);
-  static Map<String, dynamic> info = {};
+  static Map<String, dynamic>? info;
   static List<Uint8List> images = []; 
   @override
   void initState() {
     super.initState();
-    if(info.isEmpty)
+    if(info==null)
     {
       utils.getRoute("evnt/1").then((response) async {
         setState(() {
@@ -31,7 +41,7 @@ class _mainPageState extends State<mainPage> {
         });
 
         // Build full address string
-        String fullAddress = "${info["address"]}, ${info["city"]}, ${info["state"]} ${info["zip"]}";
+        String fullAddress = "${info?["address"]}, ${info?["city"]}, ${info?["state"]} ${info?["zip"]}";
 
         // Geocode the address to get coordinates
         try {
@@ -46,9 +56,8 @@ class _mainPageState extends State<mainPage> {
         } catch (e) {
           print("Geocoding failed: $e");
         }
-
-        for (var i = 0; i < info!["images"].length; i++) {
-          utils.getImage('evnt/1/image/${info["images"][i]["id"]}').then((response) {
+        for (var i = 0; i < (info?["images"].length ?? 0); i++) {
+          utils.getImage('evnt/1/image/${info!["images"][i]["id"]}').then((response) {
             setState(() {
               images.add(response);
             });
@@ -57,14 +66,7 @@ class _mainPageState extends State<mainPage> {
       });
     }
   }
-  Future<void> _launchURL(String websiteUrl) async {
-    final Uri url = Uri.parse(websiteUrl);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $websiteUrl';
-    }
-  }
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
@@ -86,7 +88,7 @@ class _mainPageState extends State<mainPage> {
                     children: [
                       Stack(
                         children: List.generate(
-                          (info["_count"]?["users"] ?? 1),
+                          (info?["_count"]?["users"] ?? 1),
                           (index) {
                             return Row(
                               children: [
@@ -109,7 +111,7 @@ class _mainPageState extends State<mainPage> {
                         ),
                       ),
                       Text(
-                        " +${info["_count"]?["users"] ?? 1} More Going",
+                        " +${info?["_count"]?["users"] ?? 1} More Going",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
@@ -118,7 +120,7 @@ class _mainPageState extends State<mainPage> {
                       )
                     ],
                   ),
-                  Text((info["name"] ?? "Event Loading").toString(),
+                  Text((info?["name"] ?? "Event Loading").toString(),
                     style: const TextStyle(
                       color: Colors.white, 
                       fontSize: 40,
@@ -134,7 +136,7 @@ class _mainPageState extends State<mainPage> {
                     geolocation: center,
                     startTime: DateTime(2025,6,22,12,30),
                     endTime: DateTime(2025,7,22,19,30), 
-                    location: ((info["address"] ?? "Address Loading")+"\n "+(info["city"] ?? "City Loading")+", "+(info["state"] ?? "State Loading")+" "+ (info["zip"] ?? "Zip Loading").toString())
+                    location: ((info?["address"] ?? "Address Loading")+"\n "+(info?["city"] ?? "City Loading")+", "+(info?["state"] ?? "State Loading")+" "+ (info?["zip"] ?? "Zip Loading").toString())
                   ),
                   SizedBox(
                     height: MediaQuery.sizeOf(context).height*.025,
@@ -150,7 +152,7 @@ class _mainPageState extends State<mainPage> {
                   ),
                   descriptionBox(
                     ellipsis: true,
-                    description:(info["description"] ?? "Description Loading")
+                    description:(info?["description"] ?? "Description Loading")
                   ),
                   SizedBox(
                     height: MediaQuery.sizeOf(context).height*.025,

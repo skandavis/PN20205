@@ -234,7 +234,7 @@ class _loginPageState extends State<loginPage> {
             switch(statusCode)
             {
               case 200:
-                loadEvents();
+                // loadEvents();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -278,13 +278,13 @@ void getToken() async {
   debugPrint('APNs Token: $token');
   ApnsToken = token!;
 }
-void loadEvents() async
-{
-  try {
-    final response = await utils.getRoute('events');
-    globals.totalEvents = response["events"];
-    debugPrint(globals.totalEvents.toString());
-  } catch (e) {
-    debugPrint("error loading event data: $e");
-  }
-}
+// void loadEvents() async
+// {
+//   try {
+//     final response = await utils.getRoute('events');
+//     globals.totalEvents = response["events"];
+//     debugPrint(globals.totalEvents.toString());
+//   } catch (e) {
+//     debugPrint("error loading event data: $e");
+//   }
+// }

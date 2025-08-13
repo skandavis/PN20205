@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'utils.dart' as utils;
 
 class eventsPage extends StatefulWidget {
+  static List<dynamic> totalEvents = [];
   const eventsPage({super.key});
 
   @override
@@ -19,9 +20,13 @@ class _eventsPageState extends State<eventsPage> {
   bool _isLoading = false;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  
+
+  static List<String> totalCategories = [];
   List<selectableCategoryLabel> _categoryWidgets = [];
-  final List<int> _imageIDs = [];
+  static List<List<Uint8List>> totalImages = [];
+  List<List<Uint8List>> shownImages = [];
+  static final List<int> _imageIDs = [];
+  List<dynamic> shownEvents = [];
   String _searchQuery = "";
   bool _onlyFavorites = false;
   List<String> categoriesChosen = [];
@@ -41,10 +46,25 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   Future<void> _initializeData() async {
-    await Future.wait([
-      _loadCategoriesIfNeeded(),
-      _loadInitialData(),
-    ]);
+    loadEvents().then((_)async{
+      await Future.wait([
+        _loadCategoriesIfNeeded(),
+        _loadInitialData(),
+      ]);
+    });
+  }
+
+  Future<void> loadEvents() async
+  {
+    if(eventsPage.totalEvents.isNotEmpty) return;
+    
+    try {
+      final response = await utils.getRoute('events');
+      eventsPage.totalEvents = response["events"];
+      debugPrint(eventsPage.totalEvents.toString());
+    } catch (e) {
+      debugPrint("error loading event data: $e");
+    }
   }
 
   Future<void> _loadCategoriesIfNeeded() async {
@@ -59,7 +79,7 @@ class _eventsPageState extends State<eventsPage> {
       if (!mounted) return;
       
       setState(() {
-        globals.totalCategories
+        totalCategories
           ..clear()
           ..addAll(categories);
         
@@ -71,7 +91,7 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   List<selectableCategoryLabel> _buildCategoryWidgets() {
-    return globals.totalCategories
+    return totalCategories
         .map((category) => selectableCategoryLabel(
               label: category,
               chooseCategory: _updateCategories,
@@ -93,9 +113,9 @@ class _eventsPageState extends State<eventsPage> {
   Future<void> _loadImages() async {
     if (_isLoading) return;
     
-    final startIndex = globals.shownImages.length;
+    final startIndex = shownImages.length;
     final endIndex = (startIndex + _imagesPerLoad)
-        .clamp(0, globals.shownEvents.length);
+        .clamp(0, shownEvents.length);
     
     if (startIndex >= endIndex) return;
     
@@ -119,18 +139,18 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   Future<void> _loadEventImages(int eventIndex) async {
-    debugPrint("loading image number$eventIndex");
-    final eventId = globals.shownEvents[eventIndex]["id"];
+    final dynamic eventID = shownEvents[eventIndex]["id"];
     
     // Check cache first
-    final cachedIndex = _imageIDs.indexOf(eventId);
+    final int cachedIndex = _imageIDs.indexOf(eventID);
     if (cachedIndex != -1) {
-      globals.shownImages.add(globals.totalImages[cachedIndex]);
+      shownImages.add(totalImages[cachedIndex]);
       return;
     }
 
     try {
-      final eventResponse = await utils.getRoute('events/$eventId');
+      debugPrint("loading image number$eventIndex");
+      final eventResponse = await utils.getRoute('events/$eventID');
       final images = eventResponse["event"]["images"] as List? ?? [];
       
       final imageFutures = images
@@ -142,20 +162,18 @@ class _eventsPageState extends State<eventsPage> {
           .where((img) => img.isNotEmpty)
           .toList();
 
-      globals.totalImages.add(validImages);
-      _imageIDs.add(eventId);
-      globals.shownImages.add(validImages);
+      totalImages.add(validImages);
+      _imageIDs.add(eventID);
+      shownImages.add(validImages);
       
     } catch (e) {
       debugPrint('Error loading images for event $eventIndex: $e');
-      globals.shownImages.add(<Uint8List>[]);
+      shownImages.add(<Uint8List>[]);
     }
   }
 
   Future<void> _refreshData() async {
-    globals.shownImages.clear();
-    _imageIDs.clear();
-    globals.totalImages.clear();
+    shownImages.clear();
     await _loadImages();
   }
 
@@ -167,11 +185,11 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   void _filterEvents() {
-    globals.shownEvents.clear();
+    shownEvents.clear();
     
-    for (final event in globals.totalEvents) {
+    for (final event in eventsPage.totalEvents) {
       if (!_matchesFilters(event)) continue;
-      globals.shownEvents.add(event);
+      shownEvents.add(event);
     }
     
     _logFilterResults();
@@ -210,7 +228,7 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   void _logFilterResults() {
-    debugPrint('Filtered events: ${globals.shownEvents.length}/${globals.totalEvents.length}');
+    debugPrint('Filtered events: ${shownEvents.length}/${eventsPage.totalEvents.length}');
     debugPrint('Search: "$_searchQuery", Categories: $categoriesChosen, Favorites: $_onlyFavorites');
   }
 
@@ -339,7 +357,7 @@ class _eventsPageState extends State<eventsPage> {
 
   Widget _buildEventsList() {
     return Expanded(
-      child: globals.shownEvents.isEmpty
+      child: shownEvents.isEmpty
           ? _buildEmptyState()
           : _buildEventsListView(),
     );
@@ -391,18 +409,18 @@ class _eventsPageState extends State<eventsPage> {
   Widget _buildEventsListView() {
   return ListView.builder(
       controller: _scrollController,
-      itemCount: globals.shownEvents.length + (_isLoading ? 1 : 0),
+      itemCount: shownEvents.length + (_isLoading ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index < globals.shownEvents.length) {
+        if (index < shownEvents.length) {
           // Ensure we have images for this index
-          final images = index < globals.shownImages.length 
-              ? globals.shownImages[index] 
+          final images = index < shownImages.length 
+              ? shownImages[index] 
               : <Uint8List>[];
               
           return Column(
             children: [
               eventCard(
-                event: globals.shownEvents[index],
+                event: shownEvents[index],
                 images: images,
               ),
               const SizedBox(height: 25),

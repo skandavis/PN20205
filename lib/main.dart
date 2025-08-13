@@ -18,7 +18,7 @@ void main() async {
       showMainPage = false;
     } else {
       globals.token = value;
-      loadEvents();
+      // loadEvents();
     }
   });
   await Firebase.initializeApp(
@@ -32,16 +32,16 @@ void main() async {
   ]);
   runApp(MyApp());
 }
-void loadEvents() async
-{
-  try {
-    final response = await utils.getRoute('events');
-    globals.totalEvents = response["events"];
-    debugPrint(globals.totalEvents.toString());
-  } catch (e) {
-    debugPrint("error loading event data: $e");
-  }
-}
+// void loadEvents() async
+// {
+//   try {
+//     final response = await utils.getRoute('events');
+//     globals.totalEvents = response["events"];
+//     debugPrint(globals.totalEvents.toString());
+//   } catch (e) {
+//     debugPrint("error loading event data: $e");
+//   }
+// }
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

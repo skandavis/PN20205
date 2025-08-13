@@ -16,9 +16,9 @@ class announcmentsPage extends StatefulWidget {
 
 class _announcmentsPageState extends State<announcmentsPage> {
   TextEditingController messageController = TextEditingController();
-  static List<dynamic> messages = [];
+  static List<dynamic>? messages;
   bool isPush = false;
-  static String type = '';
+  static String? type;
   final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
   void updateIsPush() {
@@ -92,19 +92,14 @@ class _announcmentsPageState extends State<announcmentsPage> {
                       ),
                     ),
                     onPressed: () {
-                      if (messageController.text.isEmpty) {
+                      if (messageController.text.isEmpty||messages==null) {
                         return;
                       }
-                      setState(() {
-                        messages.add({
-                          "id": messages.length + 1,
-                          "message": messageController.text,
-                          "type": "P"
-                        });
-                        sendMessage();
-                        messageController.clear();
-                        Navigator.of(context).pop();
-                      });
+
+                      
+                      sendMessage(context);
+                      messageController.clear();
+                      Navigator.of(context).pop();
                     },
                     icon: const Icon(Icons.send), // Icon to display
                     label: const Text('Send'), // Text to display
@@ -118,33 +113,47 @@ class _announcmentsPageState extends State<announcmentsPage> {
     );
   }
 
-  void sendMessage() async {
+  void sendMessage(BuildContext context) async {
     utils.postRoute(
       {
         'message': messageController.text,
         "type": isPush ? "P" : "N",
       },
       'notifications',
-    );
+    ).then((statusCode){
+      if(statusCode ==200)
+      {
+        setState(() {
+          messages!.add({
+            "id": messages!.length + 1,
+            "message": messageController.text,
+            "type": "P"
+          });
+        });
+        utils.snackBarMessage(context, "Message Sent!",color: Colors.green);
+      }else
+      {
+        utils.snackBarMessage(context, "Unable to send Message!");
+      }
+    });
   }
 
   @override
   void initState() {
-    if(messages.isEmpty)
+    if(messages==null)
     {
-        utils.getRoute('notifications').then((value) {
+      utils.getRoute('notifications').then((value) {
         setState(() {
           messages = value['notifications'];
         });
         debugPrint("notifcatio loaded");
       });
     }
-    if(type.isEmpty)
+    if(type==null)
     {
       prefs.getString("userType").then((value) {
         setState(() {
           type = value!;
-          // type = '';
         });
       });
     }
@@ -155,7 +164,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if(messages.isEmpty)
+        if(messages==null)
         const Column(
           children: [
             Icon(
@@ -174,12 +183,12 @@ class _announcmentsPageState extends State<announcmentsPage> {
             )
           ],
         ),
-        if(messages.isNotEmpty)
+        if(messages!=null)
         Container(
           height: MediaQuery.sizeOf(context).height * .7,
           padding: const EdgeInsets.all(20),
           child: ListView.builder(
-            itemCount: messages.length,
+            itemCount: messages!.length,
             itemBuilder: (context, index) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,13 +198,13 @@ class _announcmentsPageState extends State<announcmentsPage> {
                   ),
                   announcment(
                     canDelete: type == "Admin" || type == "SuperAdmin",
-                    id: messages[index]["id"],
+                    id: messages![index]["id"],
                     delete: () {
                       setState(() {
-                        messages.removeAt(index);
+                        messages!.removeAt(index);
                       });
                     },
-                    message: messages[index]["message"],
+                    message: messages![index]["message"],
                   ),
                 ],
               );
