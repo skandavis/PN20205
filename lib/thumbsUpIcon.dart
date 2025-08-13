@@ -1,3 +1,4 @@
+import 'package:PN2025/eventsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'utils.dart' as utils;
@@ -21,8 +22,8 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
         setState(() {
           liked = !liked;
           count += liked ? 1 : -1;
-          globals.shownEvents[widget.event["id"]-1]["liked"] = liked;
-          globals.shownEvents[widget.event["id"]-1]["_count"]["likedUserDevice"] =
+          eventsPage.totalEvents[widget.event["id"]-1]["liked"] = liked;
+          eventsPage.totalEvents[widget.event["id"]-1]["_count"]["likedUserDevice"] =
               count;
         });
         if (liked) {

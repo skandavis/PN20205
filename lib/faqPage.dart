@@ -11,10 +11,10 @@ class faqPage extends StatefulWidget {
 
 
 class _faqPageState extends State<faqPage> {
-static List<dynamic> questions = [];
+static List<dynamic>? questions;
   @override
   void initState() {
-    if(questions.isEmpty)
+    if(questions == null)
     {
       utils.getRoute('faqs').then((onValue) {
         setState(() {
@@ -29,17 +29,17 @@ static List<dynamic> questions = [];
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
-        child: questions.isNotEmpty?Column(
+        child: questions!=null?Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(questions.length, (index) {
+          children: List.generate(questions!.length, (index) {
             return Column(
               children: [
                 const SizedBox(
                   height: 35,
                 ),
                 faqQuestion(
-                  question: questions[index]["question"],
-                  answer: questions[index]["answer"],
+                  question: questions![index]["question"],
+                  answer: questions![index]["answer"],
                 )
               ],
             );

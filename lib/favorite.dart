@@ -1,3 +1,4 @@
+import 'package:PN2025/eventsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'utils.dart' as utils;
@@ -18,13 +19,15 @@ class _FavoriteIconState extends State<FavoriteIcon> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(eventsPage.totalEvents.toString());
     bool favorite = widget.event["favorite"];
     int id = widget.event["id"];
     return IconButton(
       onPressed: () {
         setState(() {
           favorite = !favorite;
-          globals.totalEvents[widget.event["id"]-1]["favorite"] = favorite;
+          eventsPage.totalEvents[widget.event["id"]-1]["favorite"] = favorite;
+          debugPrint(eventsPage.totalEvents.toString());
         });
         if (favorite) {
           utils.updateNoData('events/$id/favoritize');
