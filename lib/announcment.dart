@@ -5,6 +5,7 @@ import 'utils.dart' as utils;
 
 
 class announcment extends StatefulWidget {
+  bool newMessage;
   DateTime date = DateTime.now();
   String message;
   Function delete;
@@ -12,6 +13,7 @@ class announcment extends StatefulWidget {
   bool canDelete;
   announcment(
       {super.key,
+      required this.newMessage,
       required this.message,
       required this.delete,
       required this.id,
@@ -129,8 +131,8 @@ class _announcmentState extends State<announcment> {
             ),
             child: Container(
               width: MediaQuery.sizeOf(context).width * 1,
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 255, 255, 255),
+              decoration: BoxDecoration(
+                color: widget.newMessage?Colors.amber:Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10),
                   bottomLeft: Radius.circular(10),

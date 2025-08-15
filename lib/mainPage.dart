@@ -27,7 +27,7 @@ Future<void> _launchURL(String websiteUrl) async {
 
 class _mainPageState extends State<mainPage> {
   late GoogleMapController mapController;
-  LatLng center = LatLng(47.3769, 8.5417);
+  static LatLng center = LatLng(47.3769, 8.5417);
   static Map<String, dynamic>? info;
   static List<Uint8List> images = []; 
   @override
@@ -36,6 +36,7 @@ class _mainPageState extends State<mainPage> {
     if(info==null)
     {
       utils.getRoute("evnt/1").then((response) async {
+        if(response == null) return;
         setState(() {
           info = response["evnt"];
         });

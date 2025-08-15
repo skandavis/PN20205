@@ -16,9 +16,10 @@ static List<dynamic>? questions;
   void initState() {
     if(questions == null)
     {
-      utils.getRoute('faqs').then((onValue) {
+      utils.getRoute('faqs').then((faqs) {
+        if(faqs == null) return;
         setState(() {
-          questions = onValue["faqs"];
+          questions = faqs["faqs"];
         });
       });
     }
@@ -46,13 +47,9 @@ static List<dynamic>? questions;
           })
         ):Column(
           children: [
-            Icon(
-              Icons.search_off,
-              size: 128,
-              color: Colors.white,
-            ),
+            CircularProgressIndicator(),
             Text(
-              "No Notifications Found",
+              "Loading",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,

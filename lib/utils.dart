@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:PN2025/globals.dart' as globals;
 import 'dart:convert'; // For JSON encoding
+import 'package:permission_handler/permission_handler.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 
 int timeoutSecs = 3;
-Future<Map<String, dynamic>> getRoute(String route) async {
+Future<Map<String, dynamic>?> getRoute(String route) async {
   try {
     final response = await http
         .get(
@@ -205,3 +207,21 @@ Future<Uint8List> getImage(String route) async {
       ),
     );
   }
+
+
+Future<void> addEventWithPermission(String title, String description, String location, DateTime startDate, DateTime endDate) async {
+  // if (globals.calenderPermission.isGranted) {
+    debugPrint("Granted");
+    final event = Event(
+      title: title,
+      description: description,
+      location: location,
+      startDate: startDate,
+      endDate: endDate,
+    );
+    Add2Calendar.addEvent2Cal(event);
+  // } else {
+  //   // Handle permission denied (show dialog or message)
+  //   print("Calendar permission denied");
+  // }
+}

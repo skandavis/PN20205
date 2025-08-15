@@ -4,6 +4,8 @@ import 'package:PN2025/checkBox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 import 'package:PN2025/globals.dart' as globals;
+import 'package:collection/collection.dart';
+import 'package:collection/collection.dart';
 
 class announcmentsPage extends StatefulWidget {
   const announcmentsPage({super.key});
@@ -16,10 +18,13 @@ class announcmentsPage extends StatefulWidget {
 
 class _announcmentsPageState extends State<announcmentsPage> {
   TextEditingController messageController = TextEditingController();
+  ScrollController scrollController = ScrollController(); // Define in your state
   static List<dynamic>? messages;
+  static List<dynamic> newMessages = [];
   bool isPush = false;
   static String? type;
   final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+
 
   void updateIsPush() {
     setState(() {
@@ -91,14 +96,11 @@ class _announcmentsPageState extends State<announcmentsPage> {
                         globals.accentColor,
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async{
                       if (messageController.text.isEmpty||messages==null) {
                         return;
                       }
-
-                      
                       sendMessage(context);
-                      messageController.clear();
                       Navigator.of(context).pop();
                     },
                     icon: const Icon(Icons.send), // Icon to display
@@ -130,6 +132,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
             "type": "P"
           });
         });
+        messageController.clear();
         utils.snackBarMessage(context, "Message Sent!",color: Colors.green);
       }else
       {
@@ -137,14 +140,15 @@ class _announcmentsPageState extends State<announcmentsPage> {
       }
     });
   }
-
   @override
   void initState() {
     if(messages==null)
     {
       utils.getRoute('notifications').then((value) {
         setState(() {
+          if(value == null) return;
           messages = value['notifications'];
+          debugPrint(value.toString());
         });
         debugPrint("notifcatio loaded");
       });
@@ -167,13 +171,9 @@ class _announcmentsPageState extends State<announcmentsPage> {
         if(messages==null)
         const Column(
           children: [
-            Icon(
-              Icons.search_off,
-              size: 128,
-              color: Colors.white,
-            ),
+            CircularProgressIndicator(),
             Text(
-              "No Notifications Found",
+              "Loading",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -187,28 +187,55 @@ class _announcmentsPageState extends State<announcmentsPage> {
         Container(
           height: MediaQuery.sizeOf(context).height * .7,
           padding: const EdgeInsets.all(20),
-          child: ListView.builder(
-            itemCount: messages!.length,
-            itemBuilder: (context, index) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  announcment(
-                    canDelete: type == "Admin" || type == "SuperAdmin",
-                    id: messages![index]["id"],
-                    delete: () {
-                      setState(() {
-                        messages!.removeAt(index);
-                      });
-                    },
-                    message: messages![index]["message"],
-                  ),
-                ],
-              );
+          child: RefreshIndicator(
+            onRefresh: () async{
+              print('Overscrolled at top!');
+              utils.getRoute('notifications').then((value) {
+                if(value == null) return;
+                setState(() {
+                  if(ListEquality().equals(value["notifications"], messages))
+                  {
+                    debugPrint('hey');
+                    return;
+                  }
+
+                  final eq = const DeepCollectionEquality();
+
+                  newMessages = value["notifications"].where((item1) =>
+                    !messages!.any((item2) => eq.equals(item1, item2))).toList();
+
+                  print(newMessages);
+                  messages = value['notifications'];
+                });
+                debugPrint("notifcatio loaded");
+              });
             },
+            child: ListView.builder(
+              controller: scrollController,
+              itemCount: messages!.length,
+              itemBuilder: (context, index) {
+                index = messages!.length-1-index;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    announcment(
+                      newMessage: newMessages.any((item) => DeepCollectionEquality().equals(item, messages![index])),
+                      canDelete: type == "Admin" || type == "SuperAdmin",
+                      id: messages![index]["id"],
+                      delete: () {
+                        setState(() {
+                          messages!.removeAt(index);
+                        });
+                      },
+                      message: messages![index]["message"],
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
         if (type == "Admin" || type == "SuperAdmin")

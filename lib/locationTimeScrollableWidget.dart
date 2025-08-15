@@ -1,6 +1,7 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:PN2025/utils.dart' as utils;
 import 'package:intl/intl.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:url_launcher/url_launcher.dart';
@@ -27,15 +28,16 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
         children: [
           GestureDetector(
             onTap: () {
-              final event = Event(
-                title: "Nagarathar Pillayar Nombu",
-                description: "Description TBD",
-                location: widget.location,
-                startDate: widget.startTime,
-                endDate: widget.endTime,
-                allDay: false,
-              );
-              Add2Calendar.addEvent2Cal(event);
+              utils.addEventWithPermission("Nagarathar Pillayar Nombu", "Description TBD", widget.location, widget.startTime, widget.endTime);
+              // final event = Event(
+              //   title: "Nagarathar Pillayar Nombu",
+              //   description: "Description TBD",
+              //   location: widget.location,
+              //   startDate: widget.startTime,
+              //   endDate: widget.endTime,
+              //   allDay: false,
+              // );
+              // Add2Calendar.addEvent2Cal(event);
             },
             child: const Icon(
               Icons.calendar_month,

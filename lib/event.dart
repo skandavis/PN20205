@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:PN2025/expandedEventPage.dart';
 import 'package:PN2025/favorite.dart';
@@ -147,15 +148,7 @@ class _eventCardState extends State<eventCard> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          final event = Event(
-                            title: widget.event["name"],
-                            description: widget.event["description"],
-                            location: widget.event["location"],
-                            startDate: startTime,
-                            endDate: startTime.add(Duration(minutes: widget.event["duration"])),
-                            allDay: false,
-                          );
-                          Add2Calendar.addEvent2Cal(event);
+                          utils.addEventWithPermission(widget.event["name"], widget.event["description"], widget.event["location"], startTime, startTime.add(Duration(minutes: widget.event["duration"])));
                         },
                         child: Icon(Icons.event,color: globals.accentColor,)
                       ),

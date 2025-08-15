@@ -1,6 +1,6 @@
 library;
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 String url = "http://192.168.86.38:8000/api/v1/";
 // String url = "http://192.168.86.38:8010/api/v1/";
@@ -12,4 +12,5 @@ Color secondaryTransitionColor = Color.fromARGB(255, 241, 119, 19);
 Color accentColor = Color.fromARGB(255, 62, 54, 217);
 Color highlightColor = Color.fromARGB(255, 183, 48, 232);
 Color iceBlue = Color.fromARGB(255, 13, 182, 255);
+PermissionStatus calenderPermission = PermissionStatus.denied;
 var fields = {}; 

@@ -29,6 +29,7 @@ class _eventsPageState extends State<eventsPage> {
   List<dynamic> shownEvents = [];
   String _searchQuery = "";
   bool _onlyFavorites = false;
+  bool _showOld = false;
   List<String> categoriesChosen = [];
 
   @override
@@ -60,6 +61,9 @@ class _eventsPageState extends State<eventsPage> {
     
     try {
       final response = await utils.getRoute('events');
+      if(response == null) {
+        return;
+      }
       eventsPage.totalEvents = response["events"];
       debugPrint(eventsPage.totalEvents.toString());
     } catch (e) {
@@ -72,6 +76,10 @@ class _eventsPageState extends State<eventsPage> {
     
     try {
       final response = await utils.getRoute('categories');
+      if(response == null)
+      {
+        return;
+      }
       final categories = (response["categories"] as List)
           .map((category) => category["category"] as String)
           .toList();
@@ -151,6 +159,7 @@ class _eventsPageState extends State<eventsPage> {
     try {
       debugPrint("loading image number$eventIndex");
       final eventResponse = await utils.getRoute('events/$eventID');
+      if(eventResponse ==null) return;
       final images = eventResponse["event"]["images"] as List? ?? [];
       
       final imageFutures = images
@@ -198,11 +207,17 @@ class _eventsPageState extends State<eventsPage> {
   bool _matchesFilters(Map<String, dynamic> event) {
     return _matchesFavoriteFilter(event) &&
            _matchesCategoryFilter(event) &&
-           _matchesSearchFilter(event);
+           _matchesSearchFilter(event) &&
+           _matchesTimeFilter(event);
   }
 
   bool _matchesFavoriteFilter(Map<String, dynamic> event) {
-    return !_onlyFavorites || (event["favorite"] == true);
+    return !_onlyFavorites || (event["favorite"]);
+  }
+
+  bool _matchesTimeFilter(Map<String, dynamic> event){
+    bool isOld = DateTime.parse(event["startTime"]).toLocal().isBefore(DateTime.now().toLocal());
+    return _showOld || !isOld;
   }
 
   bool _matchesCategoryFilter(Map<String, dynamic> event) {
@@ -255,6 +270,14 @@ class _eventsPageState extends State<eventsPage> {
   void _toggleFavorites() {
     setState(() {
       _onlyFavorites = !_onlyFavorites;
+      _filterEvents();
+    });
+    _refreshData();
+  }
+
+  void _toggleOld() {
+    setState(() {
+      _showOld = !_showOld;
       _filterEvents();
     });
     _refreshData();
@@ -318,27 +341,40 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   Widget _buildFilterRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: _toggleFavorites,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: _onlyFavorites ? Colors.red : Colors.white,
-              ),
-              child: Icon(
-                Icons.favorite,
-                color: _onlyFavorites ? Colors.white : Colors.red,
-                size: 24,
-              ),
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: _toggleFavorites,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: _onlyFavorites ? Colors.red : Colors.white,
+            ),
+            child: Icon(
+              Icons.favorite,
+              color: _onlyFavorites ? Colors.white : Colors.red,
+              size: 24,
             ),
           ),
-        ],
-      ),
+        ),
+        SizedBox(width: 5,),
+        GestureDetector(
+          onTap: _toggleOld,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: _showOld ? globals.accentColor : Colors.white,
+            ),
+            child: Icon(
+              Icons.lock_clock,
+              color: _showOld ? Colors.white : globals.accentColor,
+              size: 24,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -407,29 +443,46 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   Widget _buildEventsListView() {
-  return ListView.builder(
-      controller: _scrollController,
-      itemCount: shownEvents.length + (_isLoading ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index < shownEvents.length) {
-          // Ensure we have images for this index
-          final images = index < shownImages.length 
-              ? shownImages[index] 
-              : <Uint8List>[];
-              
-          return Column(
-            children: [
-              eventCard(
-                event: shownEvents[index],
-                images: images,
-              ),
-              const SizedBox(height: 25),
-            ],
-          );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
-    );
+    debugPrint("here");
+  return RefreshIndicator(
+    onRefresh: () async{
+    try {
+      final response = await utils.getRoute('events');
+      if(response == null) {
+        return;
+      }
+      setState(() {
+        eventsPage.totalEvents = response["events"];
+        _filterEvents();
+      });
+    } catch (e) {
+      debugPrint("error loading event data: $e");
+    }
+    },
+    child: ListView.builder(
+        controller: _scrollController,
+        itemCount: shownEvents.length + (_isLoading ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index < shownEvents.length) {
+            // Ensure we have images for this index
+            final images = index < shownImages.length 
+                ? shownImages[index] 
+                : <Uint8List>[];
+                
+            return Column(
+              children: [
+                eventCard(
+                  event: shownEvents[index],
+                  images: images,
+                ),
+                const SizedBox(height: 25),
+              ],
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+  );
   }
 }
