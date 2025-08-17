@@ -183,32 +183,32 @@ class _announcmentsPageState extends State<announcmentsPage> {
           ],
         ),
         if(messages!=null)
-        Container(
-          height: MediaQuery.sizeOf(context).height * .7,
-          padding: const EdgeInsets.all(20),
-          child: RefreshIndicator(
-            onRefresh: () async{
-              print('Overscrolled at top!');
-              utils.getRoute('notifications').then((value) {
-                if(value == null) return;
-                setState(() {
-                  if(ListEquality().equals(value["notifications"], messages))
-                  {
-                    debugPrint('hey');
-                    return;
-                  }
-
-                  final eq = const DeepCollectionEquality();
-
-                  newMessages = value["notifications"].where((item1) =>
-                    !messages!.any((item2) => eq.equals(item1, item2))).toList();
-
-                  print(newMessages);
-                  messages = value['notifications'];
+        RefreshIndicator(
+          onRefresh: () async{
+                print('Overscrolled at top!');
+                utils.getRoute('notifications').then((value) {
+                  if(value == null) return;
+                  setState(() {
+                    if(ListEquality().equals(value["notifications"], messages))
+                    {
+                      debugPrint('hey');
+                      return;
+                    }
+              
+                    final eq = const DeepCollectionEquality();
+              
+                    newMessages = value["notifications"].where((item1) =>
+                      !messages!.any((item2) => eq.equals(item1, item2))).toList();
+              
+                    print(newMessages);
+                    messages = value['notifications'];
+                  });
+                  debugPrint("notifcatio loaded");
                 });
-                debugPrint("notifcatio loaded");
-              });
-            },
+              },
+          child: Container(
+            height: MediaQuery.sizeOf(context).height * .7,
+            padding: const EdgeInsets.all(20),
             child: ListView.builder(
               controller: scrollController,
               itemCount: messages!.length,
@@ -241,17 +241,20 @@ class _announcmentsPageState extends State<announcmentsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              GestureDetector(
-                onTap: showDialogBox,
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: globals.secondaryColor,
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.black,
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: GestureDetector(
+                  onTap: showDialogBox,
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: globals.secondaryColor,
+                    ),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               )

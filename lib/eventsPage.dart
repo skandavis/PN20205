@@ -22,7 +22,7 @@ class _eventsPageState extends State<eventsPage> {
 
   // Data structures
   static List<String> totalCategories = [];
-  static List<selectableCategoryLabel> _categoryWidgets = [];
+  List<selectableCategoryLabel> _categoryWidgets = [];
   static final Map<int, List<Uint8List>> _imageCache = {}; // Changed to Map for O(1) lookup
   List<dynamic> shownEvents = [];
   
@@ -42,6 +42,7 @@ class _eventsPageState extends State<eventsPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _initializeData();
+    _categoryWidgets = _buildCategoryWidgets();
   }
 
   @override
