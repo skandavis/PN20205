@@ -5,7 +5,6 @@ import 'package:PN2025/expandedEventPage.dart';
 import 'package:PN2025/favorite.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/imageCarousel.dart';
-import 'package:add_2_calendar/add_2_calendar.dart';
 
 class eventCard extends StatefulWidget {
   dynamic event;
@@ -60,7 +59,7 @@ class _eventCardState extends State<eventCard> {
         });
       },
       child: Container(
-        width: MediaQuery.sizeOf(context).width*.9,
+        width: MediaQuery.sizeOf(context).width*.85,
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),

@@ -14,23 +14,28 @@ class eventsPage extends StatefulWidget {
 }
 
 class _eventsPageState extends State<eventsPage> {
-  static const int _imagesPerLoad = 5;
-  static const double _scrollThreshold = 200;
+  static const int _imagesPerLoad = 10; // Increased for better batching
+  static const double _scrollThreshold = 300;
   
-  bool _isLoading = false;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
+  // Data structures
   static List<String> totalCategories = [];
-  List<selectableCategoryLabel> _categoryWidgets = [];
-  static List<List<Uint8List>> totalImages = [];
-  List<List<Uint8List>> shownImages = [];
-  static final List<int> _imageIDs = [];
+  static List<selectableCategoryLabel> _categoryWidgets = [];
+  static final Map<int, List<Uint8List>> _imageCache = {}; // Changed to Map for O(1) lookup
   List<dynamic> shownEvents = [];
+  
+  // Filter states
   String _searchQuery = "";
   bool _onlyFavorites = false;
-  bool _showOld = false;
-  List<String> categoriesChosen = [];
+  bool _showOld = true;
+  Set<String> categoriesChosen = {}; // Changed to Set for O(1) operations
+  
+  // Loading states
+  bool _isLoadingImages = false;
+  bool _isInitialized = false;
+  int _lastLoadedImageIndex = 0;
 
   @override
   void initState() {
@@ -47,52 +52,57 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   Future<void> _initializeData() async {
-    loadEvents().then((_)async{
-      await Future.wait([
-        _loadCategoriesIfNeeded(),
-        _loadInitialData(),
-      ]);
-    });
-  }
-
-  Future<void> loadEvents() async
-  {
-    if(eventsPage.totalEvents.isNotEmpty) return;
+    if (_isInitialized) return;
     
     try {
-      final response = await utils.getRoute('events');
-      if(response == null) {
-        return;
+      await _loadEventsAndCategories();
+      _filterEvents();
+      await _loadInitialImages();
+      
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
       }
-      eventsPage.totalEvents = response["events"];
-      debugPrint(eventsPage.totalEvents.toString());
     } catch (e) {
-      debugPrint("error loading event data: $e");
+      debugPrint('Error initializing data: $e');
     }
   }
 
-  Future<void> _loadCategoriesIfNeeded() async {
-    if (categoriesChosen.isNotEmpty) return;
+  Future<void> _loadEventsAndCategories() async {
+    // Load both concurrently
+    final futures = await Future.wait([
+      _loadEvents(),
+      _loadCategories(),
+    ]);
+  }
+
+  Future<void> _loadEvents() async {
+    if (eventsPage.totalEvents.isNotEmpty) return;
+    
+    try {
+      final response = await utils.getRoute('events');
+      if (response?.containsKey('events') == true) {
+        eventsPage.totalEvents = response!["events"];
+      }
+    } catch (e) {
+      debugPrint("Error loading events: $e");
+    }
+  }
+
+  Future<void> _loadCategories() async {
+    if (totalCategories.isNotEmpty) return;
     
     try {
       final response = await utils.getRoute('categories');
-      if(response == null)
-      {
-        return;
-      }
-      final categories = (response["categories"] as List)
-          .map((category) => category["category"] as String)
-          .toList();
-      
-      if (!mounted) return;
-      
-      setState(() {
-        totalCategories
-          ..clear()
-          ..addAll(categories);
+      if (response?.containsKey('categories') == true) {
+        final categories = (response!["categories"] as List)
+            .map((category) => category["category"] as String)
+            .toList();
         
+        totalCategories = categories;
         _categoryWidgets = _buildCategoryWidgets();
-      });
+      }
     } catch (e) {
       debugPrint('Error loading categories: $e');
     }
@@ -108,149 +118,129 @@ class _eventsPageState extends State<eventsPage> {
         .toList();
   }
 
-  Future<void> _loadInitialData() async {
-    try {
-      _filterEvents();
-      await _loadImages();
-      if (mounted) setState(() {});
-    } catch (e) {
-      debugPrint('Error loading initial data: $e');
-    }
-  }
-
-  Future<void> _loadImages() async {
-    if (_isLoading) return;
+  void _filterEvents() {
+    final now = DateTime.now().toLocal();
+    final query = _searchQuery.toLowerCase().trim();
     
-    final startIndex = shownImages.length;
-    final endIndex = (startIndex + _imagesPerLoad)
-        .clamp(0, shownEvents.length);
-    
-    if (startIndex >= endIndex) return;
-    
-    setState(() => _isLoading = true);
-    
-    try {
-      await _loadImagesInRange(startIndex, endIndex);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _loadImagesInRange(int startIndex, int endIndex) async {
-    final futures = <Future<void>>[];
-    
-    for (int i = startIndex; i < endIndex; i++) {
-      futures.add(_loadEventImages(i));
-    }
-    
-    await Future.wait(futures);
-  }
-
-  Future<void> _loadEventImages(int eventIndex) async {
-    final dynamic eventID = shownEvents[eventIndex]["id"];
-    
-    // Check cache first
-    final int cachedIndex = _imageIDs.indexOf(eventID);
-    if (cachedIndex != -1) {
-      shownImages.add(totalImages[cachedIndex]);
-      return;
-    }
-
-    try {
-      debugPrint("loading image number$eventIndex");
-      final eventResponse = await utils.getRoute('events/$eventID');
-      if(eventResponse ==null) return;
-      final images = eventResponse["event"]["images"] as List? ?? [];
+    shownEvents = eventsPage.totalEvents.where((event) {
+      // Favorite filter
+      if (_onlyFavorites && !(event["favorite"] ?? false)) return false;
       
+      // Time filter  
+      if (!_showOld) {
+        final startTime = DateTime.parse(event["startTime"]).toLocal();
+        if (startTime.isBefore(now)) return false;
+      }
+      
+      // Category filter
+      if (categoriesChosen.isNotEmpty) {
+        final eventCategory = event["category"]?["category"];
+        if (eventCategory == null || !categoriesChosen.contains(eventCategory)) {
+          return false;
+        }
+      }
+      
+      // Search filter
+      if (query.isNotEmpty) {
+        final name = event["name"]?.toString().toLowerCase() ?? "";
+        final categoryName = event["category"]?["category"]?.toString().toLowerCase() ?? "";
+        if (!name.contains(query) && !categoryName.contains(query)) {
+          return false;
+        }
+      }
+      
+      return true;
+    }).toList();
+    
+    // Reset image loading state when events change
+    _lastLoadedImageIndex = 0;
+    
+    debugPrint('Filtered: ${shownEvents.length}/${eventsPage.totalEvents.length} events');
+  }
+
+  Future<void> _loadInitialImages() async {
+    await _loadImagesForRange(0, (_imagesPerLoad).clamp(0, shownEvents.length));
+  }
+
+  Future<void> _loadImagesForRange(int startIndex, int endIndex) async {
+    if (_isLoadingImages || startIndex >= shownEvents.length) return;
+    
+    _isLoadingImages = true;
+    
+    try {
+      final futures = <Future<void>>[];
+      
+      for (int i = startIndex; i < endIndex && i < shownEvents.length; i++) {
+        if (!_imageCache.containsKey(shownEvents[i]["id"])) {
+          futures.add(_loadEventImages(shownEvents[i]));
+        }
+      }
+      
+      if (futures.isNotEmpty) {
+        await Future.wait(futures);
+        if (mounted) setState(() {});
+      }
+      
+      _lastLoadedImageIndex = endIndex;
+    } finally {
+      _isLoadingImages = false;
+    }
+  }
+
+  Future<void> _loadEventImages(dynamic event) async {
+    final int eventID = event["id"];
+    
+    // Skip if already cached
+    if (_imageCache.containsKey(eventID)) return;
+
+    try {
+      final eventResponse = await utils.getRoute('events/$eventID');
+      if (eventResponse?.containsKey('event') != true) {
+        _imageCache[eventID] = <Uint8List>[];
+        return;
+      }
+      
+      final images = eventResponse!["event"]["images"] as List? ?? [];
+      if (images.isEmpty) {
+        _imageCache[eventID] = <Uint8List>[];
+        return;
+      }
+      
+      // Load images concurrently with error handling
       final imageFutures = images
-          .map((img) => utils.getImage(img["url"] as String))
+          .map((img) => utils.getImage(img["url"] as String).catchError((_) => Uint8List(0)))
           .toList();
       
       final loadedImages = await Future.wait(imageFutures);
-      final validImages = loadedImages
-          .where((img) => img.isNotEmpty)
-          .toList();
-
-      totalImages.add(validImages);
-      _imageIDs.add(eventID);
-      shownImages.add(validImages);
+      final validImages = loadedImages.where((img) => img.isNotEmpty).toList();
+      
+      _imageCache[eventID] = validImages;
       
     } catch (e) {
-      debugPrint('Error loading images for event $eventIndex: $e');
-      shownImages.add(<Uint8List>[]);
+      debugPrint('Error loading images for event $eventID: $e');
+      _imageCache[eventID] = <Uint8List>[];
     }
-  }
-
-  Future<void> _refreshData() async {
-    shownImages.clear();
-    await _loadImages();
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels >= 
         _scrollController.position.maxScrollExtent - _scrollThreshold) {
-      _loadImages();
+      
+      final nextBatchEnd = (_lastLoadedImageIndex + _imagesPerLoad)
+          .clamp(0, shownEvents.length);
+      
+      if (_lastLoadedImageIndex < nextBatchEnd) {
+        _loadImagesForRange(_lastLoadedImageIndex, nextBatchEnd);
+      }
     }
-  }
-
-  void _filterEvents() {
-    shownEvents.clear();
-    
-    for (final event in eventsPage.totalEvents) {
-      if (!_matchesFilters(event)) continue;
-      shownEvents.add(event);
-    }
-    
-    _logFilterResults();
-  }
-
-  bool _matchesFilters(Map<String, dynamic> event) {
-    return _matchesFavoriteFilter(event) &&
-           _matchesCategoryFilter(event) &&
-           _matchesSearchFilter(event) &&
-           _matchesTimeFilter(event);
-  }
-
-  bool _matchesFavoriteFilter(Map<String, dynamic> event) {
-    return !_onlyFavorites || (event["favorite"]);
-  }
-
-  bool _matchesTimeFilter(Map<String, dynamic> event){
-    bool isOld = DateTime.parse(event["startTime"]).toLocal().isBefore(DateTime.now().toLocal());
-    return _showOld || !isOld;
-  }
-
-  bool _matchesCategoryFilter(Map<String, dynamic> event) {
-    if (categoriesChosen.isEmpty) return true;
-    
-    final eventCategory = event["category"]?["category"];
-    return eventCategory != null && 
-           categoriesChosen.contains(eventCategory);
-  }
-
-  bool _matchesSearchFilter(Map<String, dynamic> event) {
-    if (_searchQuery.isEmpty) return true;
-    
-    final query = _searchQuery.toLowerCase().trim();
-    
-    // Search in name
-    final name = event["name"]?.toString().toLowerCase() ?? "";
-    if (name.contains(query)) return true;
-    
-    // Search in category
-    final categoryName = event["category"]?["category"]?.toString().toLowerCase() ?? "";
-    return categoryName.contains(query);
-  }
-
-  void _logFilterResults() {
-    debugPrint('Filtered events: ${shownEvents.length}/${eventsPage.totalEvents.length}');
-    debugPrint('Search: "$_searchQuery", Categories: $categoriesChosen, Favorites: $_onlyFavorites');
   }
 
   void _onSearchChanged(String query) {
-    setState(() => _searchQuery = query.trim());
-    _filterEvents();
-    _refreshData();
+    setState(() {
+      _searchQuery = query.trim();
+      _filterEvents();
+    });
   }
 
   void _updateCategories(bool chosen, String category) {
@@ -261,10 +251,8 @@ class _eventsPageState extends State<eventsPage> {
         categoriesChosen.remove(category);
       }
       _categoryWidgets = _buildCategoryWidgets();
+      _filterEvents();
     });
-
-    _filterEvents();
-    _refreshData();
   }
 
   void _toggleFavorites() {
@@ -272,7 +260,6 @@ class _eventsPageState extends State<eventsPage> {
       _onlyFavorites = !_onlyFavorites;
       _filterEvents();
     });
-    _refreshData();
   }
 
   void _toggleOld() {
@@ -280,7 +267,6 @@ class _eventsPageState extends State<eventsPage> {
       _showOld = !_showOld;
       _filterEvents();
     });
-    _refreshData();
   }
 
   void _clearAllFilters() {
@@ -288,11 +274,28 @@ class _eventsPageState extends State<eventsPage> {
     setState(() {
       _searchQuery = "";
       _onlyFavorites = false;
+      _showOld = false;
       categoriesChosen.clear();
       _categoryWidgets = _buildCategoryWidgets();
+      _filterEvents();
     });
-    _filterEvents();
-    _refreshData();
+  }
+
+  Future<void> _refreshData() async {
+    try {
+      final response = await utils.getRoute('events');
+      if (response?.containsKey('events') == true) {
+        setState(() {
+          eventsPage.totalEvents = response!["events"];
+          _filterEvents();
+        });
+        
+        // Load images for visible events
+        await _loadInitialImages();
+      }
+    } catch (e) {
+      debugPrint("Error refreshing data: $e");
+    }
   }
 
   @override
@@ -301,12 +304,11 @@ class _eventsPageState extends State<eventsPage> {
       children: [
         _buildSearchBar(),
         _buildFilterRow(),
-        _buildCategoryList(),
+        if (_categoryWidgets.isNotEmpty) _buildCategoryList(),
         _buildEventsList(),
       ],
     );
   }
-
 
   Widget _buildSearchBar() {
     return Padding(
@@ -341,40 +343,48 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   Widget _buildFilterRow() {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: _toggleFavorites,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: _onlyFavorites ? Colors.red : Colors.white,
-            ),
-            child: Icon(
-              Icons.favorite,
-              color: _onlyFavorites ? Colors.white : Colors.red,
-              size: 24,
-            ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        children: [
+          _buildFilterButton(
+            icon: Icons.favorite,
+            isActive: _onlyFavorites,
+            onTap: _toggleFavorites,
+            activeColor: Colors.red,
           ),
-        ),
-        SizedBox(width: 5,),
-        GestureDetector(
-          onTap: _toggleOld,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: _showOld ? globals.accentColor : Colors.white,
-            ),
-            child: Icon(
-              Icons.lock_clock,
-              color: _showOld ? Colors.white : globals.accentColor,
-              size: 24,
-            ),
+          const SizedBox(width: 8),
+          _buildFilterButton(
+            icon: Icons.lock_clock,
+            isActive: _showOld,
+            onTap: _toggleOld,
+            activeColor: globals.accentColor,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterButton({
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+    required Color activeColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: isActive ? activeColor : Colors.white,
         ),
-      ],
+        child: Icon(
+          icon,
+          color: isActive ? Colors.white : activeColor,
+          size: 24,
+        ),
+      ),
     );
   }
 
@@ -393,23 +403,26 @@ class _eventsPageState extends State<eventsPage> {
 
   Widget _buildEventsList() {
     return Expanded(
-      child: shownEvents.isEmpty
-          ? _buildEmptyState()
-          : _buildEventsListView(),
+      child: !_isInitialized
+          ? const Center(child: CircularProgressIndicator())
+          : shownEvents.isEmpty
+              ? _buildEmptyState()
+              : _buildEventsListView(),
     );
   }
 
   Widget _buildEmptyState() {
     final hasActiveFilters = _searchQuery.isNotEmpty || 
                             categoriesChosen.isNotEmpty || 
-                            _onlyFavorites;
+                            _onlyFavorites || 
+                            _showOld;
     
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.search_off,
+            hasActiveFilters ? Icons.search_off : Icons.event_busy,
             size: 64,
             color: Colors.white.withOpacity(0.5),
           ),
@@ -417,7 +430,7 @@ class _eventsPageState extends State<eventsPage> {
           Text(
             hasActiveFilters 
                 ? "No events match your filters."
-                : "No events found.",
+                : "No events available.",
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
               fontSize: 16,
@@ -443,46 +456,26 @@ class _eventsPageState extends State<eventsPage> {
   }
 
   Widget _buildEventsListView() {
-    debugPrint("here");
-  return RefreshIndicator(
-    onRefresh: () async{
-    try {
-      final response = await utils.getRoute('events');
-      if(response == null) {
-        return;
-      }
-      setState(() {
-        eventsPage.totalEvents = response["events"];
-        _filterEvents();
-      });
-    } catch (e) {
-      debugPrint("error loading event data: $e");
-    }
-    },
-    child: ListView.builder(
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      child: ListView.builder(
         controller: _scrollController,
-        itemCount: shownEvents.length + (_isLoading ? 1 : 0),
+        itemCount: shownEvents.length,
         itemBuilder: (context, index) {
-          if (index < shownEvents.length) {
-            // Ensure we have images for this index
-            final images = index < shownImages.length 
-                ? shownImages[index] 
-                : <Uint8List>[];
-                
-            return Column(
-              children: [
-                eventCard(
-                  event: shownEvents[index],
-                  images: images,
-                ),
-                const SizedBox(height: 25),
-              ],
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
+          final event = shownEvents[index];
+          final images = _imageCache[event["id"]] ?? <Uint8List>[];
+          
+          return Column(
+            children: [
+              eventCard(
+                event: event,
+                images: images,
+              ),
+              const SizedBox(height: 25),
+            ],
+          );
         },
       ),
-  );
+    );
   }
 }

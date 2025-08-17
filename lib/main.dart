@@ -4,10 +4,8 @@ import 'package:PN2025/splashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:PN2025/firebase_options.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/utils.dart' as utils;
 
 bool showMainPage = true;
 
@@ -31,31 +29,11 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  Permission.calendarFullAccess.status.then((status) async {
-    globals.calenderPermission = status;
-    if (!status.isGranted) {
-      globals.calenderPermission = await Permission.calendarFullAccess.request();
-    }
-  });
-  // Permission.calendarFullAccess.status.then((status) async {
-  //   globals.calenderPermission = status;
-  //   if (!status.isGranted) {
-  //     status = await Permission.calendarFullAccess.request();
-  //   }
-  // });
   runApp(MyApp());
 }
 
-// void loadEvents() async
-// {
-//   try {
-//     final response = await utils.getRoute('events');
-//     globals.totalEvents = response["events"];
-//     debugPrint(globals.totalEvents.toString());
-//   } catch (e) {
-//     debugPrint("error loading event data: $e");
-//   }
-// }
+
+
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

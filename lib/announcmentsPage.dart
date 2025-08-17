@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 import 'package:PN2025/globals.dart' as globals;
 import 'package:collection/collection.dart';
-import 'package:collection/collection.dart';
 
 class announcmentsPage extends StatefulWidget {
   const announcmentsPage({super.key});

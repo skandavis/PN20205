@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:PN2025/globals.dart' as globals;
 import 'dart:convert'; // For JSON encoding
-import 'package:permission_handler/permission_handler.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 
 int timeoutSecs = 3;

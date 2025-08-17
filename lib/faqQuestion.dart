@@ -20,6 +20,7 @@ class _faqQuestionState extends State<faqQuestion> {
         });
       },
       child: Container(
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
@@ -30,11 +31,11 @@ class _faqQuestionState extends State<faqQuestion> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
+
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width * .8,
-                  padding: const EdgeInsets.all(15),
+                  width: (MediaQuery.of(context).size.width * .8)-20,
                   child: Text(
                     widget.question,
                     style: const TextStyle(
@@ -51,11 +52,14 @@ class _faqQuestionState extends State<faqQuestion> {
               ],
             ),
             if (widget.isExpanded)
-              Container(
-                padding: const EdgeInsets.all(15),
-                child: Text(
-                  widget.answer,
-                ),
+              Row(
+                children: [
+                  Container(
+                    child: Text(
+                      widget.answer,
+                    ),
+                  ),
+                ],
               )
           ],
         ),

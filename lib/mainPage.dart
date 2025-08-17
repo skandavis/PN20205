@@ -8,6 +8,7 @@ import 'package:PN2025/locationTimeScrollableWidget.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class mainPage extends StatefulWidget {
   const mainPage({super.key});
@@ -24,7 +25,45 @@ Future<void> _launchURL(String websiteUrl) async {
     throw 'Could not launch $websiteUrl';
   }
 }
+Future<bool> requestCalendarPermission(BuildContext context) async {
+  var status = await Permission.calendarFullAccess.status;
 
+  if (status.isGranted) {
+    return true;
+  }
+  debugPrint(status.toString());
+  if (status.isPermanentlyDenied||status.isDenied) {
+    // Show dialog to guide user to settings
+    bool openSettings = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Permission Required"),
+        content: Text(
+            "Calendar permission is permanently denied. Please enable it in Settings."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text("Open Settings"),
+          ),
+        ],
+      ),
+    );
+
+    if (openSettings == true) {
+      await openAppSettings();
+    }
+
+    return false;
+  }
+
+  // Request permission normally
+  status = await Permission.calendarFullAccess.request();
+  return status.isGranted;
+}
 class _mainPageState extends State<mainPage> {
   late GoogleMapController mapController;
   static LatLng center = LatLng(47.3769, 8.5417);
@@ -85,41 +124,46 @@ class _mainPageState extends State<mainPage> {
               padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.05),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Stack(
-                        children: List.generate(
-                          (info?["_count"]?["users"] ?? 1),
-                          (index) {
-                            return Row(
-                              children: [
-                                SizedBox(
-                                  width: (10 * index).toDouble(),
-                                ),
-                                Container(
-                                  height: 50,
-                                  width: 50,
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black, width: 1),
-                                    borderRadius: BorderRadius.circular(50),
+                  GestureDetector(
+                    onTap: (){
+                      requestCalendarPermission(context);
+                    },
+                    child: Row(
+                      children: [
+                        Stack(
+                          children: List.generate(
+                            (info?["_count"]?["users"] ?? 1),
+                            (index) {
+                              return Row(
+                                children: [
+                                  SizedBox(
+                                    width: (10 * index).toDouble(),
                                   ),
-                                  child: Image.asset("assets/genericAccount.png",),
-                                ),
-                              ],
-                            );
-                          },
+                                  Container(
+                                    height: 50,
+                                    width: 50,
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black, width: 1),
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Image.asset("assets/genericAccount.png",),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      Text(
-                        " +${info?["_count"]?["users"] ?? 1} More Going",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                          decoration: TextDecoration.none,
-                        ),
-                      )
-                    ],
+                        Text(
+                          " +${info?["_count"]?["users"] ?? 1} More Going",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                            decoration: TextDecoration.none,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   Text((info?["name"] ?? "Event Loading").toString(),
                     style: const TextStyle(
