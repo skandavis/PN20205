@@ -183,33 +183,33 @@ class _announcmentsPageState extends State<announcmentsPage> {
           ],
         ),
         if(messages!=null)
-        RefreshIndicator(
-          onRefresh: () async{
-                print('Overscrolled at top!');
-                utils.getRoute('notifications').then((value) {
-                  if(value == null) return;
-                  setState(() {
-                    if(ListEquality().equals(value["notifications"], messages))
-                    {
-                      debugPrint('hey');
-                      return;
-                    }
-              
-                    final eq = const DeepCollectionEquality();
-              
-                    newMessages = value["notifications"].where((item1) =>
-                      !messages!.any((item2) => eq.equals(item1, item2))).toList();
-              
-                    print(newMessages);
-                    messages = value['notifications'];
-                  });
-                  debugPrint("notifcatio loaded");
+        Container(
+          height: MediaQuery.sizeOf(context).height * .7,
+          padding: const EdgeInsets.all(20),
+          child: RefreshIndicator(
+            onRefresh: () async{
+              print('Overscrolled at top!');
+              utils.getRoute('notifications').then((value) {
+                if(value == null) return;
+                setState(() {
+                  if(ListEquality().equals(value["notifications"], messages))
+                  {
+                    debugPrint('hey');
+                    return;
+                  }            
+                  final eq = const DeepCollectionEquality();
+            
+                  newMessages = value["notifications"].where((item1) =>
+                    !messages!.any((item2) => eq.equals(item1, item2))).toList();
+            
+                  print(newMessages);
+                  messages = value['notifications'];
                 });
-              },
-          child: Container(
-            height: MediaQuery.sizeOf(context).height * .7,
-            padding: const EdgeInsets.all(20),
+                debugPrint("notifcatio loaded");
+              });
+            },
             child: ListView.builder(
+              physics: AlwaysScrollableScrollPhysics(),
               controller: scrollController,
               itemCount: messages!.length,
               itemBuilder: (context, index) {
@@ -224,6 +224,8 @@ class _announcmentsPageState extends State<announcmentsPage> {
                       newMessage: newMessages.any((item) => DeepCollectionEquality().equals(item, messages![index])),
                       canDelete: type == "Admin" || type == "SuperAdmin",
                       id: messages![index]["id"],
+                      createdAt: DateTime.parse(messages![index]["createdAt"]),
+                      userCreated:messages![index]["createdUser"]["name"],
                       delete: () {
                         setState(() {
                           messages!.removeAt(index);

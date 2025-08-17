@@ -6,18 +6,21 @@ import 'utils.dart' as utils;
 
 class announcment extends StatefulWidget {
   bool newMessage;
-  DateTime date = DateTime.now();
   String message;
   Function delete;
   int id;
   bool canDelete;
+  DateTime createdAt;
+  String userCreated;
   announcment(
       {super.key,
       required this.newMessage,
       required this.message,
       required this.delete,
       required this.id,
-      required this.canDelete});
+      required this.canDelete,
+      required this.createdAt,
+      required this.userCreated});
 
   @override
   State<announcment> createState() => _announcmentState();
@@ -98,16 +101,20 @@ class _announcmentState extends State<announcment> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              DateFormat('EEEE MMM d, h:mm a').format(widget.date),
+              widget.userCreated,
+              style: const TextStyle(color: Colors.white),
+            ),
+            Text(
+              DateFormat('EEEE MMM d, h:mm a').format(widget.createdAt),
               style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
         const SizedBox(
-          height: 15,
+          height: 5,
         ),
         if(widget.canDelete)
           Slidable(
