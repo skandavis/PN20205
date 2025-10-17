@@ -36,7 +36,7 @@ class _settingsPageState extends State<settingsPage> {
           onTap: () async {
             final SharedPreferencesAsync prefs = SharedPreferencesAsync();
             await prefs.remove('cookie');
-            globals.token = "";
+            globals.sessionToken = "";
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(

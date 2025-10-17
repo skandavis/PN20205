@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:PN2025/globals.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:app_set_id/app_set_id.dart';
 import 'package:PN2025/login.dart';
 import 'package:PN2025/submit.dart';
 import 'package:PN2025/messageReciever.dart';
+import 'package:http/http.dart' as http;
 
 import 'utils.dart' as utils;
 
@@ -16,13 +20,29 @@ class sendPasswordPage extends StatefulWidget {
 }
 
 Future<void> registerUser(String email) async {
-  utils.postRoute(
-    {
-      // "email": email,
-      "email": "viswanathanmanickam5@gmail.com",
-    },
-    "register",
-  );
+    var response = await http
+        .post(
+          Uri.parse('${globals.url}auth/request-otp/'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "email": email,
+            // "deviceID": getDeviceId(),
+            "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
+            // "passcode": pin,
+            // "deviceAPN": ApnsToken,
+          }),
+        ).then((onValue){
+          globals.loginToken = onValue.headers["set-cookie"].toString().split("=")[1].split(";")[0];
+        })
+        .timeout(Duration(seconds: 3));
+        // debugPrint(response.headers["set-cookie"].toString().split("=")[1]);
+  // utils.postRoute(
+  //   {
+  //     // "email": email,
+  //     "email": "viswanathanmanickam5@gmail.com",
+  //   },
+  //   "auth/request-otp/",
+  // );
 }
 
 Future<String?> getDeviceId() async {
@@ -100,8 +120,9 @@ class _sendPasswordPageState extends State<sendPasswordPage> {
   void sendPin(String email,BuildContext context) async
   {
     if (email.isEmpty ) {
-      utils.snackBarMessage(context, 'Please enter email or password');
-      return;
+      email = "viswanathanmanickam5@gmail.com";
+      // utils.snackBarMessage(context, 'Please enter email or password');
+      // return;
     } 
     if (isValidEmail(email)) {
       await registerUser(email).then((onvalue) 
@@ -114,6 +135,7 @@ class _sendPasswordPageState extends State<sendPasswordPage> {
   }
   TextEditingController username = TextEditingController();
   TextEditingController email = TextEditingController();
+  // String deviceID = getDeviceId()
   @override
   Widget build(BuildContext context) {
     getDeviceId().then((onvalue) {

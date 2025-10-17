@@ -1,8 +1,9 @@
+import 'package:PN2025/activity.dart';
 import 'package:flutter/material.dart';
 
 class categoryLabel extends StatefulWidget {
-  Map<String, dynamic> event;
-  categoryLabel({super.key,required this.event});
+  Activity activity;
+  categoryLabel({super.key,required this.activity});
 
   @override
   State<categoryLabel> createState() => _categoryLabelState();
@@ -25,7 +26,7 @@ class _categoryLabelState extends State<categoryLabel> {
             ),
             padding: const EdgeInsets.all(3),
             child: Text(
-              widget.event["category"]["category"],
+              widget.activity.category,
               style: const TextStyle(color: Colors.white),
             ),
           );

@@ -1,13 +1,14 @@
+import 'package:PN2025/category.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 
 class selectableCategoryLabel extends StatefulWidget {
-  String label;
+  ActivityCategory category;
   bool chosen;
-  Function(bool, String) chooseCategory;
+  Function(bool, ActivityCategory) chooseCategory;
   selectableCategoryLabel(
       {super.key,
-      required this.label,
+      required this.category,
       required this.chooseCategory,
       required this.chosen});
 
@@ -23,7 +24,7 @@ class _selectableCategoryLabelState extends State<selectableCategoryLabel> {
       onTap: () {
         setState(() {
           widget.chosen = !widget.chosen;
-          widget.chooseCategory(widget.chosen, widget.label);
+          widget.chooseCategory(widget.chosen, widget.category);
         });
       },
       child: Container(
@@ -36,7 +37,7 @@ class _selectableCategoryLabelState extends State<selectableCategoryLabel> {
                 : Colors.white),
         child: Center(
           child: Text(
-            widget.label,
+            widget.category.name,
             style: TextStyle(fontSize: 16, color: Colors.black),
           ),
         ),

@@ -28,38 +28,42 @@ TextEditingController email = TextEditingController();
 final FocusNode emailFocus = FocusNode();
 final FocusNode pinFocus = FocusNode();
 
-Future<int> authenticate(String email, String pin) async {
+Future<int> authenticate(String email, int pin) async {
   debugPrint("deviceId: $deviceId");
   debugPrint("ApnsID: $ApnsToken");
   try {
-    var url = Uri.parse('${globals.url}authenticate');
+    var url = Uri.parse('${globals.url}auth/verify-otp');
 
     // Create a 3-second timeout for the HTTP request
     var response = await http
         .post(
           url,
-          headers: {"Content-Type": "application/json"},
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer ${globals.loginToken}',
+          },
           body: jsonEncode({
             "email": email,
-            "passcode": pin,
             "deviceID": deviceId,
-            "evntID": 1,
-            "deviceAPN": ApnsToken,
+            "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
+            "passcode": pin,
+            // "deviceAPN": ApnsToken,
           }),
         )
         .timeout(Duration(seconds: 3)); // Timeout after 3 seconds
 
     if (response.statusCode == 200) {
       debugPrint("Success");
-      globals.token = response.headers["set-cookie"].toString().split(";")[0];
+      globals.sessionToken = response.headers["set-cookie"].toString().split(";")[0];
       final SharedPreferencesAsync prefs = SharedPreferencesAsync();
       prefs.setString('email', email);
       prefs.setString('userType', json.decode(response.body)["type"]??'User');
-      await prefs.setString('cookie', globals.token);
+      await prefs.setString('cookie', globals.sessionToken);
+      globals.eventInfo = json.decode(response.body) as Map<String, dynamic>;
       return response.statusCode;
     }
     else{
-      return 401;
+      return response.statusCode;
     }
   } on TimeoutException catch (_) {
     return 408;
@@ -217,19 +221,14 @@ class _loginPageState extends State<loginPage> {
   {
     if(email.isEmpty&& pin.isEmpty){
       email = "viswanathanmanickam5@gmail.com";
-      pin = "6602";
+      pin = "505637";
     }
     if (email.isEmpty || pin.isEmpty) {
       utils.snackBarMessage(context, 'Please enter email or password');
       return;
     }
-    if(pin.length!=4)
-    {
-      utils.snackBarMessage(context, 'PIN must be 4 characters long');
-      return;
-    }
     if (isValidEmail(email)) {
-      authenticate(email, pin)
+      authenticate(email, int.parse(pin))
           .then((statusCode){
             switch(statusCode)
             {

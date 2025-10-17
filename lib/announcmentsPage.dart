@@ -143,7 +143,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
   void initState() {
     if(messages==null)
     {
-      utils.getRoute('notifications').then((value) {
+      utils.getSingleRoute('notifications').then((value) {
         setState(() {
           if(value == null) return;
           messages = value['notifications'];
@@ -189,7 +189,7 @@ class _announcmentsPageState extends State<announcmentsPage> {
           child: RefreshIndicator(
             onRefresh: () async{
               print('Overscrolled at top!');
-              utils.getRoute('notifications').then((value) {
+              utils.getSingleRoute('notifications').then((value) {
                 if(value == null) return;
                 setState(() {
                   if(ListEquality().equals(value["notifications"], messages))

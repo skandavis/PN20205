@@ -1,11 +1,12 @@
-import 'package:PN2025/eventsPage.dart';
+import 'package:PN2025/activitiesPage.dart';
+import 'package:PN2025/activity.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'utils.dart' as utils;
 
 class thumbsUpIcon extends StatefulWidget {
-  dynamic event;
-  thumbsUpIcon({super.key, required this.event});
+  Activity activity;
+  thumbsUpIcon({super.key, required this.activity});
 
   @override
   State<thumbsUpIcon> createState() => _thumbsUpIconState();
@@ -14,22 +15,21 @@ class thumbsUpIcon extends StatefulWidget {
 class _thumbsUpIconState extends State<thumbsUpIcon> {
   @override
   Widget build(BuildContext context) {
-    int count = widget.event["_count"]["likedUserDevice"];
-    bool liked = widget.event["liked"];
-    int id = widget.event["id"];
+    int count = widget.activity.likes;
+    bool liked = widget.activity.liked;
     return GestureDetector(
       onTap: () {
         setState(() {
           liked = !liked;
           count += liked ? 1 : -1;
-          eventsPage.totalEvents[widget.event["id"]-1]["liked"] = liked;
-          eventsPage.totalEvents[widget.event["id"]-1]["_count"]["likedUserDevice"] =
-              count;
+          // activitiesPage.totalEvents[widget.event["id"]-1]["liked"] = liked;
+          // activitiesPage.totalEvents[widget.event["id"]-1]["_count"]["likedUserDevice"] =
+              // count;
         });
         if (liked) {
-          utils.updateNoData('events/$id/like');
+          // utils.updateNoData('events/$id/like');
         } else {
-          utils.updateNoData('events/$id/unlike');
+          // utils.updateNoData('events/$id/unlike');
         }
       },
       child: Container(

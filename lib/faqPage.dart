@@ -16,7 +16,7 @@ static List<dynamic>? questions;
   void initState() {
     if(questions == null)
     {
-      utils.getRoute('faqs').then((faqs) {
+      utils.getSingleRoute('faqs').then((faqs) {
         if(faqs == null) return;
         setState(() {
           questions = faqs["faqs"];

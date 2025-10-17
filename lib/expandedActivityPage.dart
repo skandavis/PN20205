@@ -1,3 +1,4 @@
+import 'package:PN2025/activity.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/attribute.dart';
 import 'package:PN2025/categoryLabel.dart';
@@ -9,21 +10,21 @@ import 'package:PN2025/verticalDivider.dart';
 import 'dart:typed_data';
 import 'package:PN2025/globals.dart' as globals;
 
-class expandedEventPage extends StatefulWidget {
-  dynamic event;
+class expandedActivityPage extends StatefulWidget {
+  Activity activity;
   List<Uint8List> images;
-  expandedEventPage({super.key, required this.images, required this.event});
+  expandedActivityPage({super.key, required this.images, required this.activity});
 
   @override
-  State<expandedEventPage> createState() => _expandedEventPageState();
+  State<expandedActivityPage> createState() => _expandedActivityPageState();
 }
 
-class _expandedEventPageState extends State<expandedEventPage> {
+class _expandedActivityPageState extends State<expandedActivityPage> {
   bool ellipsis = true;
 
   @override
   Widget build(BuildContext context) {
-    DateTime startTime = DateTime.parse(widget.event["startTime"]);
+    DateTime startTime = widget.activity.startTime;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(0, 0, 0, 0),
@@ -60,15 +61,14 @@ class _expandedEventPageState extends State<expandedEventPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        widget.event["name"],
+                        widget.activity.name,
                         style: const TextStyle(
                             fontSize: 36,
                             color: Colors.white,
                             fontWeight: FontWeight.bold),
                       ),
-                      if (widget.event["category"] != null)
                         categoryLabel(
-                          event: widget.event,
+                          activity: widget.activity,
                         )
                     ],
                   ),
@@ -78,9 +78,9 @@ class _expandedEventPageState extends State<expandedEventPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                FavoriteIcon(
-                  event: widget.event,
-                ),
+                // FavoriteIcon(
+                //   activity: widget.activity,
+                // ),
               ],
             ),
             Row(
@@ -94,21 +94,21 @@ class _expandedEventPageState extends State<expandedEventPage> {
                 const myVerticaldivider(),
                 attribute(
                   attributeTitle: "Location",
-                  attributeValue: widget.event["location"],
+                  attributeValue: widget.activity.location,
                 ),
                 const myVerticaldivider(),
                 attribute(
                   attributeTitle: "Duration",
-                  attributeValue: "${widget.event["duration"]} min",
+                  attributeValue: "${widget.activity.location} min",
                 )
               ],
             ),
             const SizedBox(
               height: 25,
             ),
-            thumbsUpIcon(
-              event: widget.event,
-            ),
+            // thumbsUpIcon(
+            //   event: widget.activity,
+            // ),
             const SizedBox(
               height: 25,
             ),
@@ -125,7 +125,7 @@ class _expandedEventPageState extends State<expandedEventPage> {
                   ),
                   descriptionBox(
                     ellipsis: ellipsis,
-                    description: widget.event["description"],
+                    description: widget.activity.description,
                   ),
                 ],
               ),

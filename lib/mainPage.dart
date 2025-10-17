@@ -9,6 +9,7 @@ import 'package:PN2025/utils.dart' as utils;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:PN2025/globals.dart' as globals;
 
 class mainPage extends StatefulWidget {
   const mainPage({super.key});
@@ -67,44 +68,48 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
 class _mainPageState extends State<mainPage> {
   late GoogleMapController mapController;
   static LatLng center = LatLng(47.3769, 8.5417);
-  static Map<String, dynamic>? info;
   static List<Uint8List> images = []; 
   @override
   void initState() {
     super.initState();
-    if(info==null)
+    if(globals.eventInfo.isEmpty)
     {
-      utils.getRoute("evnt/1").then((response) async {
-        if(response == null) return;
-        setState(() {
-          info = response["evnt"];
-        });
+      loadInitialData();
+    }
+  }
+  void loadInitialData() 
+  {
+    utils.getSingleRoute("events").then((response) async {
+      if(response == null) return;
+      setState(() {
+        globals.eventInfo = response;
+        debugPrint(globals.eventInfo.toString());
+      });
 
-        // Build full address string
-        String fullAddress = "${info?["address"]}, ${info?["city"]}, ${info?["state"]} ${info?["zip"]}";
+      // Build full address string
+      String fullAddress = "${globals.eventInfo["address"]}, ${globals.eventInfo["city"]}, ${globals.eventInfo["state"]} ${globals.eventInfo["zip"]}";
 
-        // Geocode the address to get coordinates
-        try {
-          List<Location> locations = await locationFromAddress(fullAddress);
-          debugPrint(locations.toString());
-          if (locations.isNotEmpty) {
-            setState(() {
-              center = LatLng(locations.first.latitude, locations.first.longitude);
-              mapController.animateCamera(CameraUpdate.newLatLng(center));
-            });
-          }
-        } catch (e) {
-          print("Geocoding failed: $e");
-        }
-        for (var i = 0; i < (info?["images"].length ?? 0); i++) {
-          utils.getImage('evnt/1/image/${info!["images"][i]["id"]}').then((response) {
-            setState(() {
-              images.add(response);
-            });
+      // Geocode the address to get coordinates
+      try {
+        List<Location> locations = await locationFromAddress(fullAddress);
+        debugPrint(locations.toString());
+        if (locations.isNotEmpty) {
+          setState(() {
+            center = LatLng(locations.first.latitude, locations.first.longitude);
+            mapController.animateCamera(CameraUpdate.newLatLng(center));
           });
         }
-      });
-    }
+      } catch (e) {
+        print("Geocoding failed: $e");
+      }
+      for (var i = 0; i < (globals.eventInfo["photos"].length ?? 0); i++) {
+        utils.getImage(globals.eventInfo["photos"][0]["url"].substring(1)).then((response) {
+          setState(() {
+            images.add(response);
+          });
+        });
+      }
+    });
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -132,7 +137,7 @@ class _mainPageState extends State<mainPage> {
                       children: [
                         Stack(
                           children: List.generate(
-                            (info?["_count"]?["users"] ?? 1),
+                            (globals.eventInfo["registeredUsers"] ?? 0),
                             (index) {
                               return Row(
                                 children: [
@@ -155,7 +160,7 @@ class _mainPageState extends State<mainPage> {
                           ),
                         ),
                         Text(
-                          " +${info?["_count"]?["users"] ?? 1} More Going",
+                          " +${globals.eventInfo["_count"]?["users"] ?? 1} More Going",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
@@ -165,7 +170,7 @@ class _mainPageState extends State<mainPage> {
                       ],
                     ),
                   ),
-                  Text((info?["name"] ?? "Event Loading").toString(),
+                  Text((globals.eventInfo["name"] ?? "Event Loading").toString(),
                     style: const TextStyle(
                       color: Colors.white, 
                       fontSize: 40,
@@ -177,11 +182,11 @@ class _mainPageState extends State<mainPage> {
                   height: MediaQuery.sizeOf(context).height*.025,
                   ),
                   Locationtimescrollablewidget(
-                    description: (info?["description"] ?? "Description Loading"),
+                    description: (globals.eventInfo["description"] ?? "Description Loading"),
                     geolocation: center,
                     startTime: DateTime(2025,6,22,12,30),
                     endTime: DateTime(2025,7,22,19,30), 
-                    location: ((info?["address"] ?? "Address Loading")+"\n "+(info?["city"] ?? "City Loading")+", "+(info?["state"] ?? "State Loading")+" "+ (info?["zip"] ?? "Zip Loading").toString())
+                    location: ((globals.eventInfo["address"] ?? "Address Loading")+"\n "+(globals.eventInfo["city"] ?? "City Loading")+", "+(globals.eventInfo["state"] ?? "State Loading")+" "+ (globals.eventInfo["zip"] ?? "Zip Loading").toString())
                   ),
                   SizedBox(
                     height: MediaQuery.sizeOf(context).height*.025,
@@ -197,7 +202,7 @@ class _mainPageState extends State<mainPage> {
                   ),
                   descriptionBox(
                     ellipsis: true,
-                    description:(info?["description"] ?? "Description Loading")
+                    description:(globals.eventInfo["description"] ?? "Description Loading")
                   ),
                   SizedBox(
                     height: MediaQuery.sizeOf(context).height*.025,

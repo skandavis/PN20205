@@ -1,26 +1,27 @@
 import 'dart:typed_data';
+import 'package:PN2025/activity.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
-import 'package:PN2025/expandedEventPage.dart';
+import 'package:PN2025/expandedActivityPage.dart';
 import 'package:PN2025/favorite.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/imageCarousel.dart';
 
-class eventCard extends StatefulWidget {
-  dynamic event;
+class activityCard extends StatefulWidget {
+  Activity activity;
   List<Uint8List> images;
-  eventCard({
+  activityCard({
     super.key,
-    required this.event,
+    required this.activity,
     required this.images,
   });
 
   @override
-  State<eventCard> createState() => _eventCardState();
+  State<activityCard> createState() => _activityCardState();
 }
 
 @override
-class _eventCardState extends State<eventCard> {
+class _activityCardState extends State<activityCard> {
   @override
   void initState() {
     super.initState();
@@ -28,7 +29,7 @@ class _eventCardState extends State<eventCard> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime startTime = DateTime.parse(widget.event["startTime"]).toLocal();
+    DateTime startTime = widget.activity.startTime;
     List<String> monthNames = [
       'January',
       'February',
@@ -48,8 +49,8 @@ class _eventCardState extends State<eventCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => expandedEventPage(
-              event: widget.event,
+            builder: (context) => expandedActivityPage(
+              activity: widget.activity,
               images: widget.images,
             ),
           ),
@@ -138,7 +139,7 @@ class _eventCardState extends State<eventCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.event["name"],
+                    widget.activity.name,
                     style: TextStyle(
                       fontWeight: FontWeight.bold, fontSize: Theme.of(context).textTheme.titleLarge?.fontSize
                     ),
@@ -147,13 +148,13 @@ class _eventCardState extends State<eventCard> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          utils.addEventWithPermission(widget.event["name"], widget.event["description"], widget.event["location"], startTime, startTime.add(Duration(minutes: widget.event["duration"])));
+                          utils.addEventWithPermission(widget.activity.name, widget.activity.description, widget.activity.location, startTime, startTime.add(Duration(minutes: widget.activity.duration)));
                         },
                         child: Icon(Icons.event,color: globals.accentColor,)
                       ),
-                      FavoriteIcon(
-                        event: widget.event,
-                      )
+                      // FavoriteIcon(
+                      //   event: widget.activity,
+                      // )
                     ],
                   ),
                 ],
@@ -167,7 +168,7 @@ class _eventCardState extends State<eventCard> {
                   SizedBox(
                     width: MediaQuery.sizeOf(context).width*.4,
                     child: Text(
-                      widget.event["description"],
+                      widget.activity.description,
                       style: TextStyle(
                         overflow: TextOverflow.ellipsis,
                         fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
@@ -182,7 +183,7 @@ class _eventCardState extends State<eventCard> {
                             color: globals.backgroundColor,
                             borderRadius: BorderRadius.circular(5)),
                         child: Text(
-                          "${widget.event["duration"]} min",
+                          "${widget.activity.duration} min",
                           style:  TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -204,7 +205,7 @@ class _eventCardState extends State<eventCard> {
                       Icons.pin_drop,
                     ),
                     Text(
-                      widget.event["location"],
+                      widget.activity.location,
                       style: TextStyle(
                         fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                       ),

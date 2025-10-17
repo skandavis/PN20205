@@ -7,20 +7,19 @@ import 'package:PN2025/globals.dart' as globals;
 import 'dart:convert'; // For JSON encoding
 import 'package:add_2_calendar/add_2_calendar.dart';
 
-int timeoutSecs = 3;
-Future<Map<String, dynamic>?> getRoute(String route) async {
+int timeoutSecs = 30;
+Future<Map<String, dynamic>?> getSingleRoute(String route) async {
   try {
     final response = await http
         .get(
           Uri.parse('${globals.url}$route'),
           headers: {
             "Content-Type": "application/json",
-            "Cookie": globals.token,
+            "Cookie": globals.sessionToken,
           },
         )
         .timeout(Duration(seconds: timeoutSecs)); // Add timeout here
-
-    return json.decode(response.body) as Map<String, dynamic>;
+    return json.decode(response.body);
   } on TimeoutException {
     print("GET request to $route timed out");
     return {}; // Return an empty map on timeout
@@ -29,7 +28,26 @@ Future<Map<String, dynamic>?> getRoute(String route) async {
     return {}; // Return an empty map on other failures
   }
 }
-
+Future<List<dynamic>> getMultipleRoute(String route) async {
+  try {
+    final response = await http
+        .get(
+          Uri.parse('${globals.url}$route'),
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": globals.sessionToken,
+          },
+        )
+        .timeout(Duration(seconds: timeoutSecs)); // Add timeout here
+    return json.decode(response.body);
+  } on TimeoutException {
+    print("GET request to $route timed out");
+    return []; // Return an empty map on timeout
+  } catch (e) {
+    print("Failed to load $route: $e");
+    return []; // Return an empty map on other failures
+  }
+}
 Future<int> updateNoData(String route) async {
   final url = Uri.parse('${globals.url}$route');
   try {
@@ -55,7 +73,7 @@ Future<int> postRoute(Map<String, dynamic> data, String route) async {
           url,
           headers: {
             "Content-Type": "application/json",
-            "Cookie": globals.token,
+            "Cookie": globals.sessionToken,
           },
           body: json.encode(data),
         )
@@ -86,7 +104,7 @@ Future<int> putRoute(Map<String, dynamic> data, String route) async {
           url,
           headers: {
             "Content-Type": "application/json",
-            "Cookie": globals.token,
+            "Cookie": globals.sessionToken,
           },
           body: json.encode(data),
         )
@@ -118,7 +136,7 @@ Future<int> patchRoute(Map<String, dynamic> data, String route) async {
           url,
           headers: {
             "Content-Type": "application/json",
-            "Cookie": globals.token,
+            "Cookie": globals.sessionToken,
           },
           body: json.encode(data),
         )
@@ -149,7 +167,7 @@ void deleteRoute(String route) async {
           url,
           headers: {
             "Content-Type": "application/json",
-            "Cookie": globals.token,
+            "Cookie": globals.sessionToken,
           },
         )
         .timeout( Duration(seconds: timeoutSecs)); // Apply timeoutSecs-second timeout
@@ -176,12 +194,13 @@ Future<Uint8List> getImage(String route) async {
           url,
           headers: {
             "Content-Type": "application/json",
-            "Cookie": globals.token,
+            "Cookie": globals.sessionToken,
           },
         )
         .timeout( Duration(seconds: timeoutSecs)); // timeoutSecs-second timeout
 
     if (imageResponse.statusCode == 200) {
+      print("got great image");
       return imageResponse.bodyBytes;
     } else {
       print('Failed to fetch image. Status code: ${imageResponse.statusCode}');

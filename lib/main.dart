@@ -16,7 +16,7 @@ void main() async {
     if (value == null) {
       showMainPage = false;
     } else {
-      globals.token = value;
+      globals.sessionToken = value;
       // loadEvents();
     }
   });

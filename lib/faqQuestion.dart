@@ -34,7 +34,7 @@ class _faqQuestionState extends State<faqQuestion> {
 
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
+                SizedBox(
                   width: (MediaQuery.of(context).size.width * .8)-20,
                   child: Text(
                     widget.question,

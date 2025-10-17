@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:PN2025/contactUsPage.dart';
-import 'package:PN2025/eventsPage.dart';
+import 'package:PN2025/activitiesPage.dart';
 import 'package:PN2025/faqPage.dart';
 import 'package:PN2025/announcmentsPage.dart';
 import 'package:PN2025/mainPage.dart';
@@ -20,7 +20,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var pages = {
     "Home" : const mainPage(),
-    "Events" : const eventsPage(),
+    "Events" : const activitiesPage(),
     "Announcments" : const announcmentsPage(),
     "FAQ" : const faqPage(),
     "Contact Us" : const contactUsPage(),
