@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:PN2025/globals.dart' as globals;
 
 class Check extends StatefulWidget {
   bool isChecked = false;
@@ -22,13 +21,14 @@ class _CheckState extends State<Check> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Transform.scale(
           scale: 1.25, // 🔧 Increase this value to make checkbox bigger
           child: Checkbox(
             autofocus: true,
-            activeColor: globals.secondaryColor,
-            side: BorderSide(color: Colors.white),
+            activeColor: widget.color,
+            side: BorderSide(color: widget.color),
             value: widget.isChecked,
             onChanged: (value) {
               setState(() {

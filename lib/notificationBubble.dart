@@ -1,38 +1,35 @@
-import 'package:flutter/material.dart';
+import 'package:PN2025/user.dart';
+import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'utils.dart' as utils;
+import 'package:PN2025/notification.dart';
 
 
-class announcment extends StatefulWidget {
-  bool newMessage;
-  String message;
+class notificationBubble extends StatefulWidget {
+  Notification notification;
   Function delete;
-  int id;
-  bool canDelete;
-  DateTime createdAt;
-  String userCreated;
-  announcment(
+  bool newMessage;
+  notificationBubble(
       {super.key,
-      required this.newMessage,
-      required this.message,
+      required this.notification,
       required this.delete,
-      required this.id,
-      required this.canDelete,
-      required this.createdAt,
-      required this.userCreated});
+      required this.newMessage});
 
   @override
-  State<announcment> createState() => _announcmentState();
+  State<notificationBubble> createState() => _notificationBubbleState();
 }
 
-class _announcmentState extends State<announcment> {
-  void removeNotification() async {
-    utils.deleteRoute('notifications/${widget.id}');
-  }
+class _notificationBubbleState extends State<notificationBubble> {
+  User user = User.instance;
 
   @override
   Widget build(BuildContext context) {
+
+    void removeNotification() async {
+      utils.deleteRoute('notifications/${widget.notification.id}');
+    }
+
     void showDialogBox() {
       showDialog(
         context: context,
@@ -97,6 +94,7 @@ class _announcmentState extends State<announcment> {
         },
       );
     }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,11 +102,11 @@ class _announcmentState extends State<announcment> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              widget.userCreated,
+              widget.notification.creatorName,
               style: const TextStyle(color: Colors.white),
             ),
             Text(
-              DateFormat('EEEE MMM d, h:mm a').format(widget.createdAt),
+              DateFormat('EEEE MMM d, h:mm a').format(widget.notification.creationTime),
               style: const TextStyle(color: Colors.white),
             ),
           ],
@@ -116,7 +114,7 @@ class _announcmentState extends State<announcment> {
         const SizedBox(
           height: 5,
         ),
-        if(widget.canDelete)
+        if(user.isAdmin())
           Slidable(
             endActionPane: ActionPane(
               motion: const StretchMotion(),
@@ -150,13 +148,13 @@ class _announcmentState extends State<announcment> {
               child: Padding(
                 padding: const EdgeInsets.all(12.5),
                 child: Text(
-                  widget.message,
-                  style: const TextStyle(fontSize: 20),
+                  widget.notification.message,
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             ),
           ),
-        if(!widget.canDelete)
+        if(!user.isAdmin())
           Container(
             width: MediaQuery.sizeOf(context).width * 1,
             decoration: const BoxDecoration(
@@ -171,7 +169,7 @@ class _announcmentState extends State<announcment> {
             child: Padding(
               padding: const EdgeInsets.all(12.5),
               child: Text(
-                widget.message,
+                widget.notification.message,
                 style: const TextStyle(fontSize: 20),
               ),
             ),

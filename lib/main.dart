@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:PN2025/firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:PN2025/globals.dart' as globals;
+import 'package:google_fonts/google_fonts.dart';
 
 bool showMainPage = true;
 
@@ -32,9 +33,6 @@ void main() async {
   runApp(MyApp());
 }
 
-
-
-
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -46,10 +44,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(),
+      theme: ThemeData(
+        textTheme: GoogleFonts.robotoTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
+      // theme: ThemeData(),
       home: SplashScreen(
         showMainPage: showMainPage,
       ),

@@ -8,7 +8,7 @@ import 'dart:convert'; // For JSON encoding
 import 'package:add_2_calendar/add_2_calendar.dart';
 
 int timeoutSecs = 30;
-Future<Map<String, dynamic>?> getSingleRoute(String route) async {
+Future<Map<String, dynamic>> getSingleRoute(String route) async {
   try {
     final response = await http
         .get(
@@ -186,7 +186,7 @@ void deleteRoute(String route) async {
 
 
 Future<Uint8List> getImage(String route) async {
-  final url = Uri.parse('${globals.url}$route');
+  final url = Uri.parse('${globals.baseUrl}$route');
 
   try {
     final imageResponse = await http
@@ -243,3 +243,10 @@ Future<void> addEventWithPermission(String title, String description, String loc
   //   print("Calendar permission denied");
   // }
 }
+
+bool isValidEmail(String email) {
+    final RegExp emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    debugPrint("VALID:${emailRegex.hasMatch(email)}" );
+    return emailRegex.hasMatch(email);
+  }

@@ -1,3 +1,4 @@
+import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:PN2025/DropDown.dart';
@@ -16,13 +17,14 @@ class contactUsPage extends StatefulWidget {
 
 
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+User user = User.instance;
 
 class _contactUsPageState extends State<contactUsPage> {
   List<String> values = ["Admin", "Events", "Food Committee", "Lost and Found"];
   late String selectedValue = values[0];
-  TextEditingController nameController = TextEditingController(text: globals.fields["name"]);
-  TextEditingController cityController = TextEditingController(text: globals.fields["city"]);
-  TextEditingController phoneController = TextEditingController(text: globals.fields["phone"]);
+  TextEditingController nameController = TextEditingController(text: user.name);
+  TextEditingController cityController = TextEditingController(text: user.city);
+  TextEditingController phoneController = TextEditingController(text: user.phone);
   TextEditingController subjectController = TextEditingController();
   TextEditingController messageController = TextEditingController();
   FocusNode nameFocus = FocusNode();
@@ -85,115 +87,129 @@ class _contactUsPageState extends State<contactUsPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Stack(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.sizeOf(context).height * .05,
-                ),
-                formInput(
-                  focusNode: nameFocus,
-                  lines: 1,
-                  label: "Your Name",
-                  controller: nameController,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * .025,
-                ),
-                formInput(
-                  focusNode: cityFocus,
-                  lines: 1,
-                  label: "City",
-                  controller: cityController,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * .025,
-                ),
-                formInput(
-                  focusNode: phoneFocus,
-                  lines: 1,
-                  label: "Your Phone Number",
-                  controller: phoneController,
-                  formatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    PhoneNumberFormatter(),
-                  ]
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * .025,
-                ),
-                formInput(
-                  focusNode: subjectFocus,
-                  lines: 1,
-                  label: "Subject",
-                  controller: subjectController,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                DropDown(
-                  focusNode: departmentFocus,
-                  options: values,
-                  label: "Choose the Department",
-                  initialValue: selectedValue,
-                  onChanged: updateDepartment,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                formInput(
-                  label: "Your Message", 
-                  controller: messageController, 
-                  focusNode: messageFocus, 
-                  lines: 3,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                GestureDetector(
-                  onTap: submitForm,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * .8,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: globals.secondaryColor,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Send Message",
-                          style: TextStyle(
-                            color: globals.backgroundColor,
-                            fontSize: 24,
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: MediaQuery.of(context).size.height*.05,
+        title: Text(
+          'Contact Us',
+          style: TextStyle(
+            fontSize:Theme.of(context).textTheme.displaySmall?.fontSize
+          ),
+        ),
+        backgroundColor: globals.backgroundColor,
+        foregroundColor: Colors.white,
+      ),
+      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .05,
+                  ),
+                  formInput(
+                    focusNode: nameFocus,
+                    lines: 1,
+                    label: "Your Name",
+                    controller: nameController,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .025,
+                  ),
+                  formInput(
+                    focusNode: cityFocus,
+                    lines: 1,
+                    label: "City",
+                    controller: cityController,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .025,
+                  ),
+                  formInput(
+                    focusNode: phoneFocus,
+                    lines: 1,
+                    label: "Your Phone Number",
+                    controller: phoneController,
+                    formatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      PhoneNumberFormatter(),
+                    ]
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .025,
+                  ),
+                  formInput(
+                    focusNode: subjectFocus,
+                    lines: 1,
+                    label: "Subject",
+                    controller: subjectController,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  DropDown(
+                    focusNode: departmentFocus,
+                    options: values,
+                    label: "Choose the Department",
+                    initialValue: selectedValue,
+                    onChanged: updateDepartment,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  formInput(
+                    label: "Your Message", 
+                    controller: messageController, 
+                    focusNode: messageFocus, 
+                    lines: 3,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  GestureDetector(
+                    onTap: submitForm,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * .8,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: globals.secondaryColor,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Send Message",
+                            style: TextStyle(
+                              color: globals.backgroundColor,
+                              fontSize: 24,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          if(loading)
-          Container(
-            color: Color.fromARGB(120, 0, 0, 0),
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                backgroundColor: globals.accentColor,
+                ],
               ),
             ),
-          ),
-        ],
+            if(loading)
+            Container(
+              color: Color.fromARGB(120, 0, 0, 0),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  backgroundColor: globals.accentColor,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -19,7 +19,7 @@ class _categoryLabelState extends State<categoryLabel> {
           return Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color: Colors.white,
+                color: Color.fromARGB(255, 149, 235, 252),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(5),

@@ -1,3 +1,4 @@
+import 'package:PN2025/user.dart';
 import 'package:flutter/services.dart';
 import 'package:PN2025/accountProfile.dart';
 import 'package:PN2025/phoneNumberFormatter.dart';
@@ -18,10 +19,12 @@ class accountPage extends StatefulWidget {
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 String email = "";
 String deviceID = "";
+List<String> labels = ["Name","Phone","City"];
+User user = User.instance;
 List<TextEditingController> controllers = [
-  TextEditingController(text: globals.fields["name"]),
-  TextEditingController(text: globals.fields["phone"]),
-  TextEditingController(text: globals.fields["city"]),
+  TextEditingController(text: user.name),
+  TextEditingController(text: user.phone),
+  TextEditingController(text: user.city),
   ];
 List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
 Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
@@ -29,7 +32,7 @@ Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: 
       children: [
         formInput(
           focusNode: inputFocusNodes[index],
-          label: globals.fields.keys.toList()[index],
+          label:labels[index],
           formatters: index ==1?[
             FilteringTextInputFormatter.digitsOnly,
             PhoneNumberFormatter(),
@@ -51,18 +54,17 @@ class _accountPageState extends State<accountPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint(globals.fields.toString());
     getDeviceId();
   }
 
   void sendData() async {
     utils.patchRoute({
-      "email": "viswanathanmanickam5@gmail.com",
+      // "email": "viswanathanmanickam5@gmail.com",
       "name": controllers[0].text,
       "phoneNumber":controllers[1].text,
       "city": controllers[2].text,
 
-    }, 'device/$deviceID');
+    }, 'users');
   }
 
   @override
@@ -90,11 +92,14 @@ class _accountPageState extends State<accountPage> {
                 height: 20,
               ),
               Text(
-                globals.fields["email"],
+                user.email,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 32,
+                  fontSize: 24,
                 ),
+              ),
+              const SizedBox(
+                height: 20,
               ),
               SizedBox(
                 height: MediaQuery.sizeOf(context).height*.3,
@@ -106,12 +111,11 @@ class _accountPageState extends State<accountPage> {
               
               GestureDetector(
                 onTap: () {
-                  prefs.setString('name', controllers[0].text);
-                  prefs.setString('phone', controllers[1].text);
-                  prefs.setString('city', controllers[2].text);
-                  globals.fields.update('name', (value) => controllers[0].text);
-                  globals.fields.update('phone', (value) => controllers[1].text);
-                  globals.fields.update('city', (value) => controllers[2].text);
+                  user.setPersonalInfo({
+                    'name':controllers[0].text,
+                    'phone':controllers[1].text,
+                    'city':controllers[2].text
+                  });
                   sendData();
                   utils.snackBarMessage(context, "Account Details Updated!",color: Colors.green);
                   Navigator.of(context).pop();

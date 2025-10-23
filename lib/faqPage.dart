@@ -1,3 +1,4 @@
+import 'package:PN2025/globals.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:PN2025/faqQuestion.dart';
 import 'utils.dart' as utils;
@@ -11,53 +12,63 @@ class faqPage extends StatefulWidget {
 
 
 class _faqPageState extends State<faqPage> {
-static List<dynamic>? questions;
+static List<dynamic> questions = [];
   @override
   void initState() {
-    if(questions == null)
-    {
-      utils.getSingleRoute('faqs').then((faqs) {
-        if(faqs == null) return;
+      utils.getMultipleRoute('faqs').then((faqs) {
         setState(() {
-          questions = faqs["faqs"];
+          questions = faqs;
         });
       });
-    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
-        child: questions!=null?Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(questions!.length, (index) {
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 35,
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: MediaQuery.of(context).size.height*.05,
+        title: Text(
+          'Faqs',
+          style: TextStyle(
+            fontSize:Theme.of(context).textTheme.displaySmall?.fontSize
+          ),
+        ),
+        backgroundColor: globals.backgroundColor,
+        foregroundColor: Colors.white,
+      ),
+      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+      body: SingleChildScrollView(
+        child: Center(
+          child: questions.isNotEmpty?Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: List.generate(questions.length, (index) {
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 35,
+                  ),
+                  faqQuestion(
+                    question: questions[index]["question"],
+                    answer: questions[index]["answer"],
+                  )
+                ],
+              );
+            })
+          ):Column(
+            children: [
+              CircularProgressIndicator(),
+              Text(
+                "Loading",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 44
                 ),
-                faqQuestion(
-                  question: questions![index]["question"],
-                  answer: questions![index]["answer"],
-                )
-              ],
-            );
-          })
-        ):Column(
-          children: [
-            CircularProgressIndicator(),
-            Text(
-              "Loading",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 44
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

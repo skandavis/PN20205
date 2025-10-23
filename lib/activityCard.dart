@@ -1,6 +1,8 @@
-import 'dart:typed_data';
 import 'package:PN2025/activity.dart';
+import 'package:PN2025/sendMessageDialog.dart';
+import 'package:PN2025/user.dart';
 import 'package:PN2025/utils.dart' as utils;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/expandedActivityPage.dart';
 import 'package:PN2025/favorite.dart';
@@ -9,11 +11,10 @@ import 'package:PN2025/imageCarousel.dart';
 
 class activityCard extends StatefulWidget {
   Activity activity;
-  List<Uint8List> images;
+  List<List<Uint8List>> images = [[]];
   activityCard({
     super.key,
     required this.activity,
-    required this.images,
   });
 
   @override
@@ -51,7 +52,6 @@ class _activityCardState extends State<activityCard> {
           MaterialPageRoute(
             builder: (context) => expandedActivityPage(
               activity: widget.activity,
-              images: widget.images,
             ),
           ),
         ).then((_){
@@ -60,10 +60,9 @@ class _activityCardState extends State<activityCard> {
         });
       },
       child: Container(
-        width: MediaQuery.sizeOf(context).width*.85,
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
+          borderRadius: BorderRadius.circular(25.0),
           color: Colors.white,
         ),
         child: Column(
@@ -71,12 +70,12 @@ class _activityCardState extends State<activityCard> {
             Stack(
               alignment: Alignment.topRight,
               children: [
-                if (widget.images.isNotEmpty)
+                if (widget.activity.images.isNotEmpty)
                   Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(25)),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
                     clipBehavior: Clip.hardEdge,
                     height: MediaQuery.sizeOf(context).height*.3,
-                    child: ImageCarousel(images: widget.images),
+                    child: ImageCarousel(imageUrls: widget.activity.images),
                   ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -152,9 +151,24 @@ class _activityCardState extends State<activityCard> {
                         },
                         child: Icon(Icons.event,color: globals.accentColor,)
                       ),
-                      // FavoriteIcon(
-                      //   event: widget.activity,
-                      // )
+                      FavoriteIcon(
+                        activity: widget.activity,
+                      ),
+                      if(User.instance.isAdmin())
+                      GestureDetector(
+                        onTap: () {
+                          // showDialog(
+                          //   context: context,
+                          //   builder: (BuildContext context) {
+                          //     return sendMessageDialog(route: widget.route);
+                          //   },
+                          // );
+                        },
+                        child: Icon(
+                          Icons.add,
+                          color: globals.accentColor,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -235,7 +249,7 @@ class _activityCardState extends State<activityCard> {
               height: MediaQuery.sizeOf(context).height*.075,
               width: MediaQuery.sizeOf(context).width*.9,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(25),
                 gradient: LinearGradient(
                   colors: [
                     globals.secondaryColor,

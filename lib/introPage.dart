@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:PN2025/login.dart';
 import 'package:PN2025/messageReciever.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/sendPasswordPage.dart';
+import 'package:PN2025/loginPage.dart';
 
 class introPage extends StatefulWidget {
   const introPage({super.key});
@@ -62,40 +61,7 @@ class _introPageState extends State<introPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const loginPage(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          height: 75,
-                          width: 250,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color:  globals.secondaryColor,
-                                width: 2),
-                            borderRadius: BorderRadius.circular(25),
-                            color: Colors.transparent,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Sign In",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.sizeOf(context).height*.025,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => sendPasswordPage(title: "Create\nAccount",buttonLabel: "Register",),
+                              builder: (context) => loginPage(),
                             ),
                           );
                         },

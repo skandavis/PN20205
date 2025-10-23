@@ -1,7 +1,6 @@
 import 'package:PN2025/activity.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'utils.dart' as utils;
 
 class FavoriteIcon extends StatefulWidget {
   Activity activity;
@@ -24,9 +23,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     return IconButton(
       onPressed: () {
         setState(() {
-          favorite = !favorite;
-          // activitiesPage.totalEvents[widget.event["id"]-1]["favorite"] = favorite;
-          // debugPrint(activitiesPage.totalEvents.toString());
+          globals.totalActivities[globals.totalActivities.indexOf(widget.activity)].toogleFavorite();
         });
         if (favorite) {
           // utils.updateNoData('events/$id/favoritize');

@@ -13,7 +13,7 @@ class _messageRecieverState extends State<messageReciever> {
   @override
   void initState() {
     super.initState();
-    final FirebaseMessaging fcm = FirebaseMessaging.instance;
+    // final FirebaseMessaging fcm = FirebaseMessaging.instance;
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Received a foreground message!');
@@ -64,7 +64,8 @@ Future<void> requestPermission() async {
 }
 
 Future<String> getApnsToken() async {
-  String? token = Platform.isAndroid? await FirebaseMessaging.instance.getToken(): await FirebaseMessaging.instance.getAPNSToken();
-  debugPrint('APNs Token: $token');
-  return token ?? '';
+  String? token = Platform.isAndroid
+      ? await FirebaseMessaging.instance.getToken()
+      : await FirebaseMessaging.instance.getAPNSToken();
+  return token!;
 }

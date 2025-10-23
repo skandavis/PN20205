@@ -4,92 +4,56 @@ import 'package:flutter/material.dart';
 import 'package:PN2025/selectableCategoryLabel.dart';
 import 'package:PN2025/activityCard.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'dart:typed_data';
 import 'utils.dart' as utils;
 
 class activitiesPage extends StatefulWidget {
   const activitiesPage({super.key});
 
   @override
-  State<activitiesPage> createState() => _activitiesPageState();
+  State<activitiesPage> createState() => activitiesPageState();
 }
 
-class _activitiesPageState extends State<activitiesPage> {
+class activitiesPageState extends State<activitiesPage> {
   final TextEditingController searchController = TextEditingController();
 
-  List<Activity> totalActivities = [];
   List<Activity> filteredActivities = [];
-  List<ActivityCategory> allCategories = [];
-  Map<String, List<Uint8List>> imageCache = {};
+  static List<ActivityCategory> allCategories = [];
   Set<String> selectedCategories = {};
 
-  String _searchQuery = "";
-  bool _onlyFavorites = false;
-  bool _showOld = true;
+  String searchQuery = "";
+  bool onlyFavorites = false;
+  bool showOld = true;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    loadData();
   }
 
-  Future<void> _loadData() async {
-    try {
+  Future<void> loadData() async {
+    if(globals.totalActivities.isEmpty)
+    {
       final activityRes = await utils.getMultipleRoute('activities');
-      debugPrint("activities: "+activityRes.toString());
-      final catRes = await utils.getMultipleRoute('categories');
-
-      totalActivities = activityRes.map((item) => Activity.fromJson(item)).toList();
-      allCategories = catRes.map((item) => ActivityCategory.fromJson(item)).toList();
-
-
-      await _loadAllImages();
-
-      _applyFilters();
-    } catch (e) {
-      debugPrint("Error loading data: $e");
+      debugPrint("activities: $activityRes");
+      globals.totalActivities = activityRes.map((item) => Activity.fromJson(item)).toList();
     }
+    if(allCategories.isEmpty)
+    {
+      final catRes = await utils.getMultipleRoute('categories');
+      allCategories = catRes.map((item) => ActivityCategory.fromJson(item)).toList();
+    }
+
+    applyFilters();    
   }
 
-Future<void> _loadAllImages() async {
-  final Map<String, List<Uint8List>> newImageCache = {};
-
-  await Future.wait(totalActivities.map((event) async {
-    final String id = event.id;
-    if (imageCache.containsKey(id)) {
-      // Already loaded
-      newImageCache[id] = imageCache[id]!;
-      return;
-    }
-
-    try {
-      final images = [];
-      final List<Uint8List> imgBytes = await Future.wait(
-        images.map((img) => utils.getImage(img["url"])).toList(),
-      );
-
-      newImageCache[id] = imgBytes;
-    } catch (e) {
-      debugPrint("Failed to load images for event $id: $e");
-      newImageCache[id] = [];
-    }
-  }).toList());
-
-  // Set the updated cache
-  setState(() {
-    imageCache = newImageCache;
-  });
-}
-
-
-  void _applyFilters() {
+  void applyFilters() {
     final now = DateTime.now();
 
     setState(() {
-      filteredActivities = totalActivities.where((activity) {
-        if (_onlyFavorites && !(activity.favoritized)) return false;
+      filteredActivities = globals.totalActivities.where((activity) {
+        if (onlyFavorites && !(activity.favoritized)) return false;
 
-        if (!_showOld) {
+        if (!showOld) {
           final startTime = activity.startTime;
           if (startTime.isBefore(now)) return false;
         }
@@ -99,10 +63,10 @@ Future<void> _loadAllImages() async {
           if (!selectedCategories.contains(category)) return false;
         }
 
-        if (_searchQuery.isNotEmpty) {
+        if (searchQuery.isNotEmpty) {
           final name = activity.name.toLowerCase();
           final category = activity.category.toLowerCase();
-          if (!name.contains(_searchQuery) && !category.contains(_searchQuery)) {
+          if (!name.contains(searchQuery) && !category.contains(searchQuery)) {
             return false;
           }
         }
@@ -112,66 +76,80 @@ Future<void> _loadAllImages() async {
     });
   }
 
-  void _onSearchChanged(String query) {
-    _searchQuery = query.toLowerCase().trim();
-    _applyFilters();
+  void onSearchChanged(String query) {
+    searchQuery = query.toLowerCase().trim();
+    applyFilters();
   }
 
-  void _toggleFavorites() {
-    _onlyFavorites = !_onlyFavorites;
-    _applyFilters();
+  void toggleFavorites() {
+    onlyFavorites = !onlyFavorites;
+    applyFilters();
   }
 
-  void _toggleOld() {
-    _showOld = !_showOld;
-    _applyFilters();
+  void toggleOld() {
+    showOld = !showOld;
+    applyFilters();
   }
 
-  void _onCategoryChanged(bool selected, ActivityCategory category) {
+  void onCategoryChanged(bool selected, ActivityCategory category) {
     if (selected) {
       selectedCategories.add(category.name);
     } else {
       selectedCategories.remove(category.name);
     }
-    _applyFilters();
+    applyFilters();
   }
 
-  void _clearFilters() {
+  void clearFilters() {
     searchController.clear();
-    _searchQuery = "";
-    _onlyFavorites = false;
-    _showOld = false;
+    searchQuery = "";
+    onlyFavorites = false;
+    showOld = false;
     selectedCategories.clear();
-    _applyFilters();
+    applyFilters();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildSearchBar(),
-        _buildFilterRow(),
-        if (allCategories.isNotEmpty) _buildCategoryList(),
-        _buildEventList(),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: MediaQuery.of(context).size.height*.05,
+        title: Text(
+          'Activities',
+          style: TextStyle(
+            fontSize:Theme.of(context).textTheme.displaySmall?.fontSize
+          ),
+        ),
+        backgroundColor: globals.backgroundColor,
+        foregroundColor: Colors.white,
+      ),
+      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+      body: Column(
+        children: [
+          buildSearchBar(),
+          buildFilterRow(),
+          if (allCategories.isNotEmpty) buildCategoryList(),
+          buildEventList(),
+        ],
+      ),
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         controller: searchController,
-        onChanged: _onSearchChanged,
+        onChanged: onSearchChanged,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: "Search events...",
           hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
           prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.8)),
-          suffixIcon: _searchQuery.isNotEmpty
+          suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
                   icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.8)),
-                  onPressed: () => _onSearchChanged(""),
+                  onPressed: () => onSearchChanged(""),
                 )
               : null,
           filled: true,
@@ -185,22 +163,22 @@ Future<void> _loadAllImages() async {
     );
   }
 
-  Widget _buildFilterRow() {
+  Widget buildFilterRow() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
-          _buildFilterButton(
+          buildFilterButton(
             icon: Icons.favorite,
-            active: _onlyFavorites,
-            onTap: _toggleFavorites,
+            active: onlyFavorites,
+            onTap: toggleFavorites,
             color: Colors.red,
           ),
           const SizedBox(width: 8),
-          _buildFilterButton(
+          buildFilterButton(
             icon: Icons.lock_clock,
-            active: _showOld,
-            onTap: _toggleOld,
+            active: showOld,
+            onTap: toggleOld,
             color: globals.accentColor,
           ),
         ],
@@ -208,7 +186,7 @@ Future<void> _loadAllImages() async {
     );
   }
 
-  Widget _buildFilterButton({
+  Widget buildFilterButton({
     required IconData icon,
     required bool active,
     required VoidCallback onTap,
@@ -230,48 +208,50 @@ Future<void> _loadAllImages() async {
     );
   }
 
-  Widget _buildCategoryList() {
+  Widget buildCategoryList() {
     return SizedBox(
       height: 60,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.all(8),
         itemCount: allCategories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_,__ ) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final cat = allCategories[index];
           return selectableCategoryLabel(
             category: cat,
             chosen: selectedCategories.contains(cat.name),
-            chooseCategory: _onCategoryChanged,
+            chooseCategory: onCategoryChanged,
           );
         },
       ),
     );
   }
 
-  Widget _buildEventList() {
+  Widget buildEventList() {
     return Expanded(
       child: filteredActivities.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-              itemCount: filteredActivities.length,
-              itemBuilder: (context, index) {
-                final images = imageCache[filteredActivities[index].id] ?? [];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: activityCard(activity: filteredActivities[index], images: images),
-                );
-              },
-            ),
+          ? buildEmptyState()
+          : SizedBox(
+            width: MediaQuery.of(context).size.width*.85,
+            child: ListView.builder(
+                itemCount: filteredActivities.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: activityCard(activity: filteredActivities[index]),
+                  );
+                },
+              ),
+          ),
     );
   }
 
-  Widget _buildEmptyState() {
-    final filtered = _searchQuery.isNotEmpty ||
+  Widget buildEmptyState() {
+    final filtered = searchQuery.isNotEmpty ||
         selectedCategories.isNotEmpty ||
-        _onlyFavorites ||
-        _showOld;
+        onlyFavorites ||
+        showOld;
 
     return Center(
       child: Column(
@@ -285,7 +265,7 @@ Future<void> _loadAllImages() async {
           ),
           if (filtered)
             TextButton(
-              onPressed: _clearFilters,
+              onPressed: clearFilters,
               child: Text(
                 "Clear all filters",
                 style: TextStyle(color: Colors.white70),

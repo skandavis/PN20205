@@ -1,8 +1,6 @@
-import 'package:PN2025/activitiesPage.dart';
 import 'package:PN2025/activity.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'utils.dart' as utils;
 
 class thumbsUpIcon extends StatefulWidget {
   Activity activity;
@@ -20,11 +18,7 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          liked = !liked;
-          count += liked ? 1 : -1;
-          // activitiesPage.totalEvents[widget.event["id"]-1]["liked"] = liked;
-          // activitiesPage.totalEvents[widget.event["id"]-1]["_count"]["likedUserDevice"] =
-              // count;
+          globals.totalActivities[globals.totalActivities.indexOf(widget.activity)].toogleLike();
         });
         if (liked) {
           // utils.updateNoData('events/$id/like');
@@ -36,7 +30,7 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           border: Border.all(
-            color: Colors.white,
+            color: Color.fromARGB(255, 149, 235, 252),
             width: 1,
           ),
           borderRadius: BorderRadius.circular(15),
