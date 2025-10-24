@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:app_set_id/app_set_id.dart';
 import 'package:PN2025/messageReciever.dart';
 
-String deviceId = "";
+String deviceID = "";
 String ApnsToken = "";
 class loginPage extends StatefulWidget {
   bool sentPassword = false;
@@ -15,14 +15,16 @@ class loginPage extends StatefulWidget {
   State<loginPage> createState() => _loginPageState();
 }
 
-Future<String?> getDeviceId() async {
-    deviceId = (await AppSetId().getIdentifier())!;
+Future<String?> getDeviceID() async {
+    deviceID = (await AppSetId().getIdentifier())!;
     return await AppSetId().getIdentifier();
 }
 class _loginPageState extends State<loginPage> {
   @override
   Widget build(BuildContext context) {
-    getDeviceId();
+    getDeviceID().then((onValue){
+      deviceID = onValue!;
+    });
     getApnsToken();
     return messageReciever(
       body: Scaffold(
@@ -67,6 +69,7 @@ class _loginPageState extends State<loginPage> {
                 ),
                 child: widget.sentPassword? loginUI():
                 getPinUI(
+                  deviceID: deviceID,
                   onPinSent: (email) {
                     setState(() {
                       widget.email = email;

@@ -1,5 +1,4 @@
 import 'package:PN2025/activity.dart';
-import 'package:PN2025/sendMessageDialog.dart';
 import 'package:PN2025/user.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/foundation.dart';
@@ -80,28 +79,6 @@ class _activityCardState extends State<activityCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // GestureDetector(
-                    //   onTap: () {
-                    //     final event = Event(
-                    //       title: widget.event["name"],
-                    //       description: widget.event["description"],
-                    //       location: widget.event["location"],
-                    //       startDate: DateTime.parse(widget.event["date"]),
-                    //       endDate: DateTime.parse(widget.event["date"]).add(Duration(minutes: widget.event["duration"])),
-                    //       allDay: false,
-                    //     );
-                    //     Add2Calendar.addEvent2Cal(event);
-                    //   },
-                    //   child: Container(
-                    //     height: MediaQuery.sizeOf(context).height*.075,
-                    //     width: MediaQuery.sizeOf(context).height*.075,
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.white,
-                    //       borderRadius: BorderRadius.circular(15),
-                    //     ),
-                    //     child: const Icon(Icons.event)
-                    //   ),
-                    // ),
                     Container(
                       height: MediaQuery.sizeOf(context).height*.075,
                       width: MediaQuery.sizeOf(context).height*.075,

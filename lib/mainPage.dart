@@ -79,7 +79,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
           user.fromJson(response.remove('user'));
           eventInfo.fromJson(response);
           for (var photo in response["photos"]) {
-            globals.mainPageImages.add(photo["url"].substring(1)); // removing the first character
+            globals.mainPageImages.add(photo["url"].substring(1));
           }
         });
       });

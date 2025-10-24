@@ -25,9 +25,15 @@ void sendMessage(BuildContext context) async {
   if (messageText.isEmpty)
   {
     utils.snackBarMessage(context, 'Please enter a message');
+    Navigator.pop(context);
     return;
   } 
-
+  if (messageText.length<5)
+  {
+    utils.snackBarMessage(context, 'Message is too small');
+    Navigator.pop(context);
+    return;
+  } 
   final type = globals.isPush ? "P" : "N";
   final responseCode = await utils.postRoute(
     {
@@ -48,8 +54,10 @@ void sendMessage(BuildContext context) async {
     {
       widget.sendMessage!(messageText,type);
     }
+    Navigator.pop(context);
   } else {
     utils.snackBarMessage(context, "Unable to send Message!");
+    Navigator.pop(context); 
   }
 }
   @override

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class SixDigitInput extends StatefulWidget {
+class multiDigitInput extends StatefulWidget {
+  int digits;
   final void Function(String)? onChanged;
   final void Function()? onSubmitted;
 
-  const SixDigitInput({super.key, this.onChanged, this.onSubmitted});
+  multiDigitInput({super.key, this.onChanged, this.onSubmitted, required this.digits});
 
   @override
-  State<SixDigitInput> createState() => _SixDigitInputState();
+  State<multiDigitInput> createState() => _multiDigitInputState();
 }
 
-class _SixDigitInputState extends State<SixDigitInput> {
+class _multiDigitInputState extends State<multiDigitInput> {
   final List<TextEditingController> controllers =
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());

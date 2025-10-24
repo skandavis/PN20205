@@ -10,8 +10,8 @@ import 'package:PN2025/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyHomePage extends StatefulWidget {
-  int selectedIndex;
-  MyHomePage({super.key, required this.selectedIndex});
+  int selectedIndex = 0;
+  MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();

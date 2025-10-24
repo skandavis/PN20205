@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/submit.dart';
@@ -9,28 +10,40 @@ import 'package:http/http.dart' as http;
 TextEditingController email = TextEditingController();
 
 class getPinUI extends StatefulWidget {
-
+  String deviceID;
   final void Function(String) onPinSent;
-  const getPinUI({super.key, required this.onPinSent});
+  getPinUI({super.key, required this.onPinSent, required this.deviceID});
 
   @override
   State<getPinUI> createState() => _getPinUIState();
 }
 
 class _getPinUIState extends State<getPinUI> {
-  Future<void> registerUser(String email) async {
-    await http
+  Future<int> registerUser(String email) async {
+    try {
+      var response = await http
       .post(
         Uri.parse('${globals.url}auth/request-otp/'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "email": email,
-          "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
+          "deviceID": widget.deviceID,
+          "eventId": "",
         }),
-      ).then((onValue){
-        globals.loginToken = onValue.headers["set-cookie"].toString().split("=")[1].split(";")[0];
-      })
+      )
       .timeout(Duration(seconds: 3));
+      if(response.statusCode == 200)
+      {
+        globals.loginToken = response.headers["set-cookie"].toString().split("=")[1].split(";")[0];
+      }
+      return response.statusCode;
+    }on TimeoutException catch (_) {
+      return 408;
+    } catch (e) {
+      debugPrint(e.toString());
+      debugPrint("Fail");
+      return 500;
+    }
   }
   void showDialogBox() async {
     final result = await showDialog(
@@ -65,18 +78,31 @@ class _getPinUIState extends State<getPinUI> {
       widget.onPinSent(email.text);
     }
   }
-  void sendPin(String email,BuildContext context) async
-  {
+  void sendPin(String email,BuildContext context) async{
     if (email.isEmpty ) {
       email = "viswanathanmanickam5@gmail.com";
       // utils.snackBarMessage(context, 'Please enter email');
       // return;
     } 
     if (utils.isValidEmail(email)) {
-      await registerUser(email).then((onvalue) 
+      registerUser(email).then((statusCode) 
       {
-        User.instance.setEmail(email);
-        showDialogBox();
+        switch(statusCode)
+        {
+          case 200:
+            User.instance.setEmail(email);
+            showDialogBox();
+            break;
+          case 400:
+            utils.snackBarMessage(context, 'Bad Request');
+            break;
+          case 408:
+            utils.snackBarMessage(context, 'Server Timed Out!');
+            break;
+          case 500:
+            utils.snackBarMessage(context, 'Internal Server Error');
+            break;
+        }
       });
     }else {
       utils.snackBarMessage(context, '$email is an invalid email');
@@ -99,7 +125,7 @@ class _getPinUIState extends State<getPinUI> {
           ],
         ),
         submitButton(
-          text: "Get Pin", 
+          text: "Get OTP", 
           onSubmit: (){
             sendPin(email.text,context);
           }

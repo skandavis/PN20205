@@ -1,4 +1,5 @@
 import 'package:PN2025/globals.dart' as globals;
+import 'package:PN2025/loadingScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/faqQuestion.dart';
 import 'utils.dart' as utils;
@@ -12,7 +13,7 @@ class faqPage extends StatefulWidget {
 
 
 class _faqPageState extends State<faqPage> {
-static List<dynamic> questions = [];
+static List<dynamic>? questions;
   @override
   void initState() {
       utils.getMultipleRoute('faqs').then((faqs) {
@@ -38,39 +39,26 @@ static List<dynamic> questions = [];
         foregroundColor: Colors.white,
       ),
       backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      body: SingleChildScrollView(
+      body: questions!=null?SingleChildScrollView(
         child: Center(
-          child: questions.isNotEmpty?Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(questions.length, (index) {
+            children: List.generate(questions!.length, (index) {
               return Column(
                 children: [
                   const SizedBox(
                     height: 35,
                   ),
                   faqQuestion(
-                    question: questions[index]["question"],
-                    answer: questions[index]["answer"],
+                    question: questions![index]["question"],
+                    answer: questions![index]["answer"],
                   )
                 ],
               );
             })
-          ):Column(
-            children: [
-              CircularProgressIndicator(),
-              Text(
-                "Loading",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 44
-                ),
-              )
-            ],
           ),
         ),
-      ),
+      ):loadingScreen(),
     );
   }
 }

@@ -77,7 +77,7 @@ class _introPageState extends State<introPage> {
                           ),
                           child: Center(
                             child: Text(
-                              "Sign Up",
+                              "Login",
                               style: TextStyle(
                                 color: globals.backgroundColor,
                                 fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,                              

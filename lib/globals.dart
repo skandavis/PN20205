@@ -3,8 +3,8 @@ import 'package:PN2025/activity.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-String url = "http://192.168.86.38:81/api/v1/";
-String baseUrl = "http://192.168.86.38:81/";
+String baseUrl = "http://192.168.86.38:8081/";
+String url = "${baseUrl}api/v1/";
 
 String loginToken = '';
 String sessionToken = '';

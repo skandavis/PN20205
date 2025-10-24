@@ -18,11 +18,11 @@ class User {
   void fromJson(Map<String, dynamic> json) {
     id = json['id'];
     role = json['role'];
-    firstTime = json['firstTime'];
+    firstTime = json['isFirstTime'];
     primaryUser = json['primaryUserId'];
     name = json['name'] ?? name;
     city = json['city'] ?? city;
-    phone = json['phone'] ?? phone;
+    phone = json['phoneNumber'] ?? phone;
   }
 
   void setPersonalInfo(Map<String, dynamic> json) {
