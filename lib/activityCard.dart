@@ -128,7 +128,7 @@ class _activityCardState extends State<activityCard> {
                         },
                         child: Icon(Icons.event,color: globals.accentColor,)
                       ),
-                      FavoriteIcon(
+                      favoriteIcon(
                         activity: widget.activity,
                       ),
                       if(User.instance.isAdmin())

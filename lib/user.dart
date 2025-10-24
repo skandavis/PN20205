@@ -13,13 +13,15 @@ class User {
   String city = 'Zurich';
   String phone = '1234567890';
   String email = 'iR8Zo@example.com';
+  String? photo;
   String? primaryUser;
 
   void fromJson(Map<String, dynamic> json) {
     id = json['id'];
     role = json['role'];
-    firstTime = json['isFirstTime'];
     primaryUser = json['primaryUserId'];
+    photo = json["photo"]["url"].substring(1);
+    // firstTime = json['isFirstTime'];
     name = json['name'] ?? name;
     city = json['city'] ?? city;
     phone = json['phoneNumber'] ?? phone;

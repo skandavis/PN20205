@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 
-class DropDown extends StatefulWidget {
-  final List<String> options;
+class dropDown extends StatefulWidget {
+  final List<dynamic> options;
   final String label;
   final String initialValue;
   final FocusNode focusNode;
-  final Function(String) onChanged;
+  final Function(int) onChanged;
 
-  const DropDown({
+  const dropDown({
     super.key,
     required this.options,
     required this.label,
@@ -18,10 +18,10 @@ class DropDown extends StatefulWidget {
   });
 
   @override
-  State<DropDown> createState() => _DropDownState();
+  State<dropDown> createState() => _dropDownState();
 }
 
-class _DropDownState extends State<DropDown> {
+class _dropDownState extends State<dropDown> {
   late String dropdownValue;
 
   @override
@@ -31,12 +31,9 @@ class _DropDownState extends State<DropDown> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(6);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -49,45 +46,60 @@ class _DropDownState extends State<DropDown> {
           ),
         ),
         const SizedBox(height: 5),
-        DropdownButtonFormField<String>(
-          focusNode: widget.focusNode,
-          initialValue: dropdownValue,
-          dropdownColor: globals.backgroundColor,
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: globals.secondaryColor, width: 2),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: globals.iceBlue, width: 2),
-              borderRadius: BorderRadius.circular(6),
-            ),
-          ),
-          iconEnabledColor: Colors.white,
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              setState(() => dropdownValue = newValue);
-              widget.onChanged(newValue);
-            }
-          },
-          items: widget.options.asMap().entries.map((entry) {
-            final index = entry.key;
-            final value = entry.value;
 
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Container(
-                width: MediaQuery.sizeOf(context).width * .7,
-                height: 50,
-                alignment: Alignment.centerLeft,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: index < widget.options.length - 1
-                        ? BorderSide(color: globals.iceBlue, width: 2)
-                        : BorderSide.none,
+        /// Add shadow using a Container
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                spreadRadius: 1,
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: DropdownButtonFormField<String>(
+            focusNode: widget.focusNode,
+            value: dropdownValue,
+            dropdownColor: globals.backgroundColor,
+            decoration: InputDecoration(
+              fillColor: globals.backgroundColor,
+              filled: true,
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: globals.secondaryColor, width: 2),
+                borderRadius: borderRadius,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: globals.iceBlue, width: 2),
+                borderRadius: borderRadius,
+              ),
+            ),
+            iconEnabledColor: Colors.white,
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() => dropdownValue = newValue);
+                widget.onChanged(widget.options.indexOf(newValue));
+              }
+            },
+            items: widget.options.asMap().entries.map((entry) {
+              final index = entry.key;
+              final value = entry.value;
+
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  width: MediaQuery.sizeOf(context).width * .7,
+                  height: 50,
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: index < widget.options.length - 1
+                          ? BorderSide(color: globals.iceBlue, width: 2)
+                          : BorderSide.none,
+                    ),
                   ),
-                ),
-                child: Center(
                   child: Text(
                     value,
                     style: TextStyle(
@@ -96,11 +108,9 @@ class _DropDownState extends State<DropDown> {
                     ),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
-
-
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

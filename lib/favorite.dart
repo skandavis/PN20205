@@ -1,16 +1,17 @@
 import 'package:PN2025/activity.dart';
+import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 
-class FavoriteIcon extends StatefulWidget {
+class favoriteIcon extends StatefulWidget {
   Activity activity;
-  FavoriteIcon({super.key, required this.activity});
+  favoriteIcon({super.key, required this.activity});
 
   @override
-  State<FavoriteIcon> createState() => _FavoriteIconState();
+  State<favoriteIcon> createState() => _favoriteIconState();
 }
 
-class _FavoriteIconState extends State<FavoriteIcon> {
+class _favoriteIconState extends State<favoriteIcon> {
   @override
   void initState() {
     super.initState();
@@ -26,9 +27,9 @@ class _FavoriteIconState extends State<FavoriteIcon> {
           globals.totalActivities[globals.totalActivities.indexOf(widget.activity)].toogleFavorite();
         });
         if (favorite) {
-          // utils.updateNoData('events/$id/favoritize');
+          utils.updateNoData('events/${widget.activity.id}/favoritize');
         } else {
-          // utils.updateNoData('events/$id/unfavoritize');
+          utils.updateNoData('events/${widget.activity.id}/unfavoritize');
         }
       },
       icon: Icon(

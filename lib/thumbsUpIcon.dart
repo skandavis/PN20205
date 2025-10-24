@@ -1,4 +1,5 @@
 import 'package:PN2025/activity.dart';
+import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 
@@ -21,9 +22,9 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
           globals.totalActivities[globals.totalActivities.indexOf(widget.activity)].toogleLike();
         });
         if (liked) {
-          // utils.updateNoData('events/$id/like');
+          utils.updateNoData('events/${widget.activity.id}/likes');
         } else {
-          // utils.updateNoData('events/$id/unlike');
+          utils.updateNoData('events/${widget.activity.id}/unlikes');
         }
       },
       child: Container(

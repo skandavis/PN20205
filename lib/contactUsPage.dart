@@ -1,7 +1,8 @@
+import 'package:PN2025/committee.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:PN2025/DropDown.dart';
+import 'package:PN2025/dropDown.dart';
 import 'package:PN2025/formInput.dart';
 import 'package:PN2025/phoneNumberFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,8 +21,9 @@ final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 User user = User.instance;
 
 class _contactUsPageState extends State<contactUsPage> {
-  List<String> values = ["Admin", "Events", "Food Committee", "Lost and Found"];
-  late String selectedValue = values[0];
+  static List<committee> committees = [];
+  // static List<dynamic> committeeIDs = [];
+  static int selectedIndex = 0;
   TextEditingController nameController = TextEditingController(text: user.name);
   TextEditingController cityController = TextEditingController(text: user.city);
   TextEditingController phoneController = TextEditingController(text: user.phone);
@@ -39,7 +41,7 @@ class _contactUsPageState extends State<contactUsPage> {
         'name': nameController.text,
         'city': cityController.text,
         'phoneNumber': phoneController.text,
-        "department": selectedValue,
+        "committeeId": committees[selectedIndex].id,
         'subject': subjectController.text,
         'message': messageController.text,
       },
@@ -48,9 +50,9 @@ class _contactUsPageState extends State<contactUsPage> {
       return statusCode == 200;
     });
 
-  void updateDepartment(String? value) {
+  void updateDepartment(int value) {
     setState(() {
-      selectedValue = value!;
+      selectedIndex = value;
     });
   }
   Future<void> submitForm()
@@ -65,6 +67,8 @@ class _contactUsPageState extends State<contactUsPage> {
       setState(() {
         loading = true;                      
       });
+      debugPrint(committees.map((item) => item.id).toList().toString());
+      debugPrint(selectedIndex.toString());
       bool success = await sendMessage();
       if(success)
       {
@@ -84,6 +88,23 @@ class _contactUsPageState extends State<contactUsPage> {
     } else {
       utils.snackBarMessage(context, 'Not all fields are filled in!');
     }
+  }
+  void getCommittees() async{
+    utils.getMultipleRoute('committees').then((committeesSent){
+      if(committeesSent.isEmpty) return;
+      setState(() {
+        committees = committeesSent.map((item) => committee.fromJson(item)).toList();
+        // committeeIDs = committees.map((item) => item["id"]).toList();
+      });
+    });
+  }
+  @override
+  void initState() {
+    if(committees.isEmpty)
+    {
+      getCommittees();
+    }
+    super.initState();
   }
   @override
   Widget build(BuildContext context) {
@@ -151,11 +172,12 @@ class _contactUsPageState extends State<contactUsPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  DropDown(
+                  if(committees.isNotEmpty)
+                  dropDown(
                     focusNode: departmentFocus,
-                    options: values,
+                    options: committees.map((item) => item.name).toList(),
                     label: "Choose the Department",
-                    initialValue: selectedValue,
+                    initialValue: committees[selectedIndex].name,
                     onChanged: updateDepartment,
                   ),
                   const SizedBox(

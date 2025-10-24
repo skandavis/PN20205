@@ -233,7 +233,7 @@ class activitiesPageState extends State<activitiesPage> {
       child: filteredActivities.isEmpty
           ? buildEmptyState()
           : SizedBox(
-            width: MediaQuery.of(context).size.width*.85,
+            width: MediaQuery.of(context).size.width*.9,
             child: ListView.builder(
                 itemCount: filteredActivities.length,
                 itemBuilder: (context, index) {

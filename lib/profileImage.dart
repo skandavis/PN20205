@@ -12,22 +12,21 @@ class profileImage extends StatefulWidget {
 
 class _profileImageState extends State<profileImage> {
   Image image = Image.asset('assets/genericAccount.png');
-  Future<void> _loadImage() async {
-    if (widget.imageUrl != null) {
-      try {
-        final img = await utils.getImage(widget.imageUrl!);
-        if(img.isEmpty) return;
-        setState(() {
-          image = Image.memory(img, fit: BoxFit.cover);
-        });
-      } catch (e) {
-        debugPrint("Failed to load image at route $widget.imageUrl: $e");
-      }
+  Future<void> loadImage() async {
+    if (widget.imageUrl == null) return;
+    try {
+      final img = await utils.getImage(widget.imageUrl!);
+      if(img.isEmpty) return;
+      setState(() {
+        image = Image.memory(img, fit: BoxFit.cover);
+      });
+    } catch (e) {
+      debugPrint("Failed to load image at route $widget.imageUrl: $e");
     }
   }
   @override
   void initState() {
-    _loadImage();
+    loadImage();
     super.initState();
   }
   @override

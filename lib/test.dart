@@ -1,69 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-void main() => runApp(MaterialApp(home: HighlightVisibleItems()));
+void main() => runApp(MyApp());
 
-class HighlightVisibleItems extends StatefulWidget {
-  const HighlightVisibleItems({super.key});
-
+class MyApp extends StatelessWidget {
   @override
-  _HighlightVisibleItemsState createState() => _HighlightVisibleItemsState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: DropdownExample(),
+    );
+  }
 }
 
-class _HighlightVisibleItemsState extends State<HighlightVisibleItems> {
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-  final ItemScrollController itemScrollController = ItemScrollController();
-
-  Set<int> _visibleIndices = {};
-
+class DropdownExample extends StatefulWidget {
   @override
-  void initState() {
-    super.initState();
+  _DropdownExampleState createState() => _DropdownExampleState();
+}
 
-    itemPositionsListener.itemPositions.addListener(_onScroll);
-  }
+class _DropdownExampleState extends State<DropdownExample> {
+  String? selectedValue = 'Apple'; // Default value
 
-  void _onScroll() {
-    final positions = itemPositionsListener.itemPositions.value;
-    final visible = positions
-        .where((item) => item.itemTrailingEdge > 0 && item.itemLeadingEdge < 1)
-        .map((e) => e.index)
-        .toSet();
-
-    // Only rebuild if visibility has changed
-    if (visible.difference(_visibleIndices).isNotEmpty ||
-        _visibleIndices.difference(visible).isNotEmpty) {
-      setState(() {
-        _visibleIndices = visible;
-      });
-    }
-  }
+  final List<String> fruits = ['Apple', 'Banana', 'Mango', 'Orange'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Visible Item Highlighter')),
-      body: ScrollablePositionedList.builder(
-        itemCount: 50,
-        itemScrollController: itemScrollController,
-        itemPositionsListener: itemPositionsListener,
-        itemBuilder: (context, index) {
-          final isVisible = _visibleIndices.contains(index);
-          return AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            color: isVisible ? Colors.blue[100] : Colors.grey[300],
-            height: 80,
-            alignment: Alignment.center,
-            child: Text(
-              'Item $index',
-              style: TextStyle(
-                fontSize: 20,
-                color: isVisible ? Colors.red : Colors.green,
-                fontWeight: isVisible ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          );
-        },
+      appBar: AppBar(title: Text('Simple Dropdown Example')),
+      body: Center(
+        child: DropdownButton<String>(
+          value: selectedValue,
+          icon: Icon(Icons.arrow_drop_down),
+          items: fruits.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              selectedValue = newValue!;
+            });
+          },
+        ),
       ),
     );
   }

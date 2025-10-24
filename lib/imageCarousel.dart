@@ -13,31 +13,34 @@ class ImageCarousel extends StatefulWidget {
 }
 
 class _ImageCarouselState extends State<ImageCarousel> {
-  late List<Uint8List?> images;
+  List<Uint8List>? images;
   int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     debugPrint("length:${widget.imageUrls.length}");
-    images = List<Uint8List?>.filled(widget.imageUrls.length, null);
-    loadImage(0);
+    if(images == null)
+    {
+      images = List<Uint8List>.filled(widget.imageUrls.length, Uint8List(0));
+      loadImage(0); 
+    }
   }
 
   Future<void> loadImage(int index) async {
-    if (images[index] == null) {
+    if (images![index].isEmpty) {
       try {
         final img = await utils.getImage(widget.imageUrls[index]);
         setState(() {
-          images[index] = img;
+          images![index] = img;
         });
       } catch (e) {
         debugPrint("Failed to load image at index $index: $e");
       }
-      if (index + 1 < widget.imageUrls.length) {
-        debugPrint("prefetching ${index + 1}");
-        loadImage(index + 1);
-      }
+    }
+    if (currentIndex+1 < widget.imageUrls.length && images![currentIndex+1].isEmpty) {
+      debugPrint("prefetching ${currentIndex + 1}");
+      loadImage(currentIndex + 1);
     }
   }
 
@@ -54,11 +57,11 @@ class _ImageCarouselState extends State<ImageCarousel> {
               setState(() {
                 currentIndex = index;
               });
-              loadImage(index); // Lazy load when page is viewed
+              loadImage(index);
             },
             itemBuilder: (context, index) {
-              final image = images[index];
-              if (image != null) {
+              final image = images![index];
+              if (image.isNotEmpty) {
                 return Image.memory(image, fit: BoxFit.cover);
               } else {
                 return const Center(

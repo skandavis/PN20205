@@ -51,7 +51,7 @@ Future<List<dynamic>> getMultipleRoute(String route) async {
 Future<int> updateNoData(String route) async {
   final url = Uri.parse('${globals.url}$route');
   try {
-    final response = await http.put(url).timeout(Duration(seconds: timeoutSecs));
+    final response = await http.patch(url).timeout(Duration(seconds: timeoutSecs));
     print("Updated Succesfully!");
     return response.statusCode;
   }  on TimeoutException catch (e) {
@@ -215,7 +215,7 @@ Future<Uint8List> getImage(String route) async {
   }
 }
 
-  void snackBarMessage(BuildContext context, String message,{Color color = Colors.red})
+  void snackBarMessage(BuildContext context, String message,{Color color = const Color.fromARGB(255, 185, 14, 1)})
   {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

@@ -1,3 +1,5 @@
+import 'package:PN2025/profileImage.dart';
+import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -100,15 +102,7 @@ class _accountProfileState extends State<accountProfile> {
           saveProfileImage(file);
         });
       },
-      child: Container(
-        height: 75,
-        width: 75,
-        clipBehavior: Clip.hardEdge,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-        ),
-        child: _profileImage,
-      ),
+      child: profileImage(imageUrl: User.instance.photo, size: 75),
     );
   }
 }
