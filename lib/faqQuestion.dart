@@ -31,14 +31,14 @@ class _faqQuestionState extends State<faqQuestion> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
                   width: (MediaQuery.of(context).size.width * .8)-20,
                   child: Text(
                     widget.question,
-                    style: const TextStyle(
+                    style: TextStyle(
+                      fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -57,6 +57,9 @@ class _faqQuestionState extends State<faqQuestion> {
                   Container(
                     child: Text(
                       widget.answer,
+                      style: TextStyle(
+                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                      ),
                     ),
                   ),
                 ],

@@ -20,11 +20,13 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
       onTap: () {
         setState(() {
           globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].toogleLike();
+          liked = !liked;
+          count += liked ? 1 : -1;
         });
         if (liked) {
-          NetworkService().patchNoData('events/${widget.activity.id}/likes');
+          NetworkService().patchNoData('activities/${widget.activity.id}/likes');
         } else {
-          NetworkService().patchNoData('events/${widget.activity.id}/unlikes');
+          NetworkService().patchNoData('activities/${widget.activity.id}/unlikes');
         }
       },
       child: Container(
@@ -41,7 +43,7 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Icon(
-              Icons.thumb_up_sharp,
+              Icons.thumb_up_rounded,
               color: liked ? globals.secondaryColor : Colors.white,
               size: 28,
             ),

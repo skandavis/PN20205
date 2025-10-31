@@ -1,4 +1,5 @@
 import 'package:PN2025/checkBox.dart';
+import 'package:PN2025/customDialogBox.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/gradientTextField.dart';
 import 'package:PN2025/networkService.dart';
@@ -63,80 +64,51 @@ void sendMessage(BuildContext context) async {
 }
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      constraints: BoxConstraints(
-        maxWidth: 300,
-        maxHeight: 400
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(25)),
-          color: Colors.white
-        ),
-        child: Column(
-          children: [
-            Container(
-              height: 75,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-                color: Color.fromARGB(255,31,53,76)
+    return customDialogBox(
+      title: "Create Notification", 
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          gradientTextField(
+            maxLines: 3,
+            controller: messageController,
+            hint: "Ex: Meet at Main Hall",
+            label: "Message", 
+            icon: Icons.message,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Check(
+                name: "Push", 
+                onChange: updateIsPush, 
+                color: globals.iceBlue,
               ),
+            ],
+          ),
+          GestureDetector(
+            onTap: () {
+              sendMessage(context);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: globals.secondaryColor,
+              ),
+              width: 150,
+              height: 60,
               child: Center(
                 child: Text(
-                  "Create Notification", 
+                  "Send",
                   style: TextStyle(
-                    color: Colors.white, 
-                    fontSize: 28
+                    color: Colors.white,
+                    fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize
                   ),
                 ),
               ),
             ),
-            Container(
-              height: 325,
-              padding: EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  gradientTextField(
-                    maxLines: 5,
-                    controller: messageController,
-                    hint: "Ex: Meet at Main Hall",
-                    label: "Message", 
-                    icon: Icons.message,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Check(name: "Push", onChange: updateIsPush, color: globals.iceBlue),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      sendMessage(context);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: globals.secondaryColor,
-                      ),
-                      width: 150,
-                      height: 60,
-                      child: Center(
-                        child: Text(
-                          "Send",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

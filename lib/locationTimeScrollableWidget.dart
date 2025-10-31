@@ -44,6 +44,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
               size: 48,
             ),
           ),
+          SizedBox(width: 20,),
           Column(
             children: [
               Text(
@@ -80,6 +81,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
               
             ],
           ),
+          SizedBox(width: 20,),
           GestureDetector(
             onTap: () async{
               final Uri googleMapsUrl = Uri.parse("https://www.google.com/maps/search/?api=1&query="+widget.geolocation.latitude.toString()+','+widget.geolocation.longitude.toString());

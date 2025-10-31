@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:PN2025/messageReciever.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/loginPage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class introPage extends StatefulWidget {
   const introPage({super.key});
@@ -39,7 +40,8 @@ class _introPageState extends State<introPage> {
                         "Nagarathar",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: Theme.of(context).textTheme.headlineLarge?.fontSize,
+                          fontFamily: GoogleFonts.almendra().fontFamily,
+                          fontSize: 36,
                         ),
                       ),
                     ],
@@ -50,7 +52,7 @@ class _introPageState extends State<introPage> {
                         "Welcome Back",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
+                          fontSize: Theme.of(context).textTheme.headlineLarge?.fontSize,
                         ),
                       ),
                       const SizedBox(
@@ -80,7 +82,7 @@ class _introPageState extends State<introPage> {
                               "Login",
                               style: TextStyle(
                                 color: globals.backgroundColor,
-                                fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,                              
+                                fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,                              
                               ),
                             ),
                           ),

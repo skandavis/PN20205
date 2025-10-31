@@ -20,7 +20,7 @@ void main() async {
   //   options: DefaultFirebaseOptions.currentPlatform,
   // );
   // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    // Lock orientation to portrait only
+  // Lock orientation to portrait only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        textTheme: GoogleFonts.robotoTextTheme(
+        textTheme: GoogleFonts.notoSansTextTheme(
           Theme.of(context).textTheme,
         ),
       ),

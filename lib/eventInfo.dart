@@ -43,8 +43,8 @@ class EventInfo {
     zip = json["zip"];
     country = json["country"];
     address = json["address"];
-    startDate = DateTime.parse(json["startDate"]);
-    endDate = DateTime.parse(json["endDate"]);
+    startDate = DateTime.parse(json["startDate"]).toLocal();
+    endDate = DateTime.parse(json["endDate"]).toLocal();
     description = json["description"];
     mainSection = json["mainSection"];
     subSection = json["subSection"];

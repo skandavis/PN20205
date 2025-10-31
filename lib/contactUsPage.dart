@@ -110,130 +110,116 @@ class _contactUsPageState extends State<contactUsPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: MediaQuery.of(context).size.height*.05,
-        title: Text(
-          'Contact Us',
-          style: TextStyle(
-            fontSize:Theme.of(context).textTheme.displaySmall?.fontSize
-          ),
-        ),
-        backgroundColor: globals.backgroundColor,
-        foregroundColor: Colors.white,
-      ),
-      backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.sizeOf(context).height * .05,
-                  ),
-                  formInput(
-                    focusNode: nameFocus,
-                    lines: 1,
-                    label: "Your Name",
-                    controller: nameController,
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * .025,
-                  ),
-                  formInput(
-                    focusNode: cityFocus,
-                    lines: 1,
-                    label: "City",
-                    controller: cityController,
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * .025,
-                  ),
-                  formInput(
-                    focusNode: phoneFocus,
-                    lines: 1,
-                    label: "Your Phone Number",
-                    controller: phoneController,
-                    formatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      PhoneNumberFormatter(),
-                    ]
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * .025,
-                  ),
-                  formInput(
-                    focusNode: subjectFocus,
-                    lines: 1,
-                    label: "Subject",
-                    controller: subjectController,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  if(committees!=null)
-                  dropDown(
-                    focusNode: departmentFocus,
-                    options: committees!.map((item) => item.name).toList(),
-                    label: "Choose the Department",
-                    initialValue: committees![selectedIndex].name,
-                    onChanged: updateDepartment,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  formInput(
-                    label: "Your Message", 
-                    controller: messageController, 
-                    focusNode: messageFocus, 
-                    lines: 3,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: submitForm,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * .8,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: globals.secondaryColor,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Send Message",
-                            style: TextStyle(
-                              color: globals.backgroundColor,
-                              fontSize: 24,
-                            ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * .05,
+                ),
+                formInput(
+                  focusNode: nameFocus,
+                  lines: 1,
+                  label: "Your Name",
+                  controller: nameController,
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .025,
+                ),
+                formInput(
+                  focusNode: cityFocus,
+                  lines: 1,
+                  label: "City",
+                  controller: cityController,
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .025,
+                ),
+                formInput(
+                  focusNode: phoneFocus,
+                  lines: 1,
+                  label: "Your Phone Number",
+                  controller: phoneController,
+                  formatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    PhoneNumberFormatter(),
+                  ]
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .025,
+                ),
+                if(committees!=null)
+                dropDown(
+                  focusNode: departmentFocus,
+                  options: committees!.map((item) => item.name).toList(),
+                  label: "Choose the Department",
+                  initialValue: committees![selectedIndex].name,
+                  onChanged: updateDepartment,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                formInput(
+                  focusNode: subjectFocus,
+                  lines: 1,
+                  label: "Subject",
+                  controller: subjectController,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                formInput(
+                  label: "Your Message", 
+                  controller: messageController, 
+                  focusNode: messageFocus, 
+                  lines: 3,
+                ),
+                const SizedBox(
+                  height: 50,
+                ),
+                GestureDetector(
+                  onTap: submitForm,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * .8,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: globals.secondaryColor,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Send Message",
+                          style: TextStyle(
+                            color: globals.backgroundColor,
+                            fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            if(loading)
-            Container(
-              color: Color.fromARGB(120, 0, 0, 0),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  backgroundColor: globals.accentColor,
                 ),
+              ],
+            ),
+          ),
+          if(loading)
+          Container(
+            color: Color.fromARGB(120, 0, 0, 0),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                backgroundColor: globals.accentColor,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

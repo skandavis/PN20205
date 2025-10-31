@@ -7,6 +7,7 @@ import 'package:PN2025/mainPage.dart';
 import 'package:PN2025/messageReciever.dart';
 import 'package:PN2025/settingsPage.dart';
 import 'package:PN2025/globals.dart' as globals;
+import 'package:google_fonts/google_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
   int selectedIndex = 0;
@@ -19,8 +20,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var pages = {
     "Home" : const mainPage(),
-    "Events" : const activitiesPage(),
-    "Announcments" : const notificationsPage(),
+    "Activities" : const activitiesPage(),
+    "Notifications" : const notificationsPage(),
     "FAQ" : const faqPage(),
     "Contact Us" : const contactUsPage(),
     "Settings" : const settingsPage(),
@@ -36,7 +37,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return messageReciever(
       body: Scaffold(
         appBar: AppBar(
-          title: Text("data"),
+          toolbarHeight: MediaQuery.of(context).size.height*.075,
+          title: Text(
+            pages[widget.selectedIndex].key,
+            style: TextStyle(
+              fontFamily: GoogleFonts.arvo().fontFamily,
+              fontSize: 36,
+              color: Colors.white
+              ),
+            ),
+          backgroundColor: globals.backgroundColor,
         ),
         backgroundColor: globals.backgroundColor,
         body: Container(
@@ -44,63 +54,54 @@ class _MyHomePageState extends State<MyHomePage> {
           clipBehavior: Clip.hardEdge,
           child: pages[widget.selectedIndex].value
         ),
-        bottomNavigationBar: SizedBox(
-          height: MediaQuery.sizeOf(context).height*.1,
-          child: BottomNavigationBar(
-            backgroundColor: globals.backgroundColor,
-            unselectedItemColor: globals.backgroundColor,
-            selectedItemColor:  globals.accentColor,
-            items:  const [
-              BottomNavigationBarItem(
-                label: "Home",
-                icon: Icon(
-                  size: 20,
-                  Icons.home,
-                ),
+        bottomNavigationBar: BottomNavigationBar(
+          selectedFontSize: Theme.of(context).textTheme.bodyLarge?.fontSize ?? 14.0,
+          unselectedItemColor: globals.backgroundColor,
+          selectedItemColor:  globals.accentColor,
+          items: [
+            BottomNavigationBarItem(
+              label: "Home",
+              icon: Icon(
+                Icons.home,
               ),
-              BottomNavigationBarItem(
-                label: "Activities",
-                icon: Icon(
-                  size: 20,
-                  Icons.event,
-                ),
+            ),
+            BottomNavigationBarItem(
+              label: "Activities",
+              icon: Icon(
+                Icons.event,
               ),
-              BottomNavigationBarItem(
-                label: "Messages",
-                icon: Icon(
-                  size: 20,
-                  Icons.question_answer,
-                ),
+            ),
+            BottomNavigationBarItem(
+              label: "Messages",
+              icon: Icon(
+                Icons.question_answer,
               ),
-              BottomNavigationBarItem(
-                label: "FAQ",
-                icon: Icon(
-                  size: 20,
-                  Icons.contact_support,
-                ),
+            ),
+            BottomNavigationBarItem(
+              label: "FAQ",
+              icon: Icon(
+                Icons.contact_support,
               ),
-              BottomNavigationBarItem(
-                label: "Contact Us",
-                icon: Icon(
-                  size: 20,
-                  Icons.email,
-                ),
+            ),
+            BottomNavigationBarItem(
+              label: "Contact Us",
+              icon: Icon(
+                Icons.email,
               ),
-              BottomNavigationBarItem(
-                label: "Settings",
-                icon: Icon(
-                  size: 20,
-                  Icons.settings,
-                ),
+            ),
+            BottomNavigationBarItem(
+              label: "Settings",
+              icon: Icon(
+                Icons.settings,
               ),
-            ],
-            currentIndex: widget.selectedIndex,
-            onTap: (int index) {
-              setState(() {
-                widget.selectedIndex = index;
-              });
-            },
-          ),
+            ),
+          ],
+          currentIndex: widget.selectedIndex,
+          onTap: (int index) {
+            setState(() {
+              widget.selectedIndex = index;
+            });
+          },
         ),
       ),
     );

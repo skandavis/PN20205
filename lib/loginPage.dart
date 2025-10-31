@@ -3,6 +3,7 @@ import 'package:PN2025/enterPinUI.dart';
 import 'package:flutter/material.dart';
 import 'package:app_set_id/app_set_id.dart';
 import 'package:PN2025/messageReciever.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 String deviceID = "";
 String ApnsToken = "";
@@ -50,7 +51,8 @@ class _loginPageState extends State<loginPage> {
                         "Login",
                         style: TextStyle(
                           color: Colors.white, 
-                          fontSize: Theme.of(context).textTheme.displayMedium?.fontSize, 
+                          fontFamily: GoogleFonts.almendra().fontFamily,
+                          fontSize: 36, 
                           height: 1
                         ),
                       ),

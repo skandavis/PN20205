@@ -28,6 +28,7 @@ class _notificationBubbleState extends State<notificationBubble> {
 
     void removeNotification() async {
       NetworkService().deleteRoute('notifications/${widget.notification.id}');
+      widget.delete();
     }
 
     void showDialogBox() {
@@ -75,6 +76,7 @@ class _notificationBubbleState extends State<notificationBubble> {
                       GestureDetector(
                         onTap: () {
                           removeNotification();
+                          Navigator.pop(context);
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -112,12 +114,19 @@ class _notificationBubbleState extends State<notificationBubble> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "${widget.notification.creatorName.split(' ')[0]} ${widget.notification.creatorName.split(' ')[1][0]}.",
-              style: const TextStyle(color: Colors.white),
+              widget.notification.creatorName == "You" ? widget.notification.creatorName : "${widget.notification.creatorName.split(' ')[0]} ${widget.notification.creatorName.split(' ')[1][0]}.",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                fontWeight: FontWeight.bold
+              ),
             ),
             Text(
               DateFormat('EE MMM d, h:mm a').format(widget.notification.creationTime),
-              style: const TextStyle(color: Colors.white, fontSize: 12),
+              style:  TextStyle(
+                color: Colors.white,
+                fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
+              ),
             ),
           ],
         ),
@@ -159,7 +168,7 @@ class _notificationBubbleState extends State<notificationBubble> {
                 padding: const EdgeInsets.all(12.5),
                 child: Text(
                   widget.notification.message,
-                  style: const TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.black, fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize),
                 ),
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:PN2025/user.dart';
 import 'package:flutter/services.dart';
 import 'package:PN2025/accountProfile.dart';
 import 'package:PN2025/phoneNumberFormatter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/formInput.dart';
@@ -75,11 +76,13 @@ class _accountPageState extends State<accountPage> {
         backgroundColor: globals.backgroundColor,
         appBar: AppBar(
           foregroundColor: Colors.white,
+          toolbarHeight: MediaQuery.of(context).size.height*.075,
           title: Text(
             "Account",
             style: TextStyle(
-              color: Colors.white,
-              fontSize:Theme.of(context).textTheme.displaySmall?.fontSize,
+              fontFamily: GoogleFonts.almendra().fontFamily,
+              fontSize: 36,
+              color: Colors.white
             ),
           ),
           backgroundColor: globals.backgroundColor,

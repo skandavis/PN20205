@@ -40,6 +40,7 @@ class _expandableHighlightTextState extends State<expandableHighlightText>
             overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
             style: TextStyle(
               color: Colors.white,
+              fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
             ),
           ),
         ),

@@ -66,7 +66,7 @@ class Activity {
       description: json['description'],
       location: json['location'],
       duration: json['duration'],
-      startTime: DateTime.parse(json['startTime']),
+      startTime: DateTime.parse(json['startTime']).toLocal(),
       category: json["category"],
       favorites: json["favoritized"],
       likes: json["liked"],

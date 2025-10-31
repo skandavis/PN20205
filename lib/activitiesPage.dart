@@ -1,5 +1,6 @@
 import 'package:PN2025/activity.dart';
 import 'package:PN2025/category.dart';
+import 'package:PN2025/backgroundDynamicIcon.dart';
 import 'package:PN2025/loadingScreen.dart';
 import 'package:PN2025/networkService.dart';
 import 'package:flutter/material.dart';
@@ -31,21 +32,28 @@ class activitiesPageState extends State<activitiesPage> {
     loadData();
   }
 
-  Future<void> loadData() async {
+  Future<void> loadActivities() async {
     if(globals.totalActivities == null)
     {
       final activityRes = await NetworkService().getMultipleRoute('activities');
-      debugPrint("activities: $activityRes");
-      if(activityRes ==null) return;
+      if(activityRes == null) return;
       globals.totalActivities = activityRes.map((item) => Activity.fromJson(item)).toList();
     }
+  }
+  Future<void> loadCategories() async {
     if(allCategories ==null)
     {
       final catRes = await NetworkService().getMultipleRoute('categories');
-      if(catRes ==null) return;
+      if(catRes == null) return;
       allCategories = catRes.map((item) => ActivityCategory.fromJson(item)).toList();
     }
-
+  }
+  Future<void> loadData() async {
+    await Future.wait([
+      loadActivities(),
+      loadCategories()
+    ]);
+    
     applyFilters();    
   }
 
@@ -84,13 +92,13 @@ class activitiesPageState extends State<activitiesPage> {
     applyFilters();
   }
 
-  void toggleFavorites() {
-    onlyFavorites = !onlyFavorites;
+  void toggleFavorites(bool value) {
+    onlyFavorites = value;
     applyFilters();
   }
 
-  void toggleOld() {
-    showOld = !showOld;
+  void toggleOld(bool value) {
+    showOld = value;
     applyFilters();
   }
 
@@ -114,27 +122,13 @@ class activitiesPageState extends State<activitiesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: MediaQuery.of(context).size.height*.05,
-        title: Text(
-          'Activities',
-          style: TextStyle(
-            fontSize:Theme.of(context).textTheme.displaySmall?.fontSize
-          ),
-        ),
-        backgroundColor: globals.backgroundColor,
-        foregroundColor: Colors.white,
-      ),
-      backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      body: Column(
-        children: [
-          buildSearchBar(),
-          buildFilterRow(),
-          if (allCategories != null) buildCategoryList(),
-          buildEventList(),
-        ],
-      ),
+    return Column(
+      children: [
+        buildSearchBar(),
+        buildFilterRow(),
+        if (allCategories != null) buildCategoryList(),
+        buildEventList(),
+      ],
     );
   }
 
@@ -144,7 +138,7 @@ class activitiesPageState extends State<activitiesPage> {
       child: TextField(
         controller: searchController,
         onChanged: onSearchChanged,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white,fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
         decoration: InputDecoration(
           hintText: "Search events...",
           hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
@@ -171,42 +165,22 @@ class activitiesPageState extends State<activitiesPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
-          buildFilterButton(
+          backgoundDynamicIcon(
             icon: Icons.favorite,
             active: onlyFavorites,
             onTap: toggleFavorites,
-            color: Colors.red,
+            foregroundColor: Colors.red,
+            backgroundColor: Colors.white,
           ),
           const SizedBox(width: 8),
-          buildFilterButton(
+          backgoundDynamicIcon(
             icon: Icons.lock_clock,
             active: showOld,
             onTap: toggleOld,
-            color: globals.accentColor,
+            foregroundColor: globals.accentColor,
+            backgroundColor: Colors.white,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget buildFilterButton({
-    required IconData icon,
-    required bool active,
-    required VoidCallback onTap,
-    required Color color,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: active ? color : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          icon,
-          color: active ? Colors.white : color,
-        ),
       ),
     );
   }

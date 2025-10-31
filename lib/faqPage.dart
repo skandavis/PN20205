@@ -26,39 +26,25 @@ static List<dynamic>? questions;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: MediaQuery.of(context).size.height*.05,
-        title: Text(
-          'Faqs',
-          style: TextStyle(
-            fontSize:Theme.of(context).textTheme.displaySmall?.fontSize
-          ),
+    return questions!=null?SingleChildScrollView(
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: List.generate(questions!.length, (index) {
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 35,
+                ),
+                faqQuestion(
+                  question: questions![index]["question"],
+                  answer: questions![index]["answer"],
+                )
+              ],
+            );
+          })
         ),
-        backgroundColor: globals.backgroundColor,
-        foregroundColor: Colors.white,
       ),
-      backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      body: questions!=null?SingleChildScrollView(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(questions!.length, (index) {
-              return Column(
-                children: [
-                  const SizedBox(
-                    height: 35,
-                  ),
-                  faqQuestion(
-                    question: questions![index]["question"],
-                    answer: questions![index]["answer"],
-                  )
-                ],
-              );
-            })
-          ),
-        ),
-      ):loadingScreen(),
-    );
+    ):loadingScreen();
   }
 }

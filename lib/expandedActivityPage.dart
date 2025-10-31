@@ -39,8 +39,12 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            favoriteIcon(
-              activity: widget.activity,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: favoriteIcon(activity: widget.activity,),
             ),
           ],
         ),
@@ -62,21 +66,30 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                       stops: [
                         0.75,
                         1.0
-                      ], // Controls where the fade begins and ends
+                      ],
                     ).createShader(bounds);
                   },
                   blendMode: BlendMode.dstIn,
                   child: ImageCarousel(imageUrls: widget.activity.images),
                 ),
                 Container(
-                  color: Color.fromARGB(100, 5, 3, 30),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        globals.backgroundColor,
+                      ],
+                    ),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         widget.activity.name,
-                        style: const TextStyle(
-                            fontSize: 30,
+                        style: TextStyle(
+                            fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
                             color: Colors.white,
                             fontWeight: FontWeight.bold),
                       ),

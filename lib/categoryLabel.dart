@@ -24,10 +24,12 @@ class _categoryLabelState extends State<categoryLabel> {
               ),
               borderRadius: BorderRadius.circular(5),
             ),
-            padding: const EdgeInsets.all(3),
-            child: Text(
-              widget.activity.category,
-              style: const TextStyle(color: Colors.white),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+            child: Center(
+              child: Text(
+                widget.activity.category,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           );
         },

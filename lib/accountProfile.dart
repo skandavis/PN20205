@@ -85,7 +85,7 @@ class _accountProfileState extends State<accountProfile> {
       _profileImage = savedImage;
       debugPrint("Profile Image saved: ${savedImage.path}");
     });
-    NetworkService().uploadFile(_profileImage!, "users/photo");
+    NetworkService().uploadFile(_profileImage!, "users/photo", 'profile.jpg');
   }
 
   @override

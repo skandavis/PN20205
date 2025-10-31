@@ -30,7 +30,7 @@ class Notification {
       message: json['message'],
       type: json['type'],
       creatorName: json['createdBy']['name'],
-      creationTime: DateTime.parse(json['createdAt'])
+      creationTime: DateTime.parse(json['createdAt']).toLocal()
     );
   }
 

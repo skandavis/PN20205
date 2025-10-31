@@ -31,9 +31,10 @@ class _settingsOptionState extends State<settingsOption> {
               Text(
                 widget.name,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.white),
+                  fontWeight: FontWeight.bold,
+                  fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                  color: Colors.white
+                ),
               ),
             ],
           ),

@@ -78,7 +78,7 @@ class _multiDigitInputState extends State<multiDigitInput> {
           children: [
             if (index != 0) const SizedBox(width: 5),
             SizedBox(
-              width: 50,
+              width: 45,
               child: RawKeyboardListener(
                 focusNode: FocusNode(),
                 onKey: (event) => handleKeyPress(index, event),

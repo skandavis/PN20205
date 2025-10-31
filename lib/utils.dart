@@ -32,8 +32,8 @@ Future<void> addEventWithPermission(String title, String description, String loc
 }
 
 bool isValidEmail(String email) {
-    final RegExp emailRegex =
-        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-    debugPrint("VALID:${emailRegex.hasMatch(email)}" );
-    return emailRegex.hasMatch(email);
-  }
+  final RegExp emailRegex =
+      RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  debugPrint("VALID:${emailRegex.hasMatch(email)}" );
+  return emailRegex.hasMatch(email);
+}

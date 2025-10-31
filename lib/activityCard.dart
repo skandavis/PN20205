@@ -90,7 +90,7 @@ class _activityCardState extends State<activityCard> {
                         monthNames[startTime.month - 1].substring(0, 3),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                          fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                         ),
                       ),
                       Text(
@@ -112,7 +112,7 @@ class _activityCardState extends State<activityCard> {
                   Text(
                     widget.activity.name,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 20
+                      fontWeight: FontWeight.bold, fontSize: Theme.of(context).textTheme.titleMedium?.fontSize
                     ),
                   ),
                   Row(
@@ -168,7 +168,7 @@ class _activityCardState extends State<activityCard> {
                   Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
                         decoration: BoxDecoration(
                             color: globals.backgroundColor,
                             borderRadius: BorderRadius.circular(5)),
@@ -177,7 +177,7 @@ class _activityCardState extends State<activityCard> {
                           style:  TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
+                            fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
                           ),
                         ),
                       ),
@@ -197,13 +197,13 @@ class _activityCardState extends State<activityCard> {
                     Text(
                       widget.activity.location,
                       style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                       ),
                     ),
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
                   decoration: BoxDecoration(
                       color: globals.backgroundColor,
                       borderRadius: BorderRadius.circular(5)),
@@ -212,7 +212,7 @@ class _activityCardState extends State<activityCard> {
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
+                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
                     ),
                   ),
                 ),

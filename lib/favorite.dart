@@ -25,11 +25,12 @@ class _favoriteIconState extends State<favoriteIcon> {
       onPressed: () {
         setState(() {
           globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].toogleFavorite();
+          favorite = !favorite;
         });
         if (favorite) {
-          NetworkService().patchNoData('events/${widget.activity.id}/favoritize');
+          NetworkService().patchNoData('activities/${widget.activity.id}/favoritize');
         } else {
-          NetworkService().patchNoData('events/${widget.activity.id}/unfavoritize');
+          NetworkService().patchNoData('activities/${widget.activity.id}/unfavoritize');
         }
       },
       icon: Icon(
