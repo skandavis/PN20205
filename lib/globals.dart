@@ -6,8 +6,6 @@ import 'package:permission_handler/permission_handler.dart';
 String baseUrl = "http://192.168.86.38:8081/";
 String url = "${baseUrl}api/v1/";
 
-String loginToken = '';
-String sessionToken = '';
 bool isPush = false;
 
 Color backgroundColor = const Color.fromARGB(255, 5, 3, 30);
@@ -18,6 +16,6 @@ Color highlightColor = Color.fromARGB(255, 183, 48, 232);
 Color iceBlue = Color.fromARGB(255, 13, 182, 255);
 
 List<String> mainPageImages = []; 
-List<Activity> totalActivities = [];
+List<Activity>? totalActivities;
 
 PermissionStatus calenderPermission = PermissionStatus.denied;

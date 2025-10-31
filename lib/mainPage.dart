@@ -1,8 +1,7 @@
-
 import 'package:PN2025/eventInfo.dart';
 import 'package:PN2025/expandableHighlightext.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
-import 'package:PN2025/utils.dart' as utils;
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/fullMapPage.dart';
@@ -12,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:PN2025/globals.dart' as globals;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class mainPage extends StatefulWidget {
   const mainPage({super.key});
@@ -24,6 +24,7 @@ class _mainPageState extends State<mainPage> {
   static LatLng center = LatLng(47.3769, 8.5417);
   EventInfo eventInfo = EventInfo.instance; 
   User user = User.instance; 
+  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
 
   @override
@@ -72,9 +73,11 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   return status.isGranted;
 }
   void loadInitialData() async {
+    // prefs.getString()
     if(!eventInfo.isLoaded)
     {
-      utils.getSingleRoute("events").then((response) {
+      NetworkService().getSingleRoute("events").then((response) {
+        if(response == null) return;
         setState(() {
           user.fromJson(response.remove('user'));
           eventInfo.fromJson(response);
@@ -174,7 +177,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
                       ),
                       Text(
                         " +${eventInfo.userCount} Going",
-                        style: GoogleFonts.roboto(fontSize: 24),
+                        style: GoogleFonts.roboto(fontSize: 24,color: Colors.white),
                       )
                     ],
                   ),

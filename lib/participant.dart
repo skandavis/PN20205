@@ -7,7 +7,7 @@ class Participant {
   String city;
   String gender;
   String description;
-  String image;
+  String? image;
 
   Participant({
     required this.id,
@@ -37,6 +37,7 @@ class Participant {
 
   // Factory constructor to create Participant from a JSON map
   factory Participant.fromJson(Map<String, dynamic> json) {
+    
     return Participant(
       id: json['id'],
       name: json['name'],
@@ -45,7 +46,7 @@ class Participant {
       state: json["state"],
       city: json["city"],
       gender: json["gender"],
-      image: json["photo"]["url"].substring(1)
+      image: json["photo"] == null ? null :json["photo"]["url"].substring(1) 
     );
   }
 }

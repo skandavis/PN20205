@@ -67,7 +67,7 @@ class _activityCardState extends State<activityCard> {
         child: Column(
           children: [
             Stack(
-              alignment: Alignment.topRight,
+              alignment: Alignment.topLeft,
               children: [
                 if (widget.activity.images.isNotEmpty)
                   Container(
@@ -76,36 +76,31 @@ class _activityCardState extends State<activityCard> {
                     height: MediaQuery.sizeOf(context).height*.3,
                     child: ImageCarousel(imageUrls: widget.activity.images),
                   ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      height: MediaQuery.sizeOf(context).height*.075,
-                      width: MediaQuery.sizeOf(context).height*.075,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
+                Container(
+                  height: MediaQuery.sizeOf(context).height*.075,
+                  width: MediaQuery.sizeOf(context).height*.075,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        monthNames[startTime.month - 1].substring(0, 3),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                        ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            monthNames[startTime.month - 1].substring(0, 3),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
-                            ),
-                          ),
-                          Text(
-                            startTime.day.toString(),
-                            style: TextStyle(
-                              fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
+                      Text(
+                        startTime.day.toString(),
+                        style: TextStyle(
+                          fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -117,16 +112,20 @@ class _activityCardState extends State<activityCard> {
                   Text(
                     widget.activity.name,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: Theme.of(context).textTheme.titleLarge?.fontSize
+                      fontWeight: FontWeight.bold, fontSize: 20
                     ),
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       GestureDetector(
                         onTap: () {
                           utils.addEventWithPermission(widget.activity.name, widget.activity.description, widget.activity.location, startTime, startTime.add(Duration(minutes: widget.activity.duration)));
                         },
-                        child: Icon(Icons.event,color: globals.accentColor,)
+                        child: Icon(
+                          Icons.event,
+                          color: globals.accentColor,
+                        ),
                       ),
                       favoriteIcon(
                         activity: widget.activity,

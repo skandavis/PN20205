@@ -4,7 +4,6 @@ import 'package:PN2025/splashScreen.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:PN2025/globals.dart' as globals;
 import 'package:google_fonts/google_fonts.dart';
 
 bool showMainPage = true;
@@ -12,12 +11,9 @@ bool showMainPage = true;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-  prefs.getString('cookie').then((value) {
+  prefs.getBool('loggedIn').then((value) {
     if (value == null) {
       showMainPage = false;
-    } else {
-      globals.sessionToken = value;
-      // loadEvents();
     }
   });
   // await Firebase.initializeApp(

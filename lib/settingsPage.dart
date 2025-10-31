@@ -62,8 +62,9 @@ class _settingsPageState extends State<settingsPage> {
           GestureDetector(
             onTap: () async {
               final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-              await prefs.remove('cookie');
-              globals.sessionToken = "";
+              await prefs.remove('loggedIn');
+              globals.mainPageImages.clear();
+              // globals.totalActivities.clear();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

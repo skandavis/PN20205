@@ -1,8 +1,8 @@
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/loadingScreen.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/faqQuestion.dart';
-import 'utils.dart' as utils;
 
 class faqPage extends StatefulWidget {
   const faqPage({super.key});
@@ -16,7 +16,7 @@ class _faqPageState extends State<faqPage> {
 static List<dynamic>? questions;
   @override
   void initState() {
-      utils.getMultipleRoute('faqs').then((faqs) {
+      NetworkService().getMultipleRoute('faqs').then((faqs) {
         setState(() {
           questions = faqs;
         });

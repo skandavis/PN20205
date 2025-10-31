@@ -74,7 +74,6 @@ class Activity {
       liked: json["likes"],
       images: images,
       participants: (json["participants"]as List).map((item) => Participant.fromJson(item)).toList().cast<Participant>()
-
     );
   }
 

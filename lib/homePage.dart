@@ -7,7 +7,6 @@ import 'package:PN2025/mainPage.dart';
 import 'package:PN2025/messageReciever.dart';
 import 'package:PN2025/settingsPage.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyHomePage extends StatefulWidget {
   int selectedIndex = 0;
@@ -27,7 +26,6 @@ class _MyHomePageState extends State<MyHomePage> {
     "Settings" : const settingsPage(),
   }.entries.toList();
 
-  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
   @override
   void initState() {
     super.initState();
@@ -37,6 +35,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return messageReciever(
       body: Scaffold(
+        appBar: AppBar(
+          title: Text("data"),
+        ),
         backgroundColor: globals.backgroundColor,
         body: Container(
           decoration: const BoxDecoration(),
@@ -58,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               BottomNavigationBarItem(
-                label: "Events",
+                label: "Activities",
                 icon: Icon(
                   size: 20,
                   Icons.event,

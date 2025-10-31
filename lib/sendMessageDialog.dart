@@ -1,6 +1,7 @@
 import 'package:PN2025/checkBox.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/gradientTextField.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
 
@@ -35,7 +36,7 @@ void sendMessage(BuildContext context) async {
     return;
   } 
   final type = globals.isPush ? "P" : "N";
-  final responseCode = await utils.postRoute(
+  final response = await NetworkService().postRoute(
     {
       'message': messageText,
       'type': type,
@@ -43,7 +44,7 @@ void sendMessage(BuildContext context) async {
     widget.route,
   );
 
-  if (responseCode == 200) {
+  if (response.statusCode! == 200) {
     setState(() {
       messageController.clear();
       globals.isPush = false;

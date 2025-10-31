@@ -1,5 +1,6 @@
 import 'package:PN2025/createNotificationButton.dart';
 import 'package:PN2025/loadingScreen.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:PN2025/notificationBubble.dart';
@@ -45,8 +46,8 @@ class _notificationsPageState extends State<notificationsPage> {
   void initState() {
     super.initState();
     if (messages ==null) {
-      utils.getMultipleRoute('notifications').then((value) {
-        if (value.isEmpty) return;
+      NetworkService().getMultipleRoute('notifications').then((value) {
+        if (value == null) return;
         setState(() {
           messages = value.map((item) => Notification.fromJson(item)).toList();
         });
@@ -74,13 +75,13 @@ class _notificationsPageState extends State<notificationsPage> {
         height: MediaQuery.sizeOf(context).height,
         child: Stack(
           children: [
-            messages!=null?Container(
+            messages!=null? Container(
               height: MediaQuery.sizeOf(context).height,
               padding: const EdgeInsets.all(20),
               child: RefreshIndicator(
                 onRefresh: () async {
-                  final fetched = await utils.getMultipleRoute('notifications');
-                  if (fetched.isEmpty) return;
+                  final fetched = await NetworkService().getMultipleRoute('notifications');
+                  if (fetched == null) return;
       
                   final fetchedList = fetched
                       .map((item) => Notification.fromJson(item))

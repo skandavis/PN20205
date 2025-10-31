@@ -62,7 +62,7 @@ class _dropDownState extends State<dropDown> {
           ),
           child: DropdownButtonFormField<String>(
             focusNode: widget.focusNode,
-            value: dropdownValue,
+            initialValue: dropdownValue,
             dropdownColor: globals.backgroundColor,
             decoration: InputDecoration(
               fillColor: globals.backgroundColor,

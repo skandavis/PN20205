@@ -21,6 +21,7 @@ class User {
     role = json['role'];
     primaryUser = json['primaryUserId'];
     photo = json["photo"]["url"].substring(1);
+    email = json["email"];
     // firstTime = json['isFirstTime'];
     name = json['name'] ?? name;
     city = json['city'] ?? city;

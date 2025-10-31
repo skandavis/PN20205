@@ -1,4 +1,5 @@
 import 'package:PN2025/committee.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +22,7 @@ final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 User user = User.instance;
 
 class _contactUsPageState extends State<contactUsPage> {
-  static List<committee> committees = [];
+  static List<committee>? committees;
   // static List<dynamic> committeeIDs = [];
   static int selectedIndex = 0;
   TextEditingController nameController = TextEditingController(text: user.name);
@@ -36,12 +37,12 @@ class _contactUsPageState extends State<contactUsPage> {
   FocusNode messageFocus = FocusNode();
   FocusNode departmentFocus = FocusNode();
   bool loading = false;
-  Future<bool> sendMessage() async => utils.postRoute(
+  Future<bool> sendMessage() async => NetworkService().postRoute(
       {
         'name': nameController.text,
         'city': cityController.text,
         'phoneNumber': phoneController.text,
-        "committeeId": committees[selectedIndex].id,
+        "committeeId": committees![selectedIndex].id,
         'subject': subjectController.text,
         'message': messageController.text,
       },
@@ -67,8 +68,6 @@ class _contactUsPageState extends State<contactUsPage> {
       setState(() {
         loading = true;                      
       });
-      debugPrint(committees.map((item) => item.id).toList().toString());
-      debugPrint(selectedIndex.toString());
       bool success = await sendMessage();
       if(success)
       {
@@ -90,17 +89,20 @@ class _contactUsPageState extends State<contactUsPage> {
     }
   }
   void getCommittees() async{
-    utils.getMultipleRoute('committees').then((committeesSent){
-      if(committeesSent.isEmpty) return;
+    setState(() {
+      loading = true;      
+    });
+    NetworkService().getMultipleRoute('committees').then((committeesSent){
+      if(committeesSent == null) return;
       setState(() {
         committees = committeesSent.map((item) => committee.fromJson(item)).toList();
-        // committeeIDs = committees.map((item) => item["id"]).toList();
+        loading = false;
       });
     });
   }
   @override
   void initState() {
-    if(committees.isEmpty)
+    if(committees == null)
     {
       getCommittees();
     }
@@ -172,12 +174,12 @@ class _contactUsPageState extends State<contactUsPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  if(committees.isNotEmpty)
+                  if(committees!=null)
                   dropDown(
                     focusNode: departmentFocus,
-                    options: committees.map((item) => item.name).toList(),
+                    options: committees!.map((item) => item.name).toList(),
                     label: "Choose the Department",
-                    initialValue: committees[selectedIndex].name,
+                    initialValue: committees![selectedIndex].name,
                     onChanged: updateDepartment,
                   ),
                   const SizedBox(

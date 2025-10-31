@@ -1,8 +1,8 @@
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-import 'utils.dart' as utils;
 import 'package:PN2025/notification.dart';
 
 
@@ -27,70 +27,80 @@ class _notificationBubbleState extends State<notificationBubble> {
   Widget build(BuildContext context) {
 
     void removeNotification() async {
-      utils.deleteRoute('notifications/${widget.notification.id}');
+      NetworkService().deleteRoute('notifications/${widget.notification.id}');
     }
 
     void showDialogBox() {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            child: AlertDialog(
-              backgroundColor: const Color.fromARGB(255, 15, 9, 95),
-              title: Text(
-                "Do you want to delete?",
-                style: TextStyle(
-                  color: Colors.white, 
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              content: SizedBox(
-                height: 20,
-                width: MediaQuery.sizeOf(context).width * .8,
-              ),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        "Cancel",
-                        style: TextStyle(color: Colors.white),
+          return Dialog(
+          constraints: BoxConstraints(
+              maxHeight: 300,
+              maxWidth: 400
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+              color: Colors.white
+            ),
+            child: Column(
+              children: [
+                Container(
+                  height: 75,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                    color: Color.fromARGB(255,31,53,76)
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Please Confirm", 
+                      style: TextStyle(
+                        color: Colors.white, 
+                        fontSize: 28
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                      color: Colors.red,
-                        borderRadius: BorderRadius.circular(20)
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          widget.delete();
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  height: 225,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Are you really sure you want to delete this notification? Understand that this change will affect all users in the event.",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                      GestureDetector(
+                        onTap: () {
                           removeNotification();
-                          Navigator.of(context).pop();
                         },
-                        child: const Row(
-                          children: [
-                            Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                            Text(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.red,
+                          ),
+                          width: 150,
+                          height: 60,
+                          child: Center(
+                            child: Text(
                               "Delete",
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
-          );
+          ),
+        );
         },
       );
     }
@@ -102,12 +112,12 @@ class _notificationBubbleState extends State<notificationBubble> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              widget.notification.creatorName,
+              "${widget.notification.creatorName.split(' ')[0]} ${widget.notification.creatorName.split(' ')[1][0]}.",
               style: const TextStyle(color: Colors.white),
             ),
             Text(
-              DateFormat('EEEE MMM d, h:mm a').format(widget.notification.creationTime),
-              style: const TextStyle(color: Colors.white),
+              DateFormat('EE MMM d, h:mm a').format(widget.notification.creationTime),
+              style: const TextStyle(color: Colors.white, fontSize: 12),
             ),
           ],
         ),

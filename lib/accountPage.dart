@@ -1,3 +1,4 @@
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/services.dart';
 import 'package:PN2025/accountProfile.dart';
@@ -58,7 +59,7 @@ class _accountPageState extends State<accountPage> {
   }
 
   void sendData() async {
-    utils.patchRoute({
+    await NetworkService().patchRoute({
       // "email": "viswanathanmanickam5@gmail.com",
       "name": controllers[0].text,
       "phoneNumber":controllers[1].text,

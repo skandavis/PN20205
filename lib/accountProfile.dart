@@ -1,4 +1,5 @@
-import 'package:PN2025/profileImage.dart';
+import 'package:PN2025/networkService.dart';
+import 'package:PN2025/profileImageCircle.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +7,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart';
+
+final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
 Future<File?> showImageSourceDialog(BuildContext context) async {
   final picker = ImagePicker();
@@ -48,7 +51,6 @@ Future<File?> showImageSourceDialog(BuildContext context) async {
   return imageFile;
 }
 
-
 class accountProfile extends StatefulWidget {
   const accountProfile({super.key});
 
@@ -57,7 +59,7 @@ class accountProfile extends StatefulWidget {
 }
 
 class _accountProfileState extends State<accountProfile> {
-  Image _profileImage = Image.asset('assets/genericAccount.png');
+  File? _profileImage;
 
   @override
   void initState() {
@@ -66,15 +68,10 @@ class _accountProfileState extends State<accountProfile> {
   }
 
   Future<void> loadProfileImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final path = prefs.getString("profile_image_path");
+    final path = await prefs.getString("profile_image_path");
     if (path != null && File(path).existsSync()) {
       setState(() {
-        _profileImage = Image.file(File(path), fit: BoxFit.cover);
-      });
-    } else {
-      setState(() {
-        _profileImage = Image.asset('assets/genericAccount.png');
+        _profileImage = File(path);
       });
     }
   }
@@ -83,11 +80,12 @@ class _accountProfileState extends State<accountProfile> {
     final directory = await getApplicationDocumentsDirectory();
     final String filename = basename(imageFile.path);
     final savedImage = await imageFile.copy('${directory.path}/$filename');
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString("profile_image_path", savedImage.path);
     setState(() {
-      _profileImage = Image.file(savedImage, fit: BoxFit.cover);
+      _profileImage = savedImage;
+      debugPrint("Profile Image saved: ${savedImage.path}");
     });
+    NetworkService().uploadFile(_profileImage!, "users/photo");
   }
 
   @override
@@ -95,14 +93,13 @@ class _accountProfileState extends State<accountProfile> {
     return GestureDetector(
       onTap: () {
         showImageSourceDialog(context).then((file) {
-          if (file == null)
-          {
-            return;
-          } 
+          if (file == null) return;
           saveProfileImage(file);
         });
       },
-      child: profileImage(imageUrl: User.instance.photo, size: 75),
+      child: _profileImage == null
+          ? profileImageCircle(imageUrl: User.instance.photo, size: 75)
+          : profileImageCircle(imageFile: _profileImage, size: 75),
     );
   }
 }

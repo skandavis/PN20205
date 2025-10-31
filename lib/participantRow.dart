@@ -1,6 +1,6 @@
 import 'package:PN2025/activity.dart';
 import 'package:PN2025/participantFieldItem.dart';
-import 'package:PN2025/profileImage.dart';
+import 'package:PN2025/profileImageCircle.dart';
 import 'package:flutter/material.dart';
 
 class participantRow extends StatefulWidget {
@@ -35,7 +35,7 @@ class _participantRowState extends State<participantRow> {
                 Column(
                   children: [
                     Center(
-                      child: profileImage(
+                      child: profileImageCircle(
                         size: 150,
                         imageUrl: widget.activity.participants[widget.index].image,
                       ),
@@ -112,7 +112,7 @@ class _participantRowState extends State<participantRow> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          profileImage(
+          profileImageCircle(
             imageUrl: widget.activity.participants[widget.index].image,
             size: 75,
           ),

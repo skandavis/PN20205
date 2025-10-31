@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:PN2025/eventInfo.dart';
 import 'package:PN2025/multiDigitInput.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert'; // For JSON encoding
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/homePage.dart';
@@ -12,63 +12,39 @@ import 'package:PN2025/submit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 
-class loginUI extends StatefulWidget {
-  String pin = '';
-  loginUI({super.key});
+class enterPinUI extends StatefulWidget {
+  const enterPinUI({super.key});
 
   @override
-  State<loginUI> createState() => _loginUIState();
+  State<enterPinUI> createState() => _enterPinUIState();
 }
-class _loginUIState extends State<loginUI> {
+class _enterPinUIState extends State<enterPinUI> {
+  String pin = '';
   Future<int> authenticate(int pin) async {
-    try {
-      var url = Uri.parse('${globals.url}auth/verify-otp');
-      var response = await http
-          .post(
-            url,
-            headers: {
-              "Content-Type": "application/json",
-              // 'Authorization': 'Bearer ${globals.loginToken}',
-              'Cookie': "loginToken="+globals.loginToken
-            },
-            body: jsonEncode({
-              // "email": "viswanathanmanickam5@gmail.com",
-              // "deviceID":"C94E3948-77C0-43DE-864F-D31CE817284B",
-              "passcode": pin,
-              // "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
-            }),
-          )
-          .timeout(Duration(seconds: 3));
-
-      if (response.statusCode == 200) {
-        debugPrint("Success");
-        globals.sessionToken = response.headers["set-cookie"].toString().split(",")[2];
-        final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-        await prefs.setString('cookie', globals.sessionToken);
-        Map<String, dynamic> responseMap = json.decode(response.body) as Map<String, dynamic>;
-        User.instance.fromJson(responseMap.remove('user'));
-        EventInfo.instance.fromJson(responseMap);
-        for (var photo in responseMap["photos"]) {
-          globals.mainPageImages.add(photo["url"].substring(1));
-        }
-        return response.statusCode;
-      }
-      else{
-        return response.statusCode;
-      }
-    } on TimeoutException catch (_) {
-      return 408;
-    } catch (e) {
-      debugPrint(e.toString());
-      debugPrint("Fail");
-      return 500;
+    final response = await NetworkService().postRoute(
+    {
+      // "email": "viswanathanmanickam5@gmail.com",
+      // "deviceID":"C94E3948-77C0-43DE-864F-D31CE817284B",
+      "passcode": pin,
+      // "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
+    }, 'auth/verify-otp');
+    if(response.statusCode == 200){
+      final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+      prefs.setBool('loggedIn', true);
+      final responseMap = json.decode(response.data) as Map<String, dynamic>;
+      User.instance.fromJson(responseMap.remove('user'));
+      EventInfo.instance.fromJson(responseMap);
+      for (var photo in responseMap["photos"]) {
+        globals.mainPageImages.add(photo["url"].substring(1));
+      } 
     }
+    return response.statusCode!;
   }
   void login (String pin, BuildContext context) {
     if(pin.isEmpty){
-      pin = "505637";
-      // utils.snackBarMessage(context, 'Please enter pin');
-      // return;
+      // pin = "505637";
+      utils.snackBarMessage(context, 'Please enter pin');
+      return;
     }
     authenticate(int.parse(pin))
       .then((statusCode){
@@ -107,11 +83,11 @@ class _loginUIState extends State<loginUI> {
               digits: 6,
               onChanged: (code) {
                 setState(() {
-                  widget.pin = code;
+                  pin = code;
                 });
               },
               onSubmitted: () {
-                login(widget.pin, context);
+                login(pin, context);
               },
             ),
             Row(
@@ -140,7 +116,7 @@ class _loginUIState extends State<loginUI> {
         submitButton(
           text: "Login", 
           onSubmit: (){
-            login(widget.pin, context);
+            login(pin, context);
           },
         ),
       ],

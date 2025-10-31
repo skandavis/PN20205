@@ -1,10 +1,11 @@
 import 'package:PN2025/activity.dart';
 import 'package:PN2025/category.dart';
+import 'package:PN2025/loadingScreen.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/selectableCategoryLabel.dart';
 import 'package:PN2025/activityCard.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'utils.dart' as utils;
 
 class activitiesPage extends StatefulWidget {
   const activitiesPage({super.key});
@@ -17,7 +18,7 @@ class activitiesPageState extends State<activitiesPage> {
   final TextEditingController searchController = TextEditingController();
 
   List<Activity> filteredActivities = [];
-  static List<ActivityCategory> allCategories = [];
+  static List<ActivityCategory>? allCategories;
   Set<String> selectedCategories = {};
 
   String searchQuery = "";
@@ -31,15 +32,17 @@ class activitiesPageState extends State<activitiesPage> {
   }
 
   Future<void> loadData() async {
-    if(globals.totalActivities.isEmpty)
+    if(globals.totalActivities == null)
     {
-      final activityRes = await utils.getMultipleRoute('activities');
+      final activityRes = await NetworkService().getMultipleRoute('activities');
       debugPrint("activities: $activityRes");
+      if(activityRes ==null) return;
       globals.totalActivities = activityRes.map((item) => Activity.fromJson(item)).toList();
     }
-    if(allCategories.isEmpty)
+    if(allCategories ==null)
     {
-      final catRes = await utils.getMultipleRoute('categories');
+      final catRes = await NetworkService().getMultipleRoute('categories');
+      if(catRes ==null) return;
       allCategories = catRes.map((item) => ActivityCategory.fromJson(item)).toList();
     }
 
@@ -47,10 +50,10 @@ class activitiesPageState extends State<activitiesPage> {
   }
 
   void applyFilters() {
+    if(globals.totalActivities == null) return;
     final now = DateTime.now();
-
     setState(() {
-      filteredActivities = globals.totalActivities.where((activity) {
+      filteredActivities = globals.totalActivities!.where((activity) {
         if (onlyFavorites && !(activity.favoritized)) return false;
 
         if (!showOld) {
@@ -128,7 +131,7 @@ class activitiesPageState extends State<activitiesPage> {
         children: [
           buildSearchBar(),
           buildFilterRow(),
-          if (allCategories.isNotEmpty) buildCategoryList(),
+          if (allCategories != null) buildCategoryList(),
           buildEventList(),
         ],
       ),
@@ -214,10 +217,10 @@ class activitiesPageState extends State<activitiesPage> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.all(8),
-        itemCount: allCategories.length,
+        itemCount: allCategories!.length,
         separatorBuilder: (_,__ ) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final cat = allCategories[index];
+          final cat = allCategories![index];
           return selectableCategoryLabel(
             category: cat,
             chosen: selectedCategories.contains(cat.name),
@@ -253,7 +256,7 @@ class activitiesPageState extends State<activitiesPage> {
         onlyFavorites ||
         showOld;
 
-    return Center(
+    return globals.totalActivities == null ? const loadingScreen() : Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

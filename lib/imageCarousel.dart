@@ -1,7 +1,7 @@
 import 'dart:typed_data';
+import 'package:PN2025/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/utils.dart' as utils;
 
 class ImageCarousel extends StatefulWidget {
   final List<String> imageUrls;
@@ -13,7 +13,7 @@ class ImageCarousel extends StatefulWidget {
 }
 
 class _ImageCarouselState extends State<ImageCarousel> {
-  List<Uint8List>? images;
+  List<Uint8List?>? images;
   int currentIndex = 0;
 
   @override
@@ -22,23 +22,22 @@ class _ImageCarouselState extends State<ImageCarousel> {
     debugPrint("length:${widget.imageUrls.length}");
     if(images == null)
     {
-      images = List<Uint8List>.filled(widget.imageUrls.length, Uint8List(0));
+      images = List<Uint8List?>.filled(widget.imageUrls.length, null);
       loadImage(0); 
     }
   }
 
   Future<void> loadImage(int index) async {
-    if (images![index].isEmpty) {
-      try {
-        final img = await utils.getImage(widget.imageUrls[index]);
-        setState(() {
-          images![index] = img;
-        });
-      } catch (e) {
-        debugPrint("Failed to load image at index $index: $e");
-      }
+    try {
+      final img = await NetworkService().getImage(widget.imageUrls[index]);
+      if(img == null) return;
+      setState(() {
+        images![index] = img;
+      });
+    } catch (e) {
+      debugPrint("Failed to load image at index $index: $e");
     }
-    if (currentIndex+1 < widget.imageUrls.length && images![currentIndex+1].isEmpty) {
+    if (currentIndex+1 < widget.imageUrls.length && images![currentIndex+1] == null) {
       debugPrint("prefetching ${currentIndex + 1}");
       loadImage(currentIndex + 1);
     }
@@ -61,7 +60,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
             },
             itemBuilder: (context, index) {
               final image = images![index];
-              if (image.isNotEmpty) {
+              if (image!=null) {
                 return Image.memory(image, fit: BoxFit.cover);
               } else {
                 return const Center(

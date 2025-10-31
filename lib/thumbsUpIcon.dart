@@ -1,5 +1,5 @@
 import 'package:PN2025/activity.dart';
-import 'package:PN2025/utils.dart' as utils;
+import 'package:PN2025/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 
@@ -19,12 +19,12 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          globals.totalActivities[globals.totalActivities.indexOf(widget.activity)].toogleLike();
+          globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].toogleLike();
         });
         if (liked) {
-          utils.updateNoData('events/${widget.activity.id}/likes');
+          NetworkService().patchNoData('events/${widget.activity.id}/likes');
         } else {
-          utils.updateNoData('events/${widget.activity.id}/unlikes');
+          NetworkService().patchNoData('events/${widget.activity.id}/unlikes');
         }
       },
       child: Container(

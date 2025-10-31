@@ -29,56 +29,58 @@ class _loginPageState extends State<loginPage> {
     return messageReciever(
       body: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Color.fromARGB(255, 24, 19, 118),
-              Colors.black,
-            ], begin: Alignment.centerLeft, end: Alignment.centerRight),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.1),
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white, 
-                        fontSize: Theme.of(context).textTheme.displayMedium?.fontSize, 
-                        height: 1
+        body: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [
+                Color.fromARGB(255, 24, 19, 118),
+                Colors.black,
+              ], begin: Alignment.centerLeft, end: Alignment.centerRight),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.1),
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          color: Colors.white, 
+                          fontSize: Theme.of(context).textTheme.displayMedium?.fontSize, 
+                          height: 1
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.1),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * .8,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(50),
-                    topRight: Radius.circular(50),
-                  ),
+                  ],
                 ),
-                child: widget.sentPassword? loginUI():
-                getPinUI(
-                  deviceID: deviceID,
-                  onPinSent: (email) {
-                    setState(() {
-                      widget.email = email;
-                      widget.sentPassword = true;
-                    });
-                  },
-                )
-              ),
-            ],
+                Container(
+                  padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.1),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * .8,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50),
+                    ),
+                  ),
+                  child: widget.sentPassword? enterPinUI():
+                  getPinUI(
+                    deviceID: deviceID,
+                    onPinSent: (email) {
+                      setState(() {
+                        widget.email = email;
+                        widget.sentPassword = true;
+                      });
+                    },
+                  )
+                ),
+              ],
+            ),
           ),
         ),
       ),

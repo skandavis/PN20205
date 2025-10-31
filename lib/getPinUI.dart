@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/submit.dart';
 import 'package:PN2025/user.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 TextEditingController email = TextEditingController();
 
@@ -20,65 +18,68 @@ class getPinUI extends StatefulWidget {
 
 class _getPinUIState extends State<getPinUI> {
   Future<int> registerUser(String email) async {
-    try {
-      var response = await http
-      .post(
-        Uri.parse('${globals.url}auth/request-otp/'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": email,
-          "deviceID": widget.deviceID,
-          "eventId": "",
-        }),
-      )
-      .timeout(Duration(seconds: 3));
-      if(response.statusCode == 200)
-      {
-        globals.loginToken = response.headers["set-cookie"].toString().split("=")[1].split(";")[0];
-      }
-      return response.statusCode;
-    }on TimeoutException catch (_) {
-      return 408;
-    } catch (e) {
-      debugPrint(e.toString());
-      debugPrint("Fail");
-      return 500;
-    }
+    final response = await NetworkService().postRoute({
+      "email": email,
+      "deviceID": widget.deviceID,
+      "eventId": "",
+    }, 
+    "auth/request-otp");
+    return response.statusCode!;
   }
   void showDialogBox() async {
     final result = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          child: AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Text(
-              "Email Confirmation",
-              style: TextStyle(color: Colors.black),
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+          constraints: BoxConstraints(
+              maxHeight: 300,
+              maxWidth: 400
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+              color: Colors.white
             ),
-            content: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.25,
-              child: Column(
-                children: [
-                  Container(
-                    child: const Text(
-                      "We have sent a 4-digit PIN to your email to your email to verify your account.Please cheack it and reenter it.",
-                      style: TextStyle(color: Colors.black),
+            child: Column(
+              children: [
+                Container(
+                  height: 75,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                    color: Color.fromARGB(255,31,53,76)
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Check Email", 
+                      style: TextStyle(
+                        color: Colors.white, 
+                        fontSize: 28
+                      ),
                     ),
                   ),
-                  const Divider(),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  height: 225,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("We have sent a 6-digit PIN to your email to your email to verify your account. Please check it and reenter it.",style: TextStyle(fontSize: 20),),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
     if (result == null) {
       widget.onPinSent(email.text);
     }
   }
-  void sendPin(String email,BuildContext context) async{
+  void sendPin(String email, BuildContext context) async{
     if (email.isEmpty ) {
       email = "viswanathanmanickam5@gmail.com";
       // utils.snackBarMessage(context, 'Please enter email');

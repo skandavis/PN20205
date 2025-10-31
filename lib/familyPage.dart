@@ -14,7 +14,7 @@ class familyPage extends StatefulWidget {
 class _familyPageState extends State<familyPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  List<Map<String, dynamic>> family = [];
+  static List<Map<String, dynamic>> family = [];
 
   void createUser() {
     if(!utils.isValidEmail(emailController.text))
@@ -233,7 +233,10 @@ class _familyPageState extends State<familyPage> {
         mainAxisSpacing: 10.0,
         children: List.generate(count, (index) {
           if (index == 0) {
-            return familyMemberSquare(email: User.instance.email, name: User.instance.name);
+            return familyMemberSquare(
+              email: User.instance.email, 
+              name: User.instance.name
+            );
           } else if (index == count - 1) {
             return GestureDetector(
               onTap: () {
@@ -261,7 +264,10 @@ class _familyPageState extends State<familyPage> {
                   onTap: () {
                     editUser(index - 1); // Open edit dialog for this user
                   },
-                  child:familyMemberSquare(email: family[index - 1]['email'], name: family[index - 1]['name'])
+                  child: familyMemberSquare(
+                    email: family[index - 1]['email'], 
+                    name: family[index - 1]['name'],
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
