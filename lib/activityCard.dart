@@ -1,4 +1,5 @@
 import 'package:PN2025/activity.dart';
+import 'package:PN2025/sendMessageDialog.dart';
 import 'package:PN2025/user.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/foundation.dart';
@@ -11,6 +12,9 @@ import 'package:PN2025/imageCarousel.dart';
 class activityCard extends StatefulWidget {
   Activity activity;
   List<List<Uint8List>> images = [[]];
+  late Widget expandedPage = expandedActivityPage(
+              activity: activity,
+            );
   activityCard({
     super.key,
     required this.activity,
@@ -49,9 +53,7 @@ class _activityCardState extends State<activityCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => expandedActivityPage(
-              activity: widget.activity,
-            ),
+            builder: (context) => widget.expandedPage,
           ),
         ).then((_){
           setState(() {
@@ -133,12 +135,12 @@ class _activityCardState extends State<activityCard> {
                       if(User.instance.isAdmin())
                       GestureDetector(
                         onTap: () {
-                          // showDialog(
-                          //   context: context,
-                          //   builder: (BuildContext context) {
-                          //     return sendMessageDialog(route: widget.route);
-                          //   },
-                          // );
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return sendMessageDialog(route: 'activities/${widget.activity.id}/notification');
+                            },
+                          );
                         },
                         child: Icon(
                           Icons.add,

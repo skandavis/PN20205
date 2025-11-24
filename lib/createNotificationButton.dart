@@ -1,9 +1,10 @@
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/sendMessageDialog.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class createNotificationButton extends StatefulWidget {
-  Function(String,String)? sendMessage;
+  Function(Response)? sendMessage;
   String route;
   createNotificationButton({super.key, this.sendMessage, required this.route});
 

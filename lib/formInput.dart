@@ -8,7 +8,8 @@ class formInput extends StatefulWidget {
   TextEditingController controller;
   FocusNode focusNode;
   List<TextInputFormatter>? formatters;
-  formInput({super.key, required this.label, required this.controller, required this.focusNode, this.lines, this.formatters});
+  TextInputType? inputType;
+  formInput({super.key, required this.label, required this.controller, required this.focusNode, this.lines, this.formatters, this.inputType});
 
   @override
   State<formInput> createState() => _formInputState();
@@ -21,6 +22,7 @@ class _formInputState extends State<formInput> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      keyboardType: widget.inputType ?? TextInputType.text,
       onChanged: (value) {
         setState(() {
           

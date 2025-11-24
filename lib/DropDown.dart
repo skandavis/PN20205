@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
 
 class dropDown extends StatefulWidget {
-  final List<dynamic> options;
+  final List<String> options;
   final String label;
   final String initialValue;
   final FocusNode focusNode;
@@ -32,31 +32,31 @@ class _dropDownState extends State<dropDown> {
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(6);
+    final radius = BorderRadius.circular(10);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        /// Label
         Text(
           widget.label,
           style: TextStyle(
-            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+            fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
             color: globals.secondaryColor,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 8),
 
-        /// Add shadow using a Container
+        /// Modern container + soft shadow
         Container(
           decoration: BoxDecoration(
-            borderRadius: borderRadius,
+            borderRadius: radius,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.25),
-                spreadRadius: 1,
-                blurRadius: 6,
-                offset: const Offset(0, 3),
+                color: Colors.black.withOpacity(0.18),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
@@ -64,42 +64,35 @@ class _dropDownState extends State<dropDown> {
             focusNode: widget.focusNode,
             initialValue: dropdownValue,
             dropdownColor: globals.backgroundColor,
+            borderRadius: radius,
+            elevation: 8,
+
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+            ),
+
             decoration: InputDecoration(
-              fillColor: globals.backgroundColor,
               filled: true,
+              fillColor: globals.backgroundColor,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: globals.secondaryColor, width: 2),
-                borderRadius: borderRadius,
+                borderRadius: radius,
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: globals.iceBlue, width: 2),
-                borderRadius: borderRadius,
+                borderRadius: radius,
               ),
             ),
-            iconEnabledColor: Colors.white,
-            onChanged: (String? newValue) {
-              if (newValue != null) {
-                setState(() => dropdownValue = newValue);
-                widget.onChanged(widget.options.indexOf(newValue));
-              }
-            },
-            items: widget.options.asMap().entries.map((entry) {
-              final index = entry.key;
-              final value = entry.value;
 
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Container(
-                  width: MediaQuery.sizeOf(context).width * .7,
-                  height: 50,
+            icon: const Icon(Icons.expand_more_rounded, color: Colors.white),
+
+            /// ⭐ Prevent shifting by forcing identical selected-item UI
+            selectedItemBuilder: (_) {
+              return widget.options.map((value) {
+                return Align(
                   alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: index < widget.options.length - 1
-                          ? BorderSide(color: globals.iceBlue, width: 2)
-                          : BorderSide.none,
-                    ),
-                  ),
                   child: Text(
                     value,
                     style: TextStyle(
@@ -107,10 +100,26 @@ class _dropDownState extends State<dropDown> {
                       fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                     ),
                   ),
+                );
+              }).toList();
+            },
+
+            onChanged: (value) {
+              if (value == null) return;
+              setState(() => dropdownValue = value);
+              widget.onChanged(widget.options.indexOf(value));
+            },
+
+            items: widget.options.map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Text(value),
                 ),
               );
             }).toList(),
-          ),
+          )
         ),
       ],
     );

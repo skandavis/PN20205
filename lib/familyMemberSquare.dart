@@ -1,14 +1,13 @@
+import 'package:PN2025/familyMember.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class familyMemberSquare extends StatefulWidget {
-  final String name;
-  final String email;
+  final FamilyMember  familyMember;
 
   const familyMemberSquare({
     super.key,
-    required this.email,
-    required this.name,
+    required this.familyMember
   });
 
   @override
@@ -43,6 +42,7 @@ class _familyMemberSquareState extends State<familyMemberSquare> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       width: double.infinity,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -53,8 +53,7 @@ class _familyMemberSquareState extends State<familyMemberSquare> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Icon(Icons.person, size: 64, color: textColor),
-          SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(widget.name, style: TextStyle(color: textColor, fontSize: 14))),
-          SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(widget.email, style: TextStyle(color: textColor, fontSize: 14))),
+          SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(widget.familyMember.name, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold),)),
         ],
       ),
     );

@@ -1,5 +1,7 @@
+import 'package:PN2025/accountPage.dart';
 import 'package:PN2025/eventInfo.dart';
 import 'package:PN2025/expandableHighlightext.dart';
+import 'package:PN2025/loadingScreen.dart';
 import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:geocoding/geocoding.dart';
@@ -7,11 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:PN2025/fullMapPage.dart';
 import 'package:PN2025/imageCarousel.dart';
 import 'package:PN2025/locationTimeScrollableWidget.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:PN2025/globals.dart' as globals;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class mainPage extends StatefulWidget {
   const mainPage({super.key});
@@ -24,13 +24,14 @@ class _mainPageState extends State<mainPage> {
   static LatLng center = LatLng(47.3769, 8.5417);
   EventInfo eventInfo = EventInfo.instance; 
   User user = User.instance; 
-  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
 
   @override
   void initState() {
     super.initState();
-    loadInitialData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadInitialData();
+    });
   }
 
 Future<bool> requestCalendarPermission(BuildContext context) async {
@@ -73,30 +74,27 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   return status.isGranted;
 }
   void loadInitialData() async {
-    // prefs.getString()
     if(!eventInfo.isLoaded)
     {
-      NetworkService().getSingleRoute("events").then((response) {
-        if(response == null) return;
-        setState(() {
-          user.fromJson(response.remove('user'));
-          eventInfo.fromJson(response);
-          for (var photo in response["photos"]) {
-            globals.mainPageImages.add(photo["url"].substring(1));
-          }
-        });
+      final response = await NetworkService().getSingleRoute("events", context, forceRefresh: true);
+      if(response == null) return;
+      setState(() {
+        user.fromJson(response.remove('user'));
+        eventInfo.fromJson(response);
+        for (var photo in response["photos"]) {
+          globals.mainPageImages.add(photo["url"].substring(1));
+        }
       });
     }
-    // if(user.firstTime)
-    // {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => accountPage(
-    //       ),
-    //     ),
-    //   );
-    // }
+    if(false)
+    {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => accountPage(),
+        ),
+      );
+    }
   }
 
   void geocode() async{
@@ -122,7 +120,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   }
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return eventInfo.isLoaded ? ListView(
       children: [
         if(globals.mainPageImages.isNotEmpty)
         ImageCarousel(
@@ -273,6 +271,6 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
           ),
         ),
       ],
-    );
+    ):loadingScreen();
   }
 }

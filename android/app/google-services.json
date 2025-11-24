@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "96597404835",
+    "project_id": "nagarathar-3d13e",
+    "storage_bucket": "nagarathar-3d13e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96597404835:android:ecf478fe7dc1d4633e2316",
+        "android_client_info": {
+          "package_name": "com.example.PN2025"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAAihcqv6K3usrBFRcwv9daeHUJdMS0Hs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96597404835:android:84489cc8b5e294323e2316",
+        "android_client_info": {
+          "package_name": "com.skandasoft.nagarathar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAAihcqv6K3usrBFRcwv9daeHUJdMS0Hs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

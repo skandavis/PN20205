@@ -1,7 +1,9 @@
 import 'package:PN2025/customDialogBox.dart';
+import 'package:PN2025/familyMember.dart';
 import 'package:PN2025/familyMemberSquare.dart';
 import 'package:PN2025/gradientTextField.dart';
 import 'package:PN2025/globals.dart' as globals;
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
@@ -16,34 +18,54 @@ class familyPage extends StatefulWidget {
 class _familyPageState extends State<familyPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  static List<Map<String, dynamic>> family = [];
+  final TextEditingController relationController = TextEditingController();
+  static List<FamilyMember>? family;
 
+  @override
+  void initState() {
+    super.initState();
+    if(family != null) return;
+    loadFamily();
+  }
   void createUser() {
     if(!utils.isValidEmail(emailController.text))
     {
       utils.snackBarMessage(context, '${emailController.text}is an invalid email');
-      return;
+      emailController.text = "sskandamani@gmail.com";
+      // return;
     }
-    if (nameController.text.isEmpty || emailController.text.isEmpty) {
-      utils.snackBarMessage(context, 'Please enter both name and email');
-      return;
+    if (nameController.text.isEmpty || emailController.text.isEmpty || relationController.text.isEmpty) {
+      utils.snackBarMessage(context, 'Please enter name, email and relation');
+      nameController.text = "Cornelius Cornwallus Coconut";
+      emailController.text = "sskandamani@gmail.com";
+      relationController.text = "Son";
+      // return;
     }
-    setState(() {
-      family.add({'name': nameController.text, 'email': emailController.text});
-    });
+    NetworkService().postRoute({
+      'email': emailController.text,
+      'name': nameController.text, 
+      'type':'Family', 
+      'relation': relationController.text}, 
+      'users').then((response) {
+        setState(() {
+          family!.add(FamilyMember.fromJson(response.data)); // Add the new user to the list of family members.response.data);
+        });
+      });
     nameController.clear();
     emailController.clear();
+    relationController.clear();
     Navigator.of(context).pop(); // Close dialog
   }
 
   void createUserDialog() {
     showDialog(
       context: context,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return customDialogBox(
           title: "Add Family Member",
           body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               gradientTextField(
                 controller: nameController,
@@ -56,6 +78,13 @@ class _familyPageState extends State<familyPage> {
                 hint: "Ex: John@gmail.com",
                 label: "Email", 
                 icon: Icons.mail,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              gradientTextField(
+                controller: relationController,
+                hint: "Ex: Son",
+                label: "Relation", 
+                icon: Icons.groups,
               ),
               GestureDetector(
                 onTap: () {
@@ -87,15 +116,16 @@ class _familyPageState extends State<familyPage> {
   }
 
   void editUser(int index) {
-    nameController.text = family[index]['name'];
-    emailController.text = family[index]['email'];
+    nameController.text = family![index].name;
+    emailController.text = family![index].email;
+    relationController.text = family![index].relation;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return customDialogBox(
           title: "Update Family Member", 
           body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               gradientTextField(
                 controller: nameController,
@@ -108,15 +138,31 @@ class _familyPageState extends State<familyPage> {
                 hint: "Ex: John@gmail.com",
                 label: "Email", 
                 icon: Icons.mail,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              gradientTextField(
+                controller: relationController,
+                hint: "Ex: Son",
+                label: "Relation", 
+                icon: Icons.groups,
               ),
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    family[index]['name'] = nameController.text;
-                    family[index]['email'] = emailController.text;
+                    family![index].name = nameController.text;
+                    family![index].email = emailController.text;
+                    family![index].relation = emailController.text;
                   });
+                  NetworkService().patchRoute({
+                    "email": emailController.text,
+                    "name": nameController.text,
+                    "relation": relationController.text
+                    },
+                    'users/family-users/${family![index].id}'
+                  );
                   nameController.clear();
                   emailController.clear();
+                  relationController.clear();
                   Navigator.of(context).pop();
                 },
                 child: Container(
@@ -144,9 +190,18 @@ class _familyPageState extends State<familyPage> {
     );
   }
 
+  void loadFamily() {
+    NetworkService().getMultipleRoute("users/family-users", context, forceRefresh: true).then((response) {
+      if(response == null) return;
+      setState(() {
+        family = response.map((item) => FamilyMember.fromJson(item)).toList();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    int count = family.length + 2;
+    int count = (family == null ? 0 : family!.length) + 2;
     return Scaffold(
       backgroundColor: globals.backgroundColor,
       appBar: AppBar(
@@ -155,7 +210,7 @@ class _familyPageState extends State<familyPage> {
         title: Text(
           "Family",
           style: TextStyle(
-            fontFamily: GoogleFonts.almendra().fontFamily,
+            fontFamily: GoogleFonts.arvo().fontFamily,
             fontSize: 36,
             color: Colors.white
           ),
@@ -165,13 +220,12 @@ class _familyPageState extends State<familyPage> {
       body: GridView.count(
         crossAxisCount: 2,
         padding: EdgeInsets.all(16.0),
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
+        crossAxisSpacing: 25.0,
+        mainAxisSpacing: 25.0,
         children: List.generate(count, (index) {
           if (index == 0) {
             return familyMemberSquare(
-              email: User.instance.email, 
-              name: User.instance.name
+              familyMember: FamilyMember(id: "1", name: User.instance.name, email: User.instance.email, relation: "You"),
             );
           } else if (index == count - 1) {
             return GestureDetector(
@@ -201,14 +255,14 @@ class _familyPageState extends State<familyPage> {
                     editUser(index - 1); // Open edit dialog for this user
                   },
                   child: familyMemberSquare(
-                    email: family[index - 1]['email'], 
-                    name: family[index - 1]['name'],
+                    familyMember: family![index - 1],
                   ),
                 ),
                 GestureDetector(
                   onTap: () {
+                    NetworkService().deleteRoute("users/family-users/${family![index - 1].id}");
                     setState(() {
-                      family.removeAt(index - 1);
+                      family!.removeAt(index - 1);
                     });
                   },
                   child: Container(
@@ -218,7 +272,7 @@ class _familyPageState extends State<familyPage> {
                       color: Colors.red,
                     ),
                     child: Icon(
-                      Icons.delete, 
+                      Icons.close, 
                       color: Colors.white, 
                       size: 28
                     ),

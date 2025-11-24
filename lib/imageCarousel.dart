@@ -1,43 +1,44 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:PN2025/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/globals.dart' as globals;
+import 'package:image_picker/image_picker.dart';
 
 class ImageCarousel extends StatefulWidget {
+  String? uploadPath;
+  Function? onUpload;
   final List<String> imageUrls;
-  int? length;
-  ImageCarousel({super.key, required this.imageUrls, this.length});
+  ImageCarousel({super.key, required this.imageUrls, this.uploadPath, this.onUpload});
 
   @override
   _ImageCarouselState createState() => _ImageCarouselState();
 }
 
 class _ImageCarouselState extends State<ImageCarousel> {
-  List<Uint8List?>? images;
+  List<Uint8List?> images = []; // Changed to growable list
   int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     debugPrint("length:${widget.imageUrls.length}");
-    if(images == null)
-    {
-      images = List<Uint8List?>.filled(widget.imageUrls.length, null);
-      loadImage(0); 
-    }
+    images = List<Uint8List?>.filled(widget.imageUrls.length, null, growable: true);
+    loadImage(0);
   }
 
   Future<void> loadImage(int index) async {
     try {
       final img = await NetworkService().getImage(widget.imageUrls[index]);
-      if(img == null) return;
+      if (img == null) return;
       setState(() {
-        images![index] = img;
+        images[index] = img;
       });
     } catch (e) {
       debugPrint("Failed to load image at index $index: $e");
     }
-    if (currentIndex+1 < widget.imageUrls.length && images![currentIndex+1] == null) {
+    if (currentIndex + 1 < widget.imageUrls.length &&
+        images[currentIndex + 1] == null) {
       debugPrint("prefetching ${currentIndex + 1}");
       loadImage(currentIndex + 1);
     }
@@ -48,31 +49,71 @@ class _ImageCarouselState extends State<ImageCarousel> {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: PageView.builder(
-            itemCount: widget.imageUrls.length,
-            onPageChanged: (index) {
-              setState(() {
-                currentIndex = index;
-              });
-              loadImage(index);
-            },
-            itemBuilder: (context, index) {
-              final image = images![index];
-              if (image!=null) {
-                return Image.memory(image, fit: BoxFit.cover);
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: PageView.builder(
+                itemCount: images.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                  if (index < widget.imageUrls.length) {
+                    loadImage(index);
+                  }
+                },
+                itemBuilder: (context, index) {
+                  final image = images[index];
+                  if (image != null) {
+                    return Image.memory(image, fit: BoxFit.cover);
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ),
+            if (widget.uploadPath != null && widget.onUpload != null)
+              GestureDetector(
+                onTap: () async {
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? pickedFile =
+                      await picker.pickImage(source: ImageSource.gallery);
+
+                  if (pickedFile != null) {
+                    Uint8List bytes = await pickedFile.readAsBytes();
+                    setState(() {
+                      images.add(bytes);
+                    });
+                    debugPrint(pickedFile.path);
+                    NetworkService().uploadFile(
+                    File(pickedFile.path),
+                    widget.uploadPath!,
+                    'activityNewImage.jpg');
+                    widget.onUpload!();
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Icon(Icons.upload, color: globals.accentColor),
+                  ),
+                ),
+              )
+          ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: widget.imageUrls.asMap().entries.map((entry) {
+          children: images.asMap().entries.map((entry) {
             return Container(
               width: 12.0,
               height: 12.0,

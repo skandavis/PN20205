@@ -7,7 +7,8 @@ class gradientTextField extends StatefulWidget {
   String hint;
   TextEditingController controller = TextEditingController();
   int? maxLines = 1;
-  gradientTextField({super.key,required this.icon,required this.label,required this.hint,required this.controller,this.maxLines});
+  TextInputType? keyboardType;
+  gradientTextField({super.key,required this.icon,required this.label,required this.hint,required this.controller,this.maxLines,this.keyboardType});
   @override
   State<gradientTextField> createState() =>_gradientTextFieldState();
 }
@@ -94,6 +95,7 @@ class _gradientTextFieldState extends State<gradientTextField> {
                         ),
                       ),
                       TextField(
+                        keyboardType: widget.keyboardType ?? TextInputType.text,
                         maxLines: widget.maxLines ?? 1,
                         controller: widget.controller,
                         cursorHeight: 16,

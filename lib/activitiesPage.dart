@@ -16,129 +16,113 @@ class activitiesPage extends StatefulWidget {
 }
 
 class activitiesPageState extends State<activitiesPage> {
-  final TextEditingController searchController = TextEditingController();
-
-  List<Activity> filteredActivities = [];
+  final searchController = TextEditingController();
   static List<ActivityCategory>? allCategories;
+  static Map<String, Widget> activityCardCache = {};
+  
   Set<String> selectedCategories = {};
-
   String searchQuery = "";
   bool onlyFavorites = false;
   bool showOld = true;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadData();
+    _loadData();
   }
 
-  Future<void> loadActivities() async {
-    if(globals.totalActivities == null)
-    {
-      final activityRes = await NetworkService().getMultipleRoute('activities');
-      if(activityRes == null) return;
-      globals.totalActivities = activityRes.map((item) => Activity.fromJson(item)).toList();
+  Future<void> _loadData() async {
+    final futures = <Future>[];
+    if (globals.totalActivities == null) {
+      futures.add(_loadActivities(false));
     }
-  }
-  Future<void> loadCategories() async {
-    if(allCategories ==null)
-    {
-      final catRes = await NetworkService().getMultipleRoute('categories');
-      if(catRes == null) return;
-      allCategories = catRes.map((item) => ActivityCategory.fromJson(item)).toList();
+    if (allCategories == null) {
+      futures.add(_loadCategories());
     }
+    await Future.wait(futures);
+
+    setState(() => isLoading = false);
   }
-  Future<void> loadData() async {
-    await Future.wait([
-      loadActivities(),
-      loadCategories()
-    ]);
+
+  Future<void> _loadActivities(bool forceRefresh) async {
+    final data = await NetworkService().getMultipleRoute('activities', context, forceRefresh: forceRefresh);
+    if (data == null) return;
     
-    applyFilters();    
-  }
-
-  void applyFilters() {
-    if(globals.totalActivities == null) return;
-    final now = DateTime.now();
-    setState(() {
-      filteredActivities = globals.totalActivities!.where((activity) {
-        if (onlyFavorites && !(activity.favoritized)) return false;
-
-        if (!showOld) {
-          final startTime = activity.startTime;
-          if (startTime.isBefore(now)) return false;
-        }
-
-        if (selectedCategories.isNotEmpty) {
-          final category = activity.category;
-          if (!selectedCategories.contains(category)) return false;
-        }
-
-        if (searchQuery.isNotEmpty) {
-          final name = activity.name.toLowerCase();
-          final category = activity.category.toLowerCase();
-          if (!name.contains(searchQuery) && !category.contains(searchQuery)) {
-            return false;
-          }
-        }
-
-        return true;
-      }).toList();
-    });
-  }
-
-  void onSearchChanged(String query) {
-    searchQuery = query.toLowerCase().trim();
-    applyFilters();
-  }
-
-  void toggleFavorites(bool value) {
-    onlyFavorites = value;
-    applyFilters();
-  }
-
-  void toggleOld(bool value) {
-    showOld = value;
-    applyFilters();
-  }
-
-  void onCategoryChanged(bool selected, ActivityCategory category) {
-    if (selected) {
-      selectedCategories.add(category.name);
-    } else {
-      selectedCategories.remove(category.name);
+    globals.totalActivities = data.map((item) => Activity.fromJson(item)).toList();
+    activityCardCache.clear();
+    
+    for (var activity in globals.totalActivities!) {
+      activityCardCache[activity.id] = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: activityCard(activity: activity),
+      );
     }
-    applyFilters();
   }
 
-  void clearFilters() {
-    searchController.clear();
-    searchQuery = "";
-    onlyFavorites = false;
-    showOld = false;
-    selectedCategories.clear();
-    applyFilters();
+  Future<void> _refreshActivities() async {
+    await _loadActivities(true);
+    setState(() {});
+  }
+
+  Future<void> _loadCategories() async {
+    if (allCategories != null) return;
+    
+    final data = await NetworkService().getMultipleRoute('categories', context);
+    if (data == null) return;
+    
+    allCategories = data.map((item) => ActivityCategory.fromJson(item)).toList();
+  }
+
+  List<Activity> get _filteredActivities {
+    if (globals.totalActivities == null) return [];
+    
+    return globals.totalActivities!.where((activity) {
+      if (onlyFavorites && !activity.favoritized) return false;
+      if (!showOld && activity.startTime.isBefore(DateTime.now())) return false;
+      if (selectedCategories.isNotEmpty && !selectedCategories.contains(activity.category)) return false;
+      
+      if (searchQuery.isNotEmpty) {
+        final query = searchQuery.toLowerCase();
+        return activity.name.toLowerCase().contains(query) || 
+               activity.category.toLowerCase().contains(query);
+      }
+      
+      return true;
+    }).toList();
+  }
+
+  void _clearFilters() {
+    setState(() {
+      searchController.clear();
+      searchQuery = "";
+      onlyFavorites = false;
+      showOld = false;
+      selectedCategories.clear();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        buildSearchBar(),
-        buildFilterRow(),
-        if (allCategories != null) buildCategoryList(),
-        buildEventList(),
+        _buildSearchBar(),
+        _buildFilterRow(),
+        if (allCategories != null) _buildCategoryList(),
+        Expanded(
+          child: isLoading ? loadingScreen() : _buildActivityList(),
+        ),
       ],
     );
   }
 
-  Widget buildSearchBar() {
+  Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         controller: searchController,
-        onChanged: onSearchChanged,
-        style: TextStyle(color: Colors.white,fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
+        onChanged: (query) => setState(() => searchQuery = query.toLowerCase().trim()),
+        style: TextStyle(color: Colors.white, fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
         decoration: InputDecoration(
           hintText: "Search events...",
           hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
@@ -146,7 +130,10 @@ class activitiesPageState extends State<activitiesPage> {
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
                   icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.8)),
-                  onPressed: () => onSearchChanged(""),
+                  onPressed: () {
+                    searchController.clear();
+                    setState(() => searchQuery = "");
+                  },
                 )
               : null,
           filled: true,
@@ -160,7 +147,7 @@ class activitiesPageState extends State<activitiesPage> {
     );
   }
 
-  Widget buildFilterRow() {
+  Widget _buildFilterRow() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -168,7 +155,7 @@ class activitiesPageState extends State<activitiesPage> {
           backgoundDynamicIcon(
             icon: Icons.favorite,
             active: onlyFavorites,
-            onTap: toggleFavorites,
+            onTap: (val) => setState(() => onlyFavorites = val),
             foregroundColor: Colors.red,
             backgroundColor: Colors.white,
           ),
@@ -176,7 +163,7 @@ class activitiesPageState extends State<activitiesPage> {
           backgoundDynamicIcon(
             icon: Icons.lock_clock,
             active: showOld,
-            onTap: toggleOld,
+            onTap: (val) => setState(() => showOld = val),
             foregroundColor: globals.accentColor,
             backgroundColor: Colors.white,
           ),
@@ -185,70 +172,64 @@ class activitiesPageState extends State<activitiesPage> {
     );
   }
 
-  Widget buildCategoryList() {
+  Widget _buildCategoryList() {
     return SizedBox(
       height: 60,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.all(8),
         itemCount: allCategories!.length,
-        separatorBuilder: (_,__ ) => const SizedBox(width: 10),
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final cat = allCategories![index];
           return selectableCategoryLabel(
             category: cat,
             chosen: selectedCategories.contains(cat.name),
-            chooseCategory: onCategoryChanged,
+            chooseCategory: (selected, category) {
+              setState(() {
+                selected ? selectedCategories.add(category.name) : selectedCategories.remove(category.name);
+              });
+            },
           );
         },
       ),
     );
   }
 
-  Widget buildEventList() {
-    return Expanded(
-      child: filteredActivities.isEmpty
-          ? buildEmptyState()
-          : SizedBox(
-            width: MediaQuery.of(context).size.width*.9,
-            child: ListView.builder(
-                itemCount: filteredActivities.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: activityCard(activity: filteredActivities[index]),
-                  );
-                },
-              ),
-          ),
-    );
-  }
-
-  Widget buildEmptyState() {
-    final filtered = searchQuery.isNotEmpty ||
-        selectedCategories.isNotEmpty ||
-        onlyFavorites ||
-        showOld;
-
-    return globals.totalActivities == null ? const loadingScreen() : Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(filtered ? Icons.search_off : Icons.event_busy, size: 64, color: Colors.white54),
-          const SizedBox(height: 12),
-          Text(
-            filtered ? "No events match your filters." : "No events available.",
-            style: TextStyle(color: Colors.white70),
-          ),
-          if (filtered)
-            TextButton(
-              onPressed: clearFilters,
-              child: Text(
-                "Clear all filters",
-                style: TextStyle(color: Colors.white70),
-              ),
+  Widget _buildActivityList() {
+    final activities = _filteredActivities;
+    
+    if (activities.isEmpty) {
+      final hasFilters = searchQuery.isNotEmpty || selectedCategories.isNotEmpty || onlyFavorites || showOld;
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(hasFilters ? Icons.search_off : Icons.event_busy, size: 64, color: Colors.white54),
+            const SizedBox(height: 12),
+            Text(
+              hasFilters ? "No events match your filters." : "No events available.",
+              style: TextStyle(color: Colors.white70),
             ),
-        ],
+            if (hasFilters)
+              TextButton(
+                onPressed: _clearFilters,
+                child: Text("Clear all filters", style: TextStyle(color: Colors.white70)),
+              ),
+          ],
+        ),
+      );
+    }
+    
+    return RefreshIndicator(
+      onRefresh: _refreshActivities,
+      color: globals.accentColor,
+      child: Container(
+        width: MediaQuery.of(context).size.width * .9,
+        child: ListView.builder(
+          itemCount: activities.length,
+          itemBuilder: (context, index) => activityCardCache[activities[index].id]!,
+        ),
       ),
     );
   }

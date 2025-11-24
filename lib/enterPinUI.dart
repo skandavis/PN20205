@@ -12,8 +12,10 @@ import 'package:PN2025/submit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 
+final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 class enterPinUI extends StatefulWidget {
-  const enterPinUI({super.key});
+  String ApnsToken;
+  enterPinUI({super.key, required this.ApnsToken});
 
   @override
   State<enterPinUI> createState() => _enterPinUIState();
@@ -25,6 +27,7 @@ class _enterPinUIState extends State<enterPinUI> {
     {
       // "email": "viswanathanmanickam5@gmail.com",
       // "deviceID":"C94E3948-77C0-43DE-864F-D31CE817284B",
+      "deviceAPN":  widget.ApnsToken,
       "passcode": pin,
       // "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
     }, 'auth/verify-otp');
@@ -51,6 +54,7 @@ class _enterPinUIState extends State<enterPinUI> {
         switch(statusCode)
         {
           case 200:
+            prefs.remove('gotEmail');
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -98,7 +102,7 @@ class _enterPinUIState extends State<enterPinUI> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => loginPage(),
+                        builder: (context) => loginPage(sentPassword: false,),
                       ),
                     );
                   },

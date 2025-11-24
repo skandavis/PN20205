@@ -5,11 +5,34 @@ import 'dart:io';
 import 'package:PN2025/cacheManager.dart';
 import 'package:PN2025/imageService.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'globals.dart' as globals;
+import 'utils.dart' as utils;
+import 'package:ua_client_hints/ua_client_hints.dart';
 
+const int timeoutSecs = 10;
+
+Dio getInsecureDio() {
+  final dio = Dio(BaseOptions(
+      connectTimeout: Duration(seconds: timeoutSecs),
+      receiveTimeout: Duration(seconds: timeoutSecs),
+      sendTimeout: Duration(seconds: timeoutSecs),
+    ));
+
+  // Override HttpClient globally for this Dio instance
+  (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+      (HttpClient client) {
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    return client;
+  };
+
+  return dio;
+}
 class NetworkService {
   static final NetworkService _instance = NetworkService._internal();
   factory NetworkService() => _instance;
@@ -21,14 +44,11 @@ class NetworkService {
   PersistCookieJar? cookieJar;
   bool _initialized = false;
   
-  static const int timeoutSecs = 3;
 
   NetworkService._internal() {
-    dio = Dio(BaseOptions(
-      connectTimeout: Duration(seconds: timeoutSecs),
-      receiveTimeout: Duration(seconds: timeoutSecs),
-      sendTimeout: Duration(seconds: timeoutSecs),
-    ));
+    dio = getInsecureDio();
+
+    // dio = AppDio.getInstance();
   }
 
   Future<void> _initIfNeeded() async {
@@ -40,6 +60,7 @@ class NetworkService {
     cacheManager = CacheManager(dir);
     await cacheManager.init();
     
+    // cacheManager.cleanup();
     imageService = ImageService(dio, cacheManager);
     
     _initialized = true;
@@ -50,31 +71,43 @@ class NetworkService {
     await Directory(cookiePath).create(recursive: true);
     cookieJar = PersistCookieJar(storage: FileStorage(cookiePath));
     dio.interceptors.add(CookieManager(cookieJar!));
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final myVar = await userAgentClientHintsHeader();
+        options.headers.addAll(myVar);
+        handler.next(options);
+      },
+    ));
   }
   
-  Future<dynamic> getRoute(String route) async {
+  Future<dynamic> getRoute(String route, BuildContext context, bool forceRefresh) async {
     await _initIfNeeded();
-    
+    if (!forceRefresh) {
+      final cached = await cacheManager.loadResource(route);
+      if (cached != null) return cached;
+    }
+
     try {
       final response = await dio
           .get('${globals.url}$route')
           .timeout(Duration(seconds: timeoutSecs));
       
       if (response.statusCode == 200 && response.data != null) {
-        await cacheManager.saveJson(route, response.data);
+        final headers = _normalizeHeaders(response.headers.map);
+        await cacheManager.saveResource(route, response.data, headers);
         return response.data;
       }
       
       print("Non-200 status (${response.statusCode}), loading from cache");
-      return await cacheManager.loadJson(route);
+      return await cacheManager.loadResource(route);
       
     } catch (e) {
-      return await _handleGetError(route, e);
+      return await _handleGetError(route, e, context);
     }
   }
 
-  Future<List<dynamic>?> getMultipleRoute(String route) async {
-    final data = await getRoute(route);
+  Future<List<dynamic>?> getMultipleRoute(String route,BuildContext context, {bool forceRefresh = false}) async {
+    final data = await getRoute(route, context, forceRefresh);
     
     if (data is List<dynamic>) {
       data.forEach(print);
@@ -88,8 +121,8 @@ class NetworkService {
     return null;
   }
 
-  Future<Map<String, dynamic>?> getSingleRoute(String route) async {
-    final data = await getRoute(route);
+  Future<Map<String, dynamic>?> getSingleRoute(String route, BuildContext context, {bool forceRefresh = false}) async {
+    final data = await getRoute(route, context, forceRefresh);
     
     if (data is Map<String, dynamic>) {
       print(data.toString());
@@ -103,16 +136,16 @@ class NetworkService {
     return null;
   }
 
-  Future<dynamic> _handleGetError(String route, dynamic error) async {
+  Future<dynamic> _handleGetError(String route, dynamic error, BuildContext context) async {
     if (error is TimeoutException) {
-      print("GET request to $route timed out, loading from cache");
+      utils.snackBarMessage(context, "Request for $route has timed out, loading from previous cache");
     } else if (error is DioException) {
-      print("Failed to load $route: ${error.message}, loading from cache");
+      utils.snackBarMessage(context,"Failed to load $route: ${error.message}, loading from cache" );
     } else {
-      print("Unexpected error for $route: $error, loading from cache");
+      utils.snackBarMessage(context,"Unexpected error for $route: $error, loading from cache");
     }
-    
-    return await cacheManager.loadJson(route);
+    print(error);
+    return await cacheManager.loadResource(route);
   }
   
   Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route) async {
@@ -156,6 +189,7 @@ class NetworkService {
       final response = await dio
           .patch('${globals.url}$route')
           .timeout(Duration(seconds: timeoutSecs));
+      debugPrint("Status code: ${response.statusCode}");
       return response.statusCode!;
     } on TimeoutException {
       print('Request timed out.');
@@ -188,7 +222,8 @@ class NetworkService {
     await _initIfNeeded();
     
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(file.path, filename: fileName),
+      'photo': await MultipartFile.fromFile(file.path),
+      'name': fileName
     });
 
     try {
@@ -215,5 +250,9 @@ class NetworkService {
       statusCode: statusCode,
       requestOptions: RequestOptions(path: route),
     );
+  }
+
+  Map<String, dynamic> _normalizeHeaders(Map<String, List<String>> headers) {
+    return headers.map((k, v) => MapEntry(k.toLowerCase(), v.join(',')));
   }
 }

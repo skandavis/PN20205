@@ -1,51 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:wheel_picker/wheel_picker.dart';
 
-void main() => runApp(MyApp());
+class SimpleWheelPicker extends StatefulWidget {
+  final List<String> options;
+  final String initialValue;
+  final ValueChanged<String> onChanged;
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const SimpleWheelPicker({
+    super.key,
+    required this.options,
+    required this.initialValue,
+    required this.onChanged,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DropdownExample(),
+  State<SimpleWheelPicker> createState() => _SimpleWheelPickerState();
+}
+
+class _SimpleWheelPickerState extends State<SimpleWheelPicker> {
+  late final WheelPickerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final initialIndex = widget.options.indexOf(widget.initialValue);
+    _controller = WheelPickerController(
+      itemCount: widget.options.length,
+      initialIndex: initialIndex >= 0 ? initialIndex : 0,
     );
-  }
-}
 
-class DropdownExample extends StatefulWidget {
-  const DropdownExample({super.key});
+    _controller.
+
+    _controller.addListener(() {
+      final value = widget.options[_controller.currentIndex];
+      widget.onChanged(value);
+    });
+  }
 
   @override
-  _DropdownExampleState createState() => _DropdownExampleState();
-}
-
-class _DropdownExampleState extends State<DropdownExample> {
-  String? selectedValue = 'Apple'; // Default value
-
-  final List<String> fruits = ['Apple', 'Banana', 'Mango', 'Orange'];
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Simple Dropdown Example')),
-      body: Center(
-        child: DropdownButton<String>(
-          value: selectedValue,
-          icon: Icon(Icons.arrow_drop_down),
-          items: fruits.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              selectedValue = newValue!;
-            });
-          },
-        ),
+    const textStyle = TextStyle(fontSize: 22);
+
+    return WheelPicker(
+      controller: _controller,
+      style: const WheelPickerStyle(
+        itemExtent: 28,
+        magnification: 1.1,
+        squeeze: 1.2,
+        diameterRatio: 0.9,
       ),
+      builder: (context, index) {
+        return Text(widget.options[index], style: textStyle);
+      },
+      looping: false,
     );
   }
 }

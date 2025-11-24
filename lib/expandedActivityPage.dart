@@ -1,6 +1,7 @@
 import 'package:PN2025/activity.dart';
 import 'package:PN2025/createNotificationButton.dart';
 import 'package:PN2025/expandableHighlightext.dart';
+import 'package:PN2025/networkService.dart';
 import 'package:PN2025/participant.dart';
 import 'package:PN2025/participantRow.dart';
 import 'package:PN2025/user.dart';
@@ -13,8 +14,49 @@ import 'package:PN2025/thumbsUpIcon.dart';
 import 'package:PN2025/verticalDivider.dart';
 import 'package:PN2025/globals.dart' as globals;
 
+
+
+
 class expandedActivityPage extends StatefulWidget {
+  void updateActivity(String? location, DateTime? startTime) {
+     if(location != null)
+    {
+      NetworkService().patchRoute({"location": location}, "activities/${activity.id}");
+      globals.totalActivities![globals.totalActivities!.indexOf(activity)].location = location;
+    }
+    if(startTime != null)
+    {
+      NetworkService().patchRoute({"startTime": startTime}, "activities/${activity.id}");
+      globals.totalActivities![globals.totalActivities!.indexOf(activity)].startTime = startTime;
+    }
+  }
   Activity activity;
+  List<Widget>? participants;
+  late Widget attrs = Row(
+    mainAxisAlignment: MainAxisAlignment.spaceAround,
+    children: [
+      attribute(
+        isDate: true,
+        onValueChange: updateActivity,
+        isEditable: false,
+        attributeTitle: "Date",
+        attributeValue:
+            "June ${activity.startTime.day}, ${activity.startTime.hour > 12 ? activity.startTime.hour - 12 : activity.startTime.hour}:${activity.startTime.minute} ${activity.startTime.hour > 12 ? "PM" : "AM"}",
+      ),
+      const myVerticaldivider(),
+      attribute(
+        isEditable: true,
+        attributeTitle: "Location",
+        attributeValue: activity.location,
+      ),
+      const myVerticaldivider(),
+      attribute(
+        isEditable: false,
+        attributeTitle: "Duration",
+        attributeValue: "${activity.duration} minutes",
+      )
+    ],
+  );
   expandedActivityPage({super.key, required this.activity});
 
   @override
@@ -23,15 +65,26 @@ class expandedActivityPage extends StatefulWidget {
 
 class _expandedActivityPageState extends State<expandedActivityPage> {
   bool ellipsis = true;
+@override
+  void initState() {
+    if(widget.participants != null) return;
+    widget.participants = List.generate(widget.activity.participants.length, (index) {
+      return Column(
+        children: [
+          participantRow(participant: widget.activity.participants[index]),
+          SizedBox(height: 25,)
+        ],
+      );
+    },);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    DateTime startTime = widget.activity.startTime;
     for(Participant guy in widget.activity.participants)
     {
       debugPrint(guy.name);
     }
-    debugPrint('');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(0, 0, 0, 0),
@@ -70,7 +123,13 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                     ).createShader(bounds);
                   },
                   blendMode: BlendMode.dstIn,
-                  child: ImageCarousel(imageUrls: widget.activity.images),
+                  child: ImageCarousel(
+                    imageUrls: widget.activity.images,
+                    uploadPath: 'activities/${widget.activity.id}/photo',
+                    onUpload: (){
+                      // widget.activity.images.add()
+                    },
+                  ),
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -115,26 +174,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                             ),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            attribute(
-                              attributeTitle: "Date",
-                              attributeValue:
-                                  "June ${startTime.day}, ${startTime.hour > 12 ? startTime.hour - 12 : startTime.hour}:${startTime.minute} ${startTime.hour > 12 ? "PM" : "AM"}",
-                            ),
-                            const myVerticaldivider(),
-                            attribute(
-                              attributeTitle: "Location",
-                              attributeValue: widget.activity.location,
-                            ),
-                            const myVerticaldivider(),
-                            attribute(
-                              attributeTitle: "Duration",
-                              attributeValue: "${widget.activity.duration} min",
-                            )
-                          ],
-                        ),
+                        widget.attrs,
                         const SizedBox(
                           height: 25,
                         ),
@@ -155,15 +195,9 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                               SizedBox(
                                 height: 25,
                               ),
+                              if(widget.participants != null)
                               Column(
-                                children: List.generate(widget.activity.participants.length, (index) {
-                                  return Column(
-                                    children: [
-                                      participantRow(activity: widget.activity, index: index),
-                                      SizedBox(height: 25,)
-                                    ],
-                                  );
-                                },),
+                                children: widget.participants!,
                               ),
                             ],
                           ),

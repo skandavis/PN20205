@@ -1,4 +1,3 @@
-import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/loadingScreen.dart';
 import 'package:PN2025/networkService.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +15,13 @@ class _faqPageState extends State<faqPage> {
 static List<dynamic>? questions;
   @override
   void initState() {
-      NetworkService().getMultipleRoute('faqs').then((faqs) {
-        setState(() {
-          questions = faqs;
-        });
-      });
     super.initState();
+    if (questions != null) return;
+    NetworkService().getMultipleRoute('faqs', context, forceRefresh: true).then((faqs) {
+      setState(() {
+        questions = faqs;
+      });
+    });
   }
 
   @override

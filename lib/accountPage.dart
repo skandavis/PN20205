@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:PN2025/accountProfile.dart';
 import 'package:PN2025/phoneNumberFormatter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:PN2025/formInput.dart';
 import 'package:PN2025/messageReciever.dart';
@@ -12,43 +11,25 @@ import 'package:app_set_id/app_set_id.dart';
 import 'utils.dart' as utils;
 import 'package:PN2025/globals.dart' as globals;
 
+String deviceID = "";
+User user = User.instance;
+
 class accountPage extends StatefulWidget {
   const accountPage({super.key});
 
   @override
   State<accountPage> createState() => _accountPageState();
 }
-final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-String email = "";
-String deviceID = "";
-List<String> labels = ["Name","Phone","City"];
-User user = User.instance;
-List<TextEditingController> controllers = [
-  TextEditingController(text: user.name),
-  TextEditingController(text: user.phone),
-  TextEditingController(text: user.city),
-  ];
-List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
-Widget inputs = ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
-    return Column(
-      children: [
-        formInput(
-          focusNode: inputFocusNodes[index],
-          label:labels[index],
-          formatters: index ==1?[
-            FilteringTextInputFormatter.digitsOnly,
-            PhoneNumberFormatter(),
-          ]:null,
-          lines: 1,
-          controller: controllers[index],
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * .025,
-        ),
-      ],
-    );
-  });
+
 class _accountPageState extends State<accountPage> {
+  List<String> labels = ["Name","Phone","City"];
+  List<TextEditingController> controllers = [
+    TextEditingController(text: user.name),
+    TextEditingController(text: user.phone),
+    TextEditingController(text: user.city),
+  ];
+  List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
+  static Widget? profile;
   void getDeviceId() async {
     deviceID = (await AppSetId().getIdentifier())!;
   }
@@ -57,6 +38,12 @@ class _accountPageState extends State<accountPage> {
   void initState() {
     super.initState();
     getDeviceId();
+    if(profile != null) return;
+    profile = accountProfile(
+      size: 75,
+      photoRoute:user.photo,
+      uploadRoute:"users/photo"
+    );
   }
 
   void sendData() async {
@@ -80,7 +67,7 @@ class _accountPageState extends State<accountPage> {
           title: Text(
             "Account",
             style: TextStyle(
-              fontFamily: GoogleFonts.almendra().fontFamily,
+              fontFamily: GoogleFonts.arvo().fontFamily,
               fontSize: 36,
               color: Colors.white
             ),
@@ -90,8 +77,8 @@ class _accountPageState extends State<accountPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // make circle
-              accountProfile(),
+              if(profile != null)
+              profile!,
               const SizedBox(
                 height: 20,
               ),
@@ -107,7 +94,26 @@ class _accountPageState extends State<accountPage> {
               ),
               SizedBox(
                 height: MediaQuery.sizeOf(context).height*.3,
-                child: inputs,
+                child:  ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
+                  return Column(
+                    children: [
+                      formInput(
+                        focusNode: inputFocusNodes[index],
+                        label:labels[index],
+                        formatters: index ==1?[
+                          FilteringTextInputFormatter.digitsOnly,
+                          PhoneNumberFormatter(),
+                        ]:null,
+                        lines: 1,
+                        controller: controllers[index],
+                        inputType: index == 1?TextInputType.phone:TextInputType.text
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * .025,
+                      ),
+                    ],
+                  );
+                }),
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * .025,
@@ -115,6 +121,12 @@ class _accountPageState extends State<accountPage> {
               
               GestureDetector(
                 onTap: () {
+                  for(TextEditingController controller in controllers){
+                    if(controller.text.isEmpty){
+                      utils.snackBarMessage(context, "Please fill all the fields!",color: Colors.red);
+                      return;
+                    }
+                  }
                   user.setPersonalInfo({
                     'name':controllers[0].text,
                     'phone':controllers[1].text,

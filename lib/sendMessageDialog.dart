@@ -4,10 +4,11 @@ import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/gradientTextField.dart';
 import 'package:PN2025/networkService.dart';
 import 'package:PN2025/utils.dart' as utils;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class sendMessageDialog extends StatefulWidget {
-  Function(String,String)? sendMessage;
+  Function(Response)? sendMessage;
   String route;
   sendMessageDialog({super.key, required this.route, this.sendMessage});
 
@@ -54,7 +55,7 @@ void sendMessage(BuildContext context) async {
     utils.snackBarMessage(context, "Message Sent!", color: Colors.green);
     if(widget.sendMessage != null)
     {
-      widget.sendMessage!(messageText,type);
+      widget.sendMessage!(response);
     }
     Navigator.pop(context);
   } else {
@@ -67,10 +68,10 @@ void sendMessage(BuildContext context) async {
     return customDialogBox(
       title: "Create Notification", 
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           gradientTextField(
-            maxLines: 3,
+            maxLines: 5,
             controller: messageController,
             hint: "Ex: Meet at Main Hall",
             label: "Message", 

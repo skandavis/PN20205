@@ -6,13 +6,13 @@ class User {
   User._internal();
 
   // Properties
-  String id = 'id1';
-  String role = 'user';
+  String id = '';
+  String role = '';
   bool firstTime = true;
-  String name = 'John Doe';
-  String city = 'Zurich';
-  String phone = '1234567890';
-  String email = 'iR8Zo@example.com';
+  String name = '';
+  String city = '';
+  String phone = '';
+  String email = '';
   String? photo;
   String? primaryUser;
 
@@ -20,7 +20,7 @@ class User {
     id = json['id'];
     role = json['role'];
     primaryUser = json['primaryUserId'];
-    photo = json["photo"]["url"].substring(1);
+    photo = json["photo"] == null ? null : json["photo"]["url"].substring(1);
     email = json["email"];
     // firstTime = json['isFirstTime'];
     name = json['name'] ?? name;

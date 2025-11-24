@@ -2,9 +2,9 @@ import 'package:PN2025/createNotificationButton.dart';
 import 'package:PN2025/loadingScreen.dart';
 import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:PN2025/notificationBubble.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 import 'package:PN2025/notification.dart';
 
@@ -19,18 +19,11 @@ class _notificationsPageState extends State<notificationsPage> {
   ScrollController scrollController = ScrollController();
   static List<Notification>? messages;
   static Set<String> newMessageIds = {};
-  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
   User user = User.instance;
 
 
-  void sendMessage(String messageText, String type) async {
-      final newNotification = Notification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        message: messageText,
-        type: type,
-        creatorName: "You",
-        creationTime: DateTime.now(),
-      );
+  void sendMessage(Response response) async {
+      final newNotification = Notification.fromJson(response.data);
       setState(() {
         if(messages == null){
           messages = [newNotification];
@@ -44,14 +37,44 @@ class _notificationsPageState extends State<notificationsPage> {
   @override
   void initState() {
     super.initState();
-    if (messages ==null) {
-      NetworkService().getMultipleRoute('notifications').then((value) {
-        if (value == null) return;
-        setState(() {
-          messages = value.map((item) => Notification.fromJson(item)).toList();
-        });
-        debugPrint("notifications loaded");
+    if (messages !=null) return;
+    loadMessages();
+  }
+
+  void loadMessages() {
+    NetworkService().getMultipleRoute('notifications', context).then((value) {
+      if (value == null) return;
+      setState(() {
+        messages = value.map((item) => Notification.fromJson(item)).toList();
       });
+    });
+  }
+
+  void loadNewMessages() async{
+    final fetched = await NetworkService().getMultipleRoute('notifications', context, forceRefresh: true);
+    if (fetched == null) return;
+
+    final fetchedList = fetched
+        .map((item) => Notification.fromJson(item))
+        .toList();
+
+    final currentIds = messages!.map((m) => m.id).toSet();
+    final newOnes = fetchedList
+        .where((f) => !currentIds.contains(f.id))
+        .toList();
+
+    setState(() {
+      newMessageIds.clear();
+      newMessageIds.addAll(newOnes.map((n) => n.id));
+      messages = fetchedList;
+    });
+
+    if (newOnes.isNotEmpty) {
+      utils.snackBarMessage(
+        context,
+        "${newOnes.length} new message${newOnes.length > 1 ? 's' : ''}",
+        color: Colors.blue,
+      );
     }
   }
 
@@ -66,31 +89,7 @@ class _notificationsPageState extends State<notificationsPage> {
             padding: const EdgeInsets.all(20),
             child: RefreshIndicator(
               onRefresh: () async {
-                final fetched = await NetworkService().getMultipleRoute('notifications');
-                if (fetched == null) return;
-    
-                final fetchedList = fetched
-                    .map((item) => Notification.fromJson(item))
-                    .toList();
-    
-                final currentIds = messages!.map((m) => m.id).toSet();
-                final newOnes = fetchedList
-                    .where((f) => !currentIds.contains(f.id))
-                    .toList();
-    
-                setState(() {
-                  newMessageIds.clear();
-                  newMessageIds.addAll(newOnes.map((n) => n.id));
-                  messages = fetchedList;
-                });
-    
-                if (newOnes.isNotEmpty) {
-                  utils.snackBarMessage(
-                    context,
-                    "${newOnes.length} new message${newOnes.length > 1 ? 's' : ''}",
-                    color: Colors.blue,
-                  );
-                }
+                loadNewMessages();
               },
               child: ListView.builder(
                 controller: scrollController,

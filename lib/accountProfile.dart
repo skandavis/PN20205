@@ -1,14 +1,9 @@
 import 'package:PN2025/networkService.dart';
 import 'package:PN2025/profileImageCircle.dart';
-import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart';
-
-final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+import 'package:PN2025/globals.dart' as globals;
 
 Future<File?> showImageSourceDialog(BuildContext context) async {
   final picker = ImagePicker();
@@ -52,54 +47,59 @@ Future<File?> showImageSourceDialog(BuildContext context) async {
 }
 
 class accountProfile extends StatefulWidget {
-  const accountProfile({super.key});
+  File? _profileImage;
+  final bool? expandable;
+  final String? photoRoute;
+  final int size;
+  final String uploadRoute;
+  Function(File)? onImageChanged;
+  accountProfile({
+    super.key, 
+    this.onImageChanged,
+    this.expandable,
+    required this.size,
+    required this.photoRoute, 
+    required this.uploadRoute
+  });
 
   @override
   State<accountProfile> createState() => _accountProfileState();
 }
 
 class _accountProfileState extends State<accountProfile> {
-  File? _profileImage;
 
   @override
   void initState() {
     super.initState();
-    loadProfileImage();
   }
 
-  Future<void> loadProfileImage() async {
-    final path = await prefs.getString("profile_image_path");
-    if (path != null && File(path).existsSync()) {
-      setState(() {
-        _profileImage = File(path);
-      });
-    }
-  }
-
-  Future<void> saveProfileImage(File imageFile) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final String filename = basename(imageFile.path);
-    final savedImage = await imageFile.copy('${directory.path}/$filename');
-    await prefs.setString("profile_image_path", savedImage.path);
-    setState(() {
-      _profileImage = savedImage;
-      debugPrint("Profile Image saved: ${savedImage.path}");
-    });
-    NetworkService().uploadFile(_profileImage!, "users/photo", 'profile.jpg');
+  Future<void> saveProfileImage() async {
+    NetworkService().uploadFile(widget._profileImage!, widget.uploadRoute, 'profile.jpg');
+    if (widget.onImageChanged == null) return;
+    widget.onImageChanged!(widget._profileImage!);
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        showImageSourceDialog(context).then((file) {
-          if (file == null) return;
-          saveProfileImage(file);
-        });
-      },
-      child: _profileImage == null
-          ? profileImageCircle(imageUrl: User.instance.photo, size: 75)
-          : profileImageCircle(imageFile: _profileImage, size: 75),
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        widget._profileImage != null ? 
+        profileImageCircle(imageFile: widget._profileImage, size: widget.size, expandable: widget.expandable ?? true,) : 
+        profileImageCircle(imageUrl: widget.photoRoute, size: widget.size, expandable: widget.expandable ?? true,),
+        GestureDetector(
+          onTap: () {
+            showImageSourceDialog(context).then((file) {
+              if (file == null) return;
+              setState(() {
+                widget._profileImage = file;                
+              });
+              saveProfileImage();
+            });
+          },
+          child: Container(decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white), child: Icon(Icons.add,color: globals.accentColor,size: 32,))
+        ),
+      ],
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:PN2025/customDialogBox.dart';
 import 'package:PN2025/networkService.dart';
 import 'package:PN2025/user.dart';
 import 'package:flutter/material.dart' hide Notification;
@@ -35,74 +36,41 @@ class _notificationBubbleState extends State<notificationBubble> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return Dialog(
-          constraints: BoxConstraints(
-              maxHeight: 300,
-              maxWidth: 400
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(25)),
-              color: Colors.white
-            ),
-            child: Column(
+          return customDialogBox(
+            height: 375,
+            title: "Delete Notification",
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Container(
-                  height: 75,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-                    color: Color.fromARGB(255,31,53,76)
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Please Confirm", 
-                      style: TextStyle(
-                        color: Colors.white, 
-                        fontSize: 28
+                Text("Are you really sure you want to delete this notification? Understand that this change will affect all users in the event.",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                GestureDetector(
+                  onTap: () {
+                    removeNotification();
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: Colors.red,
+                    ),
+                    width: 150,
+                    height: 60,
+                    child: Center(
+                      child: Text(
+                        "Delete",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(20),
-                  height: 225,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Are you really sure you want to delete this notification? Understand that this change will affect all users in the event.",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                      GestureDetector(
-                        onTap: () {
-                          removeNotification();
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            color: Colors.red,
-                          ),
-                          width: 150,
-                          height: 60,
-                          child: Center(
-                            child: Text(
-                              "Delete",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                )
               ],
             ),
-          ),
-        );
+          );
         },
       );
     }

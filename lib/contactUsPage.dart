@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:PN2025/dropDown.dart';
 import 'package:PN2025/formInput.dart';
 import 'package:PN2025/phoneNumberFormatter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 import 'package:PN2025/globals.dart' as globals;
 
@@ -18,7 +17,6 @@ class contactUsPage extends StatefulWidget {
 }
 
 
-final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 User user = User.instance;
 
 class _contactUsPageState extends State<contactUsPage> {
@@ -92,7 +90,7 @@ class _contactUsPageState extends State<contactUsPage> {
     setState(() {
       loading = true;      
     });
-    NetworkService().getMultipleRoute('committees').then((committeesSent){
+    NetworkService().getMultipleRoute('committees', context).then((committeesSent){
       if(committeesSent == null) return;
       setState(() {
         committees = committeesSent.map((item) => committee.fromJson(item)).toList();

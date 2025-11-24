@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
 class customDialogBox extends StatefulWidget {
-  String title;
-  Widget body;
-  customDialogBox({super.key, required this.title, required this.body});
+  final String title;
+  final Widget body;
+  final int height;
+
+  const customDialogBox({
+    super.key,
+    required this.title,
+    required this.body,
+    this.height = 450,
+  });
 
   @override
   State<customDialogBox> createState() => _customDialogBoxState();
@@ -13,38 +20,49 @@ class _customDialogBoxState extends State<customDialogBox> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      constraints: BoxConstraints(
-        maxWidth: 300,
-        maxHeight: 400
-      ),
+      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Container(
+        constraints: BoxConstraints(
+          maxWidth: 300,
+          maxHeight: widget.height.toDouble(),
+        ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(25)),
-          color: Colors.white
+          borderRadius: BorderRadius.circular(25),
+          color: Colors.white,
         ),
         child: Column(
           children: [
+            // Header
             Container(
               height: 75,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-                color: Color.fromARGB(255,31,53,76)
+                color: const Color.fromARGB(255, 31, 53, 76),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(25),
+                ),
               ),
               child: Center(
                 child: Text(
-                  widget.title, 
+                  widget.title,
                   style: TextStyle(
-                    color: Colors.white, 
-                    fontSize: Theme.of(context).textTheme.titleMedium?.fontSize
+                    color: Colors.white,
+                    fontSize:
+                        Theme.of(context).textTheme.titleMedium?.fontSize,
                   ),
                 ),
               ),
             ),
-            Container(
-              height: 325,
-              padding: EdgeInsets.all(20),
-              child: widget.body
-            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Center(
+                  child: Container(
+                    height: widget.height.toDouble() - 115,
+                    child: widget.body,
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

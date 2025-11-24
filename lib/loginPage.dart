@@ -8,9 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 String deviceID = "";
 String ApnsToken = "";
 class loginPage extends StatefulWidget {
-  bool sentPassword = false;
+  bool sentPassword;
   String email = "";
-  loginPage({super.key});
+  loginPage({super.key, required this.sentPassword});
 
   @override
   State<loginPage> createState() => _loginPageState();
@@ -26,7 +26,9 @@ class _loginPageState extends State<loginPage> {
     getDeviceID().then((onValue){
       deviceID = onValue!;
     });
-    getApnsToken();
+    getApnsToken().then((onValue){
+      ApnsToken = onValue;        
+    });
     return messageReciever(
       body: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -51,7 +53,7 @@ class _loginPageState extends State<loginPage> {
                         "Login",
                         style: TextStyle(
                           color: Colors.white, 
-                          fontFamily: GoogleFonts.almendra().fontFamily,
+                          fontFamily: GoogleFonts.arvo().fontFamily,
                           fontSize: 36, 
                           height: 1
                         ),
@@ -70,7 +72,7 @@ class _loginPageState extends State<loginPage> {
                       topRight: Radius.circular(50),
                     ),
                   ),
-                  child: widget.sentPassword? enterPinUI():
+                  child: widget.sentPassword? enterPinUI(ApnsToken: ApnsToken,):
                   getPinUI(
                     deviceID: deviceID,
                     onPinSent: (email) {

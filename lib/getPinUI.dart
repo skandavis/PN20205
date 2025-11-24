@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'package:PN2025/customDialogBox.dart';
 import 'package:PN2025/networkService.dart';
 import 'package:PN2025/submit.dart';
 import 'package:PN2025/user.dart';
 import 'package:PN2025/utils.dart' as utils;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 TextEditingController email = TextEditingController();
+final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
 class getPinUI extends StatefulWidget {
   String deviceID;
@@ -24,53 +27,24 @@ class _getPinUIState extends State<getPinUI> {
       "eventId": "",
     }, 
     "auth/request-otp");
+    prefs.setBool('gotEmail', true);
     return response.statusCode!;
   }
   void showDialogBox() async {
     final result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return Dialog(
-          constraints: BoxConstraints(
-              maxHeight: 300,
-              maxWidth: 400
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(25)),
-              color: Colors.white
-            ),
-            child: Column(
+          return customDialogBox(
+            height: 250,
+            title: "Email Sent", 
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Container(
-                  height: 75,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-                    color: Color.fromARGB(255,31,53,76)
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Check Email", 
-                      style: TextStyle(
-                        color: Colors.white, 
-                        fontSize: 28
-                      ),
-                    ),
-                  ),
+                Text(
+                  "We have sent a 6-digit PIN to your email to your email to verify your account. Please check it and reenter it.",
+                  style: TextStyle(fontSize: 16),
                 ),
-                Container(
-                  padding: EdgeInsets.all(20),
-                  height: 225,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("We have sent a 6-digit PIN to your email to your email to verify your account. Please check it and reenter it.",style: TextStyle(fontSize: 20),),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
           );
         },
@@ -120,6 +94,7 @@ class _getPinUIState extends State<getPinUI> {
               onSubmitted: (email) {
                 sendPin(email, context);
               },
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(labelText: "Email"),
               controller: email,
             ),

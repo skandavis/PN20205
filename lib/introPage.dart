@@ -3,6 +3,7 @@ import 'package:PN2025/messageReciever.dart';
 import 'package:PN2025/globals.dart' as globals;
 import 'package:PN2025/loginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class introPage extends StatefulWidget {
   const introPage({super.key});
@@ -12,6 +13,19 @@ class introPage extends StatefulWidget {
 }
 
 class _introPageState extends State<introPage> {
+  bool gotEmail = false;
+  @override
+  void initState() {
+    super.initState();
+    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+    prefs.getBool('gotEmail').then((value) {
+      if (value == true) {
+        setState(() {
+          gotEmail = true;
+        });
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return messageReciever(
@@ -40,7 +54,7 @@ class _introPageState extends State<introPage> {
                         "Nagarathar",
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: GoogleFonts.almendra().fontFamily,
+                          fontFamily: GoogleFonts.arvo().fontFamily,
                           fontSize: 36,
                         ),
                       ),
@@ -63,7 +77,7 @@ class _introPageState extends State<introPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => loginPage(),
+                              builder: (context) => loginPage(sentPassword: gotEmail,),
                             ),
                           );
                         },
