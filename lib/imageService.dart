@@ -16,7 +16,7 @@ class ImageService {
     
     final cached = await cacheManager.loadImage(url);
     if (cached != null) return cached;
-    debugPrint("Couldn't find cached image: $route");
+    ("Couldn't find cached image: $route");
     try {
       final response = await dio.get(
         url,
@@ -26,7 +26,7 @@ class ImageService {
       if (response.statusCode == 200 && response.data is Uint8List) {
         final headers = _normalizeHeaders(response.headers.map);
         await cacheManager.saveImage(url, response.data, headers);
-        debugPrint('Saved to cache: $url');
+        ('Saved to cache: $url');
         return response.data;
       }
       

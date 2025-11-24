@@ -40,7 +40,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   if (status.isGranted) {
     return true;
   }
-  debugPrint(status.toString());
+  (status.toString());
   if (status.isPermanentlyDenied||status.isDenied) {
     // Show dialog to guide user to settings
     bool openSettings = await showDialog(
@@ -99,10 +99,10 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
 
   void geocode() async{
     String fullAddress = "${eventInfo.address}, ${eventInfo.city}, ${eventInfo.state} ${eventInfo.zip}";
-    debugPrint(fullAddress);
+    (fullAddress);
     try {
       List<Location> locations = await locationFromAddress(fullAddress);
-      debugPrint(locations.toString());
+      (locations.toString());
       if (locations.isNotEmpty) {
         setState(() {
           center = LatLng(locations.first.latitude, locations.first.longitude);
@@ -115,7 +115,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   }
   void onMapCreated(GoogleMapController controller) async{
     mapController = controller;
-    debugPrint("Why Here Of All Places?");
+    ("Why Here Of All Places?");
     geocode();
   }
   @override

@@ -19,7 +19,7 @@ class _favoriteIconState extends State<favoriteIcon> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(widget.activity.favoritized.toString());
+    (widget.activity.favoritized.toString());
     bool favorite = widget.activity.favoritized;
     return IconButton(
       onPressed: () {

@@ -16,7 +16,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 
 Future<void> addEventWithPermission(String title, String description, String location, DateTime startDate, DateTime endDate) async {
   // if (globals.calenderPermission.isGranted) {
-    debugPrint("Granted");
+    ("Granted");
     final event = Event(
       title: title,
       description: description,
@@ -34,6 +34,6 @@ Future<void> addEventWithPermission(String title, String description, String loc
 bool isValidEmail(String email) {
   final RegExp emailRegex =
       RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-  debugPrint("VALID:${emailRegex.hasMatch(email)}" );
+  ("VALID:${emailRegex.hasMatch(email)}" );
   return emailRegex.hasMatch(email);
 }

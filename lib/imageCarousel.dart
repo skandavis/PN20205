@@ -22,7 +22,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
   @override
   void initState() {
     super.initState();
-    debugPrint("length:${widget.imageUrls.length}");
+    ("length:${widget.imageUrls.length}");
     images = List<Uint8List?>.filled(widget.imageUrls.length, null, growable: true);
     loadImage(0);
   }
@@ -35,11 +35,11 @@ class _ImageCarouselState extends State<ImageCarousel> {
         images[index] = img;
       });
     } catch (e) {
-      debugPrint("Failed to load image at index $index: $e");
+      ("Failed to load image at index $index: $e");
     }
     if (currentIndex + 1 < widget.imageUrls.length &&
         images[currentIndex + 1] == null) {
-      debugPrint("prefetching ${currentIndex + 1}");
+      ("prefetching ${currentIndex + 1}");
       loadImage(currentIndex + 1);
     }
   }
@@ -88,7 +88,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
                     setState(() {
                       images.add(bytes);
                     });
-                    debugPrint(pickedFile.path);
+                    (pickedFile.path);
                     NetworkService().uploadFile(
                     File(pickedFile.path),
                     widget.uploadPath!,

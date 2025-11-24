@@ -81,10 +81,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
 
   @override
   Widget build(BuildContext context) {
-    for(Participant guy in widget.activity.participants)
-    {
-      debugPrint(guy.name);
-    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(0, 0, 0, 0),

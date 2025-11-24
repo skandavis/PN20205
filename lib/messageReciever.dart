@@ -14,11 +14,11 @@ class _messageRecieverState extends State<messageReciever> {
   void initState() {
     super.initState();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Received a foreground message!');
-      debugPrint('Message data: ${message.data}');
+      ('Received a foreground message!');
+      ('Message data: ${message.data}');
 
       if (message.notification != null) {
-        debugPrint('Message contains a notification: ${message.notification}');
+        ('Message contains a notification: ${message.notification}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.red,
@@ -52,12 +52,12 @@ Future<void> requestPermission() async {
   );
 
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    debugPrint('User granted permission');
+    ('User granted permission');
     getApnsToken();
   } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    debugPrint('User granted provisional permission');
+    ('User granted provisional permission');
   } else {
-    debugPrint('User declined or has not accepted permission');
+    ('User declined or has not accepted permission');
   }
 }
 

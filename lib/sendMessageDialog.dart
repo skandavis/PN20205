@@ -24,7 +24,7 @@ void updateIsPush() {
 }
 void sendMessage(BuildContext context) async {
   final messageText = messageController.text.trim();
-  debugPrint(globals.isPush.toString());
+  (globals.isPush.toString());
   if (messageText.isEmpty)
   {
     utils.snackBarMessage(context, 'Please enter a message');

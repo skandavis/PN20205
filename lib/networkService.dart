@@ -189,7 +189,7 @@ class NetworkService {
       final response = await dio
           .patch('${globals.url}$route')
           .timeout(Duration(seconds: timeoutSecs));
-      debugPrint("Status code: ${response.statusCode}");
+      ("Status code: ${response.statusCode}");
       return response.statusCode!;
     } on TimeoutException {
       print('Request timed out.');
