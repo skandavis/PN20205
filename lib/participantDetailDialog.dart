@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/accountProfile.dart';
-import 'package:PN2025/gradientTextField.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/participant.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/gradientTextField.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/participant.dart';
+import 'package:NagaratharEvents/profileImageCircle.dart';
 import 'package:flutter/material.dart';
 
 class ParticipantDetailDialog extends StatefulWidget {
@@ -119,9 +119,9 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                 child: Column(
                   children: [
                     Center(
-                      child: accountProfile(
+                      child: profileImageCircle(
                         size: 150,
-                        photoRoute: participant.image,
+                        imageUrl: participant.image,
                         uploadRoute: "participants/${participant.id}/photo",
                         onImageChanged: widget.onImageUpdated,
                       ),

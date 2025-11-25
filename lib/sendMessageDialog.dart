@@ -1,9 +1,9 @@
-import 'package:PN2025/checkBox.dart';
-import 'package:PN2025/customDialogBox.dart';
-import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/gradientTextField.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/utils.dart' as utils;
+import 'package:NagaratharEvents/checkBox.dart';
+import 'package:NagaratharEvents/customDialogBox.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/gradientTextField.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 

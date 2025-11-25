@@ -1,12 +1,12 @@
-import 'package:PN2025/createNotificationButton.dart';
-import 'package:PN2025/loadingScreen.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/createNotificationButton.dart';
+import 'package:NagaratharEvents/loadingScreen.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart' hide Notification;
-import 'package:PN2025/notificationBubble.dart';
+import 'package:NagaratharEvents/notificationBubble.dart';
 import 'utils.dart' as utils;
-import 'package:PN2025/notification.dart';
+import 'package:NagaratharEvents/notification.dart';
 
 class notificationsPage extends StatefulWidget {
   const notificationsPage({super.key});

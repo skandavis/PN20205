@@ -1,12 +1,12 @@
-import 'package:PN2025/activity.dart';
-import 'package:PN2025/category.dart';
-import 'package:PN2025/backgroundDynamicIcon.dart';
-import 'package:PN2025/loadingScreen.dart';
-import 'package:PN2025/networkService.dart';
+import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/category.dart';
+import 'package:NagaratharEvents/backgroundDynamicIcon.dart';
+import 'package:NagaratharEvents/loadingScreen.dart';
+import 'package:NagaratharEvents/networkService.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/selectableCategoryLabel.dart';
-import 'package:PN2025/activityCard.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/selectableCategoryLabel.dart';
+import 'package:NagaratharEvents/activityCard.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class activitiesPage extends StatefulWidget {
   const activitiesPage({super.key});
@@ -224,7 +224,7 @@ class activitiesPageState extends State<activitiesPage> {
     return RefreshIndicator(
       onRefresh: _refreshActivities,
       color: globals.accentColor,
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width * .9,
         child: ListView.builder(
           itemCount: activities.length,

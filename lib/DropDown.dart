@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class dropDown extends StatefulWidget {
   final List<String> options;

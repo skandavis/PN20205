@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
-import 'package:PN2025/cacheManager.dart';
-import 'package:PN2025/imageService.dart';
+import 'package:NagaratharEvents/cacheManager.dart';
+import 'package:NagaratharEvents/imageService.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -24,7 +24,7 @@ Dio getInsecureDio() {
     ));
 
   // Override HttpClient globally for this Dio instance
-  (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+  (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
       (HttpClient client) {
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
@@ -78,6 +78,46 @@ class NetworkService {
         handler.next(options);
       },
     ));
+    dio.interceptors.add(
+      InterceptorsWrapper( 
+        onResponse: (response, handler) {
+          print("RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}");
+
+          // Example: Custom handling based on status code
+          if (response.statusCode == 200) {
+            // everything OK
+          } else if (response.statusCode == 413) {
+            print('Image too large');
+          } else if (response.statusCode == 500) {
+            // Server error
+          }
+
+          return handler.next(response);
+      },
+       onError: (DioException e, handler) {
+        print(
+          "ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}"
+        );
+
+        if (e.response?.statusCode == 400) {
+          // Bad request
+        } else if (e.response?.statusCode == 413) {
+          print('Image too large');
+          // Token expired → trigger refresh token logic
+        } else if (e.response?.statusCode == 403) {
+          // Forbidden
+        } else if (e.response?.statusCode == 500) {
+          // Server problem
+        } else if (e.response?.statusCode == 404) {
+          print('Not found');
+        } else if (e.response?.statusCode == 401) {
+          print('Unauthorized');
+        }
+
+        return handler.next(e);
+      },
+      )
+    );
   }
   
   Future<dynamic> getRoute(String route, BuildContext context, bool forceRefresh) async {
@@ -218,7 +258,7 @@ class NetworkService {
     }
   }
   
-  Future<void> uploadFile(File file, String route, String fileName) async {
+  Future<void> uploadFile(File file, String route, String fileName, BuildContext context) async {
     await _initIfNeeded();
     
     final formData = FormData.fromMap({
@@ -232,10 +272,15 @@ class NetworkService {
         data: formData,
         options: Options(headers: {'Content-Type': 'multipart/form-data'}),
       );
-      
-      print('Upload successful: ${response.data}');
+      print(response.data);
+      if(response.statusCode == 200){
+        utils.snackBarMessage(context, "File uploaded successfully!",color: Colors.green);  
+      }else{
+        utils.snackBarMessage(context, "Failed to upload file${response.statusCode}${response.data}");
+      }
     } catch (e) {
-      print('Upload failed: $e');
+      print('Failed to upload file: $e');
+      utils.snackBarMessage(context, "Failed to upload file: $e");
     }
   }
   

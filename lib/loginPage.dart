@@ -1,8 +1,8 @@
-import 'package:PN2025/getPinUI.dart';
-import 'package:PN2025/enterPinUI.dart';
+import 'package:NagaratharEvents/getPinUI.dart';
+import 'package:NagaratharEvents/enterPinUI.dart';
 import 'package:flutter/material.dart';
 import 'package:app_set_id/app_set_id.dart';
-import 'package:PN2025/messageReciever.dart';
+import 'package:NagaratharEvents/messageReciever.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 String deviceID = "";

@@ -1,7 +1,7 @@
-import 'package:PN2025/activity.dart';
-import 'package:PN2025/networkService.dart';
+import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/networkService.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class favoriteIcon extends StatefulWidget {
   Activity activity;

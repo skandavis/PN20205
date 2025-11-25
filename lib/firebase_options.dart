@@ -51,20 +51,20 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDAAihcqv6K3usrBFRcwv9daeHUJdMS0Hs',
-    appId: '1:96597404835:android:ecf478fe7dc1d4633e2316',
-    messagingSenderId: '96597404835',
-    projectId: 'nagarathar-3d13e',
-    storageBucket: 'nagarathar-3d13e.firebasestorage.app',
+    apiKey: 'AIzaSyA3VZgkfaaF_dGGijrZd4dQsAs3suvxz1s',
+    appId: '1:759670782026:android:bf254f5340276948f18eb3',
+    messagingSenderId: '759670782026',
+    projectId: 'nagarathar-events',
+    storageBucket: 'nagarathar-events.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBOCdHBTcwJorHF0aiakAux54R5nSiPi1E',
-    appId: '1:96597404835:ios:0511a7904c9cf0b33e2316',
-    messagingSenderId: '96597404835',
-    projectId: 'nagarathar-3d13e',
-    storageBucket: 'nagarathar-3d13e.firebasestorage.app',
-    iosBundleId: 'com.example.nagaratharApp',
+    apiKey: 'AIzaSyC3mJpiwOLaVMdwF0H_bylkWmaIda-HFWE',
+    appId: '1:759670782026:ios:3d7962c5d492ca66f18eb3',
+    messagingSenderId: '759670782026',
+    projectId: 'nagarathar-events',
+    storageBucket: 'nagarathar-events.firebasestorage.app',
+    iosBundleId: 'com.skandaSoft.nagaratharApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '96597404835',
     projectId: 'nagarathar-3d13e',
     storageBucket: 'nagarathar-3d13e.firebasestorage.app',
-    iosBundleId: 'com.example.nagaratharApp',
+    iosBundleId: 'com.skandaSoft.nagaratharApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

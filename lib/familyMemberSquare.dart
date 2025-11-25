@@ -1,4 +1,4 @@
-import 'package:PN2025/familyMember.dart';
+import 'package:NagaratharEvents/familyMember.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 

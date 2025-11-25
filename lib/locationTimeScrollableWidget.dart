@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:PN2025/utils.dart' as utils;
+import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:intl/intl.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:url_launcher/url_launcher.dart';
 
 class Locationtimescrollablewidget extends StatefulWidget {

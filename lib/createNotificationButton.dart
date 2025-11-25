@@ -1,5 +1,5 @@
-import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/sendMessageDialog.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/sendMessageDialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 

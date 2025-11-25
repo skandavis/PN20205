@@ -1,17 +1,15 @@
 import 'dart:io';
-import 'package:PN2025/participant.dart';
-import 'package:PN2025/participantDetailDialog.dart';
-import 'package:PN2025/profileImageCircle.dart';
+import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/participant.dart';
+import 'package:NagaratharEvents/participantDetailDialog.dart';
+import 'package:NagaratharEvents/profileImageCircle.dart';
 import 'package:flutter/material.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class participantRow extends StatefulWidget {
   Participant participant;
-  late Widget profileCircle = profileImageCircle(
-                imageUrl: participant.image,
-                size: 75,
-                expandable: false,
-              );
-  participantRow({super.key, required this.participant});
+  Activity activity;
+  participantRow({super.key, required this.participant, required this.activity});
 
   @override
   State<participantRow> createState() => _participantRowState();
@@ -20,7 +18,11 @@ class participantRow extends StatefulWidget {
 class _participantRowState extends State<participantRow> {
   void onImageUpdated(File image) {
     setState(() {
-      widget.profileCircle = profileImageCircle(imageFile: image, size: 75,expandable: false,);
+      int index = globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].participants.indexOf(widget.participant);
+      globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].participants[index].image = image.path;
+      widget.participant.image = image.path;
+      debugPrint("image.path");
+      // widget.profileCircle = profileImageCircle(imageUrl: image.path, size: 75,expandable: false,);
     });
   }
 
@@ -44,7 +46,11 @@ class _participantRowState extends State<participantRow> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          widget.profileCircle,
+          profileImageCircle(
+            imageUrl: widget.participant.image,
+            size: 75,
+            expandable: false,
+          ),
           const SizedBox(width: 10),
           SizedBox(
             height: 75,

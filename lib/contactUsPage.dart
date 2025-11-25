@@ -1,13 +1,13 @@
-import 'package:PN2025/committee.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/committee.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:PN2025/dropDown.dart';
-import 'package:PN2025/formInput.dart';
-import 'package:PN2025/phoneNumberFormatter.dart';
+import 'package:NagaratharEvents/dropDown.dart';
+import 'package:NagaratharEvents/formInput.dart';
+import 'package:NagaratharEvents/phoneNumberFormatter.dart';
 import 'utils.dart' as utils;
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class contactUsPage extends StatefulWidget {
   const contactUsPage({super.key});

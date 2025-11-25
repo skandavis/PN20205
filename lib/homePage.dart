@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:PN2025/contactUsPage.dart';
-import 'package:PN2025/activitiesPage.dart';
-import 'package:PN2025/faqPage.dart';
-import 'package:PN2025/notificationsPage.dart';
-import 'package:PN2025/mainPage.dart';
-import 'package:PN2025/messageReciever.dart';
-import 'package:PN2025/settingsPage.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/contactUsPage.dart';
+import 'package:NagaratharEvents/activitiesPage.dart';
+import 'package:NagaratharEvents/faqPage.dart';
+import 'package:NagaratharEvents/notificationsPage.dart';
+import 'package:NagaratharEvents/mainPage.dart';
+import 'package:NagaratharEvents/messageReciever.dart';
+import 'package:NagaratharEvents/settingsPage.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:google_fonts/google_fonts.dart';
 
 class MyHomePage extends StatefulWidget {

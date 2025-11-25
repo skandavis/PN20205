@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:PN2025/messageReciever.dart';
-import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/loginPage.dart';
+import 'package:NagaratharEvents/messageReciever.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/loginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

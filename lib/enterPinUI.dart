@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'package:PN2025/eventInfo.dart';
-import 'package:PN2025/multiDigitInput.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/eventInfo.dart';
+import 'package:NagaratharEvents/multiDigitInput.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert'; // For JSON encoding
-import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/homePage.dart';
-import 'package:PN2025/loginPage.dart';
-import 'package:PN2025/submit.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/homePage.dart';
+import 'package:NagaratharEvents/loginPage.dart';
+import 'package:NagaratharEvents/submit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'utils.dart' as utils;
 

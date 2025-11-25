@@ -1,4 +1,4 @@
-# PN2025
+# NagaratharEvents
 
 A new Flutter project.
 

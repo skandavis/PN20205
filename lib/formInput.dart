@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class formInput extends StatefulWidget {
   int? lines;

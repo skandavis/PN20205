@@ -1,4 +1,4 @@
-package com.example.PN2025
+package com.skandaSoft.NagaratharEvents
 
 import io.flutter.embedding.android.FlutterActivity
 

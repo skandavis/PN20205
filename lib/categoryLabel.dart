@@ -1,4 +1,4 @@
-import 'package:PN2025/activity.dart';
+import 'package:NagaratharEvents/activity.dart';
 import 'package:flutter/material.dart';
 
 class categoryLabel extends StatefulWidget {

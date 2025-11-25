@@ -1,4 +1,4 @@
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:flutter/material.dart';
 
 class gradientTextField extends StatefulWidget {

@@ -1,11 +1,11 @@
-import 'package:PN2025/customDialogBox.dart';
-import 'package:PN2025/familyMember.dart';
-import 'package:PN2025/familyMemberSquare.dart';
-import 'package:PN2025/gradientTextField.dart';
-import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/user.dart';
-import 'package:PN2025/utils.dart' as utils;
+import 'package:NagaratharEvents/customDialogBox.dart';
+import 'package:NagaratharEvents/familyMember.dart';
+import 'package:NagaratharEvents/familyMemberSquare.dart';
+import 'package:NagaratharEvents/gradientTextField.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/user.dart';
+import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 class familyPage extends StatefulWidget {

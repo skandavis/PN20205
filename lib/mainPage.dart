@@ -1,17 +1,17 @@
-import 'package:PN2025/accountPage.dart';
-import 'package:PN2025/eventInfo.dart';
-import 'package:PN2025/expandableHighlightext.dart';
-import 'package:PN2025/loadingScreen.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/accountPage.dart';
+import 'package:NagaratharEvents/eventInfo.dart';
+import 'package:NagaratharEvents/expandableHighlightext.dart';
+import 'package:NagaratharEvents/loadingScreen.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/fullMapPage.dart';
-import 'package:PN2025/imageCarousel.dart';
-import 'package:PN2025/locationTimeScrollableWidget.dart';
+import 'package:NagaratharEvents/fullMapPage.dart';
+import 'package:NagaratharEvents/imageCarousel.dart';
+import 'package:NagaratharEvents/locationTimeScrollableWidget.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class mainPage extends StatefulWidget {
   const mainPage({super.key});

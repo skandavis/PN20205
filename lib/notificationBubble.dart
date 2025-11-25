@@ -1,10 +1,10 @@
-import 'package:PN2025/customDialogBox.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/customDialogBox.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-import 'package:PN2025/notification.dart';
+import 'package:NagaratharEvents/notification.dart';
 
 
 class notificationBubble extends StatefulWidget {

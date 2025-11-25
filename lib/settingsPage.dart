@@ -1,11 +1,11 @@
-import 'package:PN2025/familyPage.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/familyPage.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/accountPage.dart';
-import 'package:PN2025/introPage.dart';
-import 'package:PN2025/settingsOption.dart';
+import 'package:NagaratharEvents/accountPage.dart';
+import 'package:NagaratharEvents/introPage.dart';
+import 'package:NagaratharEvents/settingsOption.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class settingsPage extends StatefulWidget {
   const settingsPage({super.key});

@@ -1,7 +1,7 @@
-import 'package:PN2025/loadingScreen.dart';
-import 'package:PN2025/networkService.dart';
+import 'package:NagaratharEvents/loadingScreen.dart';
+import 'package:NagaratharEvents/networkService.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/faqQuestion.dart';
+import 'package:NagaratharEvents/faqQuestion.dart';
 
 class faqPage extends StatefulWidget {
   const faqPage({super.key});

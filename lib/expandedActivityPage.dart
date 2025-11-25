@@ -1,18 +1,17 @@
-import 'package:PN2025/activity.dart';
-import 'package:PN2025/createNotificationButton.dart';
-import 'package:PN2025/expandableHighlightext.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/participant.dart';
-import 'package:PN2025/participantRow.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/createNotificationButton.dart';
+import 'package:NagaratharEvents/expandableHighlightext.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/participantRow.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/attribute.dart';
-import 'package:PN2025/categoryLabel.dart';
-import 'package:PN2025/favorite.dart';
-import 'package:PN2025/imageCarousel.dart';
-import 'package:PN2025/thumbsUpIcon.dart';
-import 'package:PN2025/verticalDivider.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/attribute.dart';
+import 'package:NagaratharEvents/categoryLabel.dart';
+import 'package:NagaratharEvents/favorite.dart';
+import 'package:NagaratharEvents/imageCarousel.dart';
+import 'package:NagaratharEvents/thumbsUpIcon.dart';
+import 'package:NagaratharEvents/verticalDivider.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 
 
@@ -31,7 +30,6 @@ class expandedActivityPage extends StatefulWidget {
     }
   }
   Activity activity;
-  List<Widget>? participants;
   late Widget attrs = Row(
     mainAxisAlignment: MainAxisAlignment.spaceAround,
     children: [
@@ -67,15 +65,6 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
   bool ellipsis = true;
 @override
   void initState() {
-    if(widget.participants != null) return;
-    widget.participants = List.generate(widget.activity.participants.length, (index) {
-      return Column(
-        children: [
-          participantRow(participant: widget.activity.participants[index]),
-          SizedBox(height: 25,)
-        ],
-      );
-    },);
     super.initState();
   }
 
@@ -123,9 +112,6 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                   child: ImageCarousel(
                     imageUrls: widget.activity.images,
                     uploadPath: 'activities/${widget.activity.id}/photo',
-                    onUpload: (){
-                      // widget.activity.images.add()
-                    },
                   ),
                 ),
                 Container(
@@ -192,9 +178,15 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                               SizedBox(
                                 height: 25,
                               ),
-                              if(widget.participants != null)
                               Column(
-                                children: widget.participants!,
+                                children: List.generate(widget.activity.participants.length, (index) {
+                                  return Column(
+                                    children: [
+                                      participantRow(participant: widget.activity.participants[index], activity: widget.activity,),
+                                      SizedBox(height: 25,)
+                                    ],
+                                  );
+                                },),
                               ),
                             ],
                           ),

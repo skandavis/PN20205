@@ -56,7 +56,7 @@ class _customDialogBoxState extends State<customDialogBox> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Center(
-                  child: Container(
+                  child: SizedBox(
                     height: widget.height.toDouble() - 115,
                     child: widget.body,
                   ),

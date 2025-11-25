@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:PN2025/customDialogBox.dart';
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/submit.dart';
-import 'package:PN2025/user.dart';
-import 'package:PN2025/utils.dart' as utils;
+import 'package:NagaratharEvents/customDialogBox.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/submit.dart';
+import 'package:NagaratharEvents/user.dart';
+import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

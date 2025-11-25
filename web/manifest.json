@@ -1,6 +1,6 @@
 {
-    "name": "PN2025",
-    "short_name": "PN2025",
+    "name": "NagaratharEvents",
+    "short_name": "NagaratharEvents",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

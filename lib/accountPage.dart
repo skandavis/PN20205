@@ -1,15 +1,15 @@
-import 'package:PN2025/networkService.dart';
-import 'package:PN2025/user.dart';
+import 'package:NagaratharEvents/networkService.dart';
+import 'package:NagaratharEvents/profileImageCircle.dart';
+import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/services.dart';
-import 'package:PN2025/accountProfile.dart';
-import 'package:PN2025/phoneNumberFormatter.dart';
+import 'package:NagaratharEvents/phoneNumberFormatter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/formInput.dart';
-import 'package:PN2025/messageReciever.dart';
+import 'package:NagaratharEvents/formInput.dart';
+import 'package:NagaratharEvents/messageReciever.dart';
 import 'package:app_set_id/app_set_id.dart';
 import 'utils.dart' as utils;
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 String deviceID = "";
 User user = User.instance;
@@ -39,9 +39,9 @@ class _accountPageState extends State<accountPage> {
     super.initState();
     getDeviceId();
     if(profile != null) return;
-    profile = accountProfile(
+    profile = profileImageCircle(
       size: 75,
-      photoRoute:user.photo,
+      imageUrl:user.photo,
       uploadRoute:"users/photo"
     );
   }

@@ -1,40 +1,21 @@
 {
   "project_info": {
-    "project_number": "96597404835",
-    "project_id": "nagarathar-3d13e",
-    "storage_bucket": "nagarathar-3d13e.firebasestorage.app"
+    "project_number": "759670782026",
+    "project_id": "nagarathar-events",
+    "storage_bucket": "nagarathar-events.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:96597404835:android:ecf478fe7dc1d4633e2316",
+        "mobilesdk_app_id": "1:759670782026:android:bf254f5340276948f18eb3",
         "android_client_info": {
-          "package_name": "com.example.PN2025"
+          "package_name": "com.skandaSoft.NagaratharEvents"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDAAihcqv6K3usrBFRcwv9daeHUJdMS0Hs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:96597404835:android:84489cc8b5e294323e2316",
-        "android_client_info": {
-          "package_name": "com.skandasoft.nagarathar"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDAAihcqv6K3usrBFRcwv9daeHUJdMS0Hs"
+          "current_key": "AIzaSyA3VZgkfaaF_dGGijrZd4dQsAs3suvxz1s"
         }
       ],
       "services": {

@@ -1,4 +1,4 @@
-import 'package:PN2025/participant.dart';
+import 'package:NagaratharEvents/participant.dart';
 
 class Activity {
   String id;

@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyBOCdHBTcwJorHF0aiakAux54R5nSiPi1E</string>
+	<string>AIzaSyC3mJpiwOLaVMdwF0H_bylkWmaIda-HFWE</string>
 	<key>GCM_SENDER_ID</key>
-	<string>96597404835</string>
+	<string>759670782026</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.nagaratharApp</string>
+	<string>com.skandaSoft.nagaratharApp</string>
 	<key>PROJECT_ID</key>
-	<string>nagarathar-3d13e</string>
+	<string>nagarathar-events</string>
 	<key>STORAGE_BUCKET</key>
-	<string>nagarathar-3d13e.firebasestorage.app</string>
+	<string>nagarathar-events.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:96597404835:ios:0511a7904c9cf0b33e2316</string>
+	<string>1:759670782026:ios:3d7962c5d492ca66f18eb3</string>
 </dict>
 </plist>

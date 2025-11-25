@@ -1,13 +1,13 @@
-import 'package:PN2025/activity.dart';
-import 'package:PN2025/sendMessageDialog.dart';
-import 'package:PN2025/user.dart';
-import 'package:PN2025/utils.dart' as utils;
+import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/sendMessageDialog.dart';
+import 'package:NagaratharEvents/user.dart';
+import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/expandedActivityPage.dart';
-import 'package:PN2025/favorite.dart';
-import 'package:PN2025/globals.dart' as globals;
-import 'package:PN2025/imageCarousel.dart';
+import 'package:NagaratharEvents/expandedActivityPage.dart';
+import 'package:NagaratharEvents/favorite.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/imageCarousel.dart';
 
 class activityCard extends StatefulWidget {
   Activity activity;

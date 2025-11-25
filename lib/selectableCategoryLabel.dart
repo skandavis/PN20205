@@ -1,6 +1,6 @@
-import 'package:PN2025/category.dart';
+import 'package:NagaratharEvents/category.dart';
 import 'package:flutter/material.dart';
-import 'package:PN2025/globals.dart' as globals;
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class selectableCategoryLabel extends StatefulWidget {
   ActivityCategory category;
