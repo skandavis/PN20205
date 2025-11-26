@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // String baseUrl = "https://192.168.86.38";
-String baseUrl = "https://24.27.32.138/";
+String baseUrl = "https://nagaratharEvents.skandasoft.com/";
 String url = "${baseUrl}api/v1/";
 
 bool isPush = false;
@@ -20,3 +20,5 @@ List<String> mainPageImages = [];
 List<Activity>? totalActivities;
 
 PermissionStatus calenderPermission = PermissionStatus.denied;
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

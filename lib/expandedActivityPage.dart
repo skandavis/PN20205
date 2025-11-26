@@ -12,49 +12,13 @@ import 'package:NagaratharEvents/imageCarousel.dart';
 import 'package:NagaratharEvents/thumbsUpIcon.dart';
 import 'package:NagaratharEvents/verticalDivider.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:intl/intl.dart';
 
 
 
 
 class expandedActivityPage extends StatefulWidget {
-  void updateActivity(String? location, DateTime? startTime) {
-     if(location != null)
-    {
-      NetworkService().patchRoute({"location": location}, "activities/${activity.id}");
-      globals.totalActivities![globals.totalActivities!.indexOf(activity)].location = location;
-    }
-    if(startTime != null)
-    {
-      NetworkService().patchRoute({"startTime": startTime}, "activities/${activity.id}");
-      globals.totalActivities![globals.totalActivities!.indexOf(activity)].startTime = startTime;
-    }
-  }
   Activity activity;
-  late Widget attrs = Row(
-    mainAxisAlignment: MainAxisAlignment.spaceAround,
-    children: [
-      attribute(
-        isDate: true,
-        onValueChange: updateActivity,
-        isEditable: false,
-        attributeTitle: "Date",
-        attributeValue:
-            "June ${activity.startTime.day}, ${activity.startTime.hour > 12 ? activity.startTime.hour - 12 : activity.startTime.hour}:${activity.startTime.minute} ${activity.startTime.hour > 12 ? "PM" : "AM"}",
-      ),
-      const myVerticaldivider(),
-      attribute(
-        isEditable: true,
-        attributeTitle: "Location",
-        attributeValue: activity.location,
-      ),
-      const myVerticaldivider(),
-      attribute(
-        isEditable: false,
-        attributeTitle: "Duration",
-        attributeValue: "${activity.duration} minutes",
-      )
-    ],
-  );
   expandedActivityPage({super.key, required this.activity});
 
   @override
@@ -67,10 +31,20 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
   void initState() {
     super.initState();
   }
-
+  void updateActivity(String? location, DateTime? startTime) {
+     if(location != null)
+    {
+      NetworkService().patchRoute({"location": location}, "activities/${widget.activity.id}");
+      globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].location = location;
+    }
+    if(startTime != null)
+    {
+      NetworkService().patchRoute({"startTime": startTime}, "activities/${widget.activity.id}");
+      globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].startTime = startTime;
+    }
+  }
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(0, 0, 0, 0),
@@ -114,30 +88,6 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                     uploadPath: 'activities/${widget.activity.id}/photo',
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        globals.backgroundColor,
-                      ],
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.activity.name,
-                        style: TextStyle(
-                            fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                )
               ],
             ),
             Stack(
@@ -150,6 +100,18 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                     child: Column(
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              widget.activity.name,
+                              style: TextStyle(
+                                  fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             categoryLabel(
@@ -157,7 +119,31 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                             ),
                           ],
                         ),
-                        widget.attrs,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            attribute(
+                              isDate: true,
+                              onValueChange: updateActivity,
+                              isEditable: true,
+                              attributeTitle: "Date",
+                              attributeValue: DateFormat('MMM dd, H:mm a').format(widget.activity.startTime),
+                            ),
+                            const myVerticaldivider(),
+                            attribute(
+                              isEditable: true,
+                              onValueChange: updateActivity,
+                              attributeTitle: "Location",
+                              attributeValue: widget.activity.location,
+                            ),
+                            const myVerticaldivider(),
+                            attribute(
+                              isEditable: false,
+                              attributeTitle: "Duration",
+                              attributeValue: "${widget.activity.duration} minutes",
+                            )
+                          ],
+                        ),
                         const SizedBox(
                           height: 25,
                         ),

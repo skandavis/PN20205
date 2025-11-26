@@ -26,20 +26,17 @@ class _ImageCarouselState extends State<ImageCarousel> {
       return imageLoader(
         imageRoute: imageUrl,
         uploadRoute: widget.uploadPath,
-        onImageChanged: (image) {
-          widget.imageUrls.add(image.path);
+        onUpload: (image) {
+          setState(() {
+            widget.imageUrls.add(image.path);
+            _initializeImageLoaders();
+          });
+            
+          debugPrint(widget.imageUrls.toString());
+            // widget.imageUrls[widget.imageUrls.indexOf(imageUrl)] = image.path;                
         },
       );
     }).toList();
-  }
-
-  @override
-  void didUpdateWidget(ImageCarousel oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Reinitialize if the imageUrls list changes
-    if (oldWidget.imageUrls != widget.imageUrls) {
-      _initializeImageLoaders();
-    }
   }
 
   @override

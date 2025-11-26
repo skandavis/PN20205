@@ -21,8 +21,7 @@ class _participantRowState extends State<participantRow> {
       int index = globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].participants.indexOf(widget.participant);
       globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].participants[index].image = image.path;
       widget.participant.image = image.path;
-      debugPrint("image.path");
-      // widget.profileCircle = profileImageCircle(imageUrl: image.path, size: 75,expandable: false,);
+      debugPrint("image.path: ${image.path}");
     });
   }
 
@@ -47,6 +46,7 @@ class _participantRowState extends State<participantRow> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           profileImageCircle(
+            key: ValueKey(widget.participant.image), // Add this key
             imageUrl: widget.participant.image,
             size: 75,
             expandable: false,
@@ -78,4 +78,3 @@ class _participantRowState extends State<participantRow> {
     );
   }
 }
-

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 
-  void snackBarMessage(BuildContext context, String message,{Color color = const Color.fromARGB(255, 185, 14, 1)})
+  void snackBarMessage(BuildContext context, String message,{Color color = const Color.fromARGB(255, 255, 51, 0)})
   {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

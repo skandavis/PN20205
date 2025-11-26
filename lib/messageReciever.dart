@@ -65,6 +65,5 @@ Future<String> getApnsToken() async {
   String? token = Platform.isAndroid
       ? await FirebaseMessaging.instance.getToken()
       : await FirebaseMessaging.instance.getAPNSToken();
-  debugPrint(token!);
   return token!;
 }

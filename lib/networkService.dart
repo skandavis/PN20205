@@ -4,35 +4,19 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:NagaratharEvents/cacheManager.dart';
 import 'package:NagaratharEvents/imageService.dart';
+import 'package:NagaratharEvents/introPage.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as globals;
 import 'utils.dart' as utils;
 import 'package:ua_client_hints/ua_client_hints.dart';
 
 const int timeoutSecs = 10;
 
-Dio getInsecureDio() {
-  final dio = Dio(BaseOptions(
-      connectTimeout: Duration(seconds: timeoutSecs),
-      receiveTimeout: Duration(seconds: timeoutSecs),
-      sendTimeout: Duration(seconds: timeoutSecs),
-    ));
-
-  // Override HttpClient globally for this Dio instance
-  (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
-      (HttpClient client) {
-    client.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-    return client;
-  };
-
-  return dio;
-}
 class NetworkService {
   static final NetworkService _instance = NetworkService._internal();
   factory NetworkService() => _instance;
@@ -44,10 +28,13 @@ class NetworkService {
   PersistCookieJar? cookieJar;
   bool _initialized = false;
   
-
   NetworkService._internal() {
-    dio = getInsecureDio();
-
+    dio = Dio(BaseOptions(
+      validateStatus: (status)=> true,
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 10),
+      sendTimeout: const Duration(seconds: 10),
+    ));
     // dio = AppDio.getInstance();
   }
 
@@ -71,51 +58,49 @@ class NetworkService {
     await Directory(cookiePath).create(recursive: true);
     cookieJar = PersistCookieJar(storage: FileStorage(cookiePath));
     dio.interceptors.add(CookieManager(cookieJar!));
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final myVar = await userAgentClientHintsHeader();
-        options.headers.addAll(myVar);
-        handler.next(options);
-      },
-    ));
     dio.interceptors.add(
       InterceptorsWrapper( 
+        onRequest: (options, handler) async {
+          final myVar = await userAgentClientHintsHeader();
+          options.headers.addAll(myVar);
+          handler.next(options);
+        },
         onResponse: (response, handler) {
-          print("RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}");
-
-          // Example: Custom handling based on status code
-          if (response.statusCode == 200) {
-            // everything OK
+          final context = globals.navigatorKey.currentContext;
+          if (response.statusCode == 400) {
+            // Bad request
           } else if (response.statusCode == 413) {
+            utils.snackBarMessage(context!, 'Image too large!');
             print('Image too large');
+          } else if (response.statusCode == 403) {
+            // Forbidden
           } else if (response.statusCode == 500) {
-            // Server error
+            // Server problem
+          } else if (response.statusCode == 404) {
+            utils.snackBarMessage(context!, 'Resource not found!');
+          } else if (response.statusCode == 401) {
+            final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+            prefs.remove('loggedIn');
+            globals.mainPageImages.clear();
+            // globals.totalActivities.clear();
+            Navigator.pushReplacement(
+              context!,
+              MaterialPageRoute(
+                builder: (context) => const introPage(),
+              ),
+            );
+            utils.snackBarMessage(context, 'Unauthorized User! Try Logging In Again.');
           }
-
           return handler.next(response);
-      },
-       onError: (DioException e, handler) {
-        print(
-          "ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}"
-        );
-
-        if (e.response?.statusCode == 400) {
-          // Bad request
-        } else if (e.response?.statusCode == 413) {
-          print('Image too large');
-          // Token expired → trigger refresh token logic
-        } else if (e.response?.statusCode == 403) {
-          // Forbidden
-        } else if (e.response?.statusCode == 500) {
-          // Server problem
-        } else if (e.response?.statusCode == 404) {
-          print('Not found');
-        } else if (e.response?.statusCode == 401) {
-          print('Unauthorized');
-        }
-
-        return handler.next(e);
-      },
+        },
+        onError: (e, handler) {
+          if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+            utils.snackBarMessage(globals.navigatorKey.currentContext!, 'Connection timed out!');
+          }
+          return handler.next(e);
+        },
       )
     );
   }
@@ -129,8 +114,7 @@ class NetworkService {
 
     try {
       final response = await dio
-          .get('${globals.url}$route')
-          .timeout(Duration(seconds: timeoutSecs));
+          .get('${globals.url}$route');
       
       if (response.statusCode == 200 && response.data != null) {
         final headers = _normalizeHeaders(response.headers.map);
@@ -142,11 +126,12 @@ class NetworkService {
       return await cacheManager.loadResource(route);
       
     } catch (e) {
-      return await _handleGetError(route, e, context);
+      debugPrint(e.toString());
+      return await cacheManager.loadResource(route);
     }
   }
 
-  Future<List<dynamic>?> getMultipleRoute(String route,BuildContext context, {bool forceRefresh = false}) async {
+  Future<List<dynamic>?> getMultipleRoute(String route, BuildContext context, {bool forceRefresh = false}) async {
     final data = await getRoute(route, context, forceRefresh);
     
     if (data is List<dynamic>) {
@@ -175,18 +160,6 @@ class NetworkService {
     
     return null;
   }
-
-  Future<dynamic> _handleGetError(String route, dynamic error, BuildContext context) async {
-    if (error is TimeoutException) {
-      utils.snackBarMessage(context, "Request for $route has timed out, loading from previous cache");
-    } else if (error is DioException) {
-      utils.snackBarMessage(context,"Failed to load $route: ${error.message}, loading from cache" );
-    } else {
-      utils.snackBarMessage(context,"Unexpected error for $route: $error, loading from cache");
-    }
-    print(error);
-    return await cacheManager.loadResource(route);
-  }
   
   Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route) async {
     await _initIfNeeded();
@@ -196,9 +169,6 @@ class NetworkService {
           .post('${globals.url}$route', data: json.encode(data))
           .timeout(Duration(seconds: timeoutSecs));
       
-    } on TimeoutException {
-      print('Request timed out.');
-      return _createErrorResponse(route, 408);
     } catch (e) {
       print('An error occurred: $e');
       return _createErrorResponse(route, 500);
@@ -213,9 +183,6 @@ class NetworkService {
           .patch('${globals.url}$route', data: json.encode(data))
           .timeout(Duration(seconds: timeoutSecs));
       return response.statusCode!;
-    } on TimeoutException {
-      print('PATCH request to $route timed out.');
-      return 408;
     } catch (e) {
       print('An error occurred while patching: $e');
       return 500;
@@ -229,11 +196,8 @@ class NetworkService {
       final response = await dio
           .patch('${globals.url}$route')
           .timeout(Duration(seconds: timeoutSecs));
-      ("Status code: ${response.statusCode}");
+      print("Status code: ${response.statusCode}");
       return response.statusCode!;
-    } on TimeoutException {
-      print('Request timed out.');
-      return 408;
     } catch (e) {
       print('Unexpected error: $e');
       return 500;
@@ -249,16 +213,13 @@ class NetworkService {
           .timeout(Duration(seconds: timeoutSecs));
       return response.statusCode!;
       
-    } on TimeoutException {
-      print('Delete request timed out.');
-      return 408;
     } catch (e) {
       print('An error occurred while deleting: $e');
       return 500;
     }
   }
   
-  Future<void> uploadFile(File file, String route, String fileName, BuildContext context) async {
+  Future<Response> uploadFile(File file, String route, String fileName, BuildContext context) async {
     await _initIfNeeded();
     
     final formData = FormData.fromMap({
@@ -273,14 +234,14 @@ class NetworkService {
         options: Options(headers: {'Content-Type': 'multipart/form-data'}),
       );
       print(response.data);
-      if(response.statusCode == 200){
-        utils.snackBarMessage(context, "File uploaded successfully!",color: Colors.green);  
-      }else{
-        utils.snackBarMessage(context, "Failed to upload file${response.statusCode}${response.data}");
+      if (response.statusCode == 200) {
+        utils.snackBarMessage(context, "File uploaded successfully!", color: Colors.green);  
       }
+      return response;
     } catch (e) {
       print('Failed to upload file: $e');
       utils.snackBarMessage(context, "Failed to upload file: $e");
+      return _createErrorResponse(route, 500);
     }
   }
   

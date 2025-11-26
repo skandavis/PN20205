@@ -34,7 +34,7 @@ class _profileImageCircleState extends State<profileImageCircle> {
     return Container(
       height: widget.size.toDouble(),
       width: widget.size.toDouble(),
-      child: imageLoader(imageRoute: widget.imageUrl, uploadRoute: widget.uploadRoute, onImageChanged: widget.onImageChanged,shape: BoxShape.circle,)
+      child: imageLoader(imageRoute: widget.imageUrl, uploadRoute: widget.uploadRoute, onUpload: widget.onImageChanged,shape: BoxShape.circle,)
     );
   }
 }

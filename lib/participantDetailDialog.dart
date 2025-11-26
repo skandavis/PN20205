@@ -123,7 +123,10 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                         size: 150,
                         imageUrl: participant.image,
                         uploadRoute: "participants/${participant.id}/photo",
-                        onImageChanged: widget.onImageUpdated,
+                        onImageChanged: (file){
+                          setState(() => participant.image = file.path);
+                          widget.onImageUpdated(file);
+                        },
                       ),
                     ),
                     SizedBox(height: 16),

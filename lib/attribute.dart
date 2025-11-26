@@ -1,9 +1,14 @@
+import 'package:NagaratharEvents/customDialogBox.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/gradientTextField.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class attribute extends StatefulWidget {
+  bool isEditable;
   final String attributeTitle;
   String attributeValue;
-  bool isEditable;
   bool isDate;
   void Function(String?, DateTime?)? onValueChange;
   attribute({
@@ -21,98 +26,148 @@ class attribute extends StatefulWidget {
 
 class _attributeState extends State<attribute> {
   late final controller = TextEditingController(text: widget.attributeValue);
+  
   void _editValue() {
     if(!widget.isEditable) return;
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          // borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Edit ${widget.attributeTitle}",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+        return customDialogBox(
+          height: 250,
+          title: "Location", 
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              gradientTextField(
+                controller: controller,
+                hint: "Enter ${widget.attributeTitle}",
+                label: widget.attributeTitle, 
+                icon: Icons.pin_drop,
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    widget.attributeValue = controller.text;
+                  });
+                  if(widget.onValueChange != null) {
+                    widget.onValueChange!(controller.text, null);
+                  }
+                  Navigator.pop(context, controller.text);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: globals.secondaryColor,
                   ),
-                ),
-
-                const SizedBox(height: 12),
-
-                TextField(
-                  keyboardType: TextInputType.datetime,
-                  controller: controller,
-                  autofocus: true,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Color(0xFF2C2C2C),
-                    border: InputBorder.none,
-                    hintText: "Enter new value",
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                ),
-
-                const SizedBox(height: 16),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        "Cancel",
-                        style: TextStyle(color: Colors.grey),
+                  width: 100,
+                  height: 40,
+                  child: Center(
+                    child: Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          widget.attributeValue = controller.text;
-                        });
-                        widget.onValueChange!(controller.text,null);
-                        Navigator.pop(context, controller.text);
-                      },
-                      child: const Text("Save"),
-                    ),
-                  ],
+                  ),
                 ),
-              ],
-            ),
+              )
+            ],
           ),
         );
       },
     );
+    controller.clear();
   }
 
-Future<void> _selectDate(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
-    lastDate: DateTime(2100),
-  );
+  Future<void> _selectDateTime(BuildContext context) async {
+    debugPrint("Selecting date and time");
+    
+    DateTime selectedDateTime = DateTime.now();
+    
+    // Show Cupertino date-time picker
+    await showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          color: globals.backgroundColor,
+          child: Column(
+            children: [
+              Container(
+                height: 50,
+                color: globals.secondaryColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CupertinoButton(
+                      child: Text(
+                        'Done',
+                        style: TextStyle(
+                          color: globals.accentColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              // Date-time picker
+              Expanded(
+                child: CupertinoTheme(
+                  data: CupertinoThemeData(
+                    textTheme: CupertinoTextThemeData(
+                      dateTimePickerTextStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                    brightness: Brightness.dark,
+                  ),
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.dateAndTime,
+                    initialDateTime: DateTime.now(),
+                    minimumDate: DateTime.now().subtract(Duration(days: 3)),
+                    maximumDate: DateTime.now().add(Duration(days: 3)),
+                    onDateTimeChanged: (DateTime newDateTime) {
+                      selectedDateTime = newDateTime;
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
 
-  if (picked != null) {
-    print("Selected date: $picked");
-    widget.onValueChange!(null,picked);
+    // Format as "MMMM DD, HH:mm"
+    final String formattedDate = DateFormat('MMM dd, h:mm a').format(selectedDateTime);
+    
+    print("Selected date and time: $selectedDateTime");
+    setState(() {
+      widget.attributeValue = formattedDate;
+    });
+    
+    if(widget.onValueChange != null) {
+      widget.onValueChange!(null, selectedDateTime);
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: InkWell(
-        onTap:  () => widget.isDate ? _selectDate : _editValue,
+        onTap: (){
+          if(widget.isDate) {
+            _selectDateTime(context);
+          } else {
+            _editValue();
+          } 
+        },
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

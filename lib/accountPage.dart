@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/profileImageCircle.dart';
 import 'package:NagaratharEvents/user.dart';
@@ -29,7 +31,6 @@ class _accountPageState extends State<accountPage> {
     TextEditingController(text: user.city),
   ];
   List<FocusNode> inputFocusNodes = [FocusNode(),FocusNode(),FocusNode()];
-  static Widget? profile;
   void getDeviceId() async {
     deviceID = (await AppSetId().getIdentifier())!;
   }
@@ -38,12 +39,6 @@ class _accountPageState extends State<accountPage> {
   void initState() {
     super.initState();
     getDeviceId();
-    if(profile != null) return;
-    profile = profileImageCircle(
-      size: 75,
-      imageUrl:user.photo,
-      uploadRoute:"users/photo"
-    );
   }
 
   void sendData() async {
@@ -77,8 +72,16 @@ class _accountPageState extends State<accountPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              if(profile != null)
-              profile!,
+              profileImageCircle(
+                size: 75,
+                imageUrl:user.photo,
+                uploadRoute:"users/photo",
+                onImageChanged: (file) {
+                  setState(() {
+                    user.photo = file.path;
+                  });
+                },
+              ),
               const SizedBox(
                 height: 20,
               ),

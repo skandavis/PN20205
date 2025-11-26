@@ -2,7 +2,6 @@ import 'package:NagaratharEvents/activity.dart';
 import 'package:NagaratharEvents/sendMessageDialog.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:NagaratharEvents/utils.dart' as utils;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/expandedActivityPage.dart';
 import 'package:NagaratharEvents/favorite.dart';
@@ -11,10 +10,6 @@ import 'package:NagaratharEvents/imageCarousel.dart';
 
 class activityCard extends StatefulWidget {
   Activity activity;
-  List<List<Uint8List>> images = [[]];
-  late Widget expandedPage = expandedActivityPage(
-              activity: activity,
-            );
   activityCard({
     super.key,
     required this.activity,
@@ -53,7 +48,9 @@ class _activityCardState extends State<activityCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => widget.expandedPage,
+            builder: (context) => expandedActivityPage(
+              activity: widget.activity,
+            ),
           ),
         ).then((_){
           setState(() {

@@ -8,8 +8,8 @@ import 'package:image_picker/image_picker.dart';
 
 class imageLoader extends StatefulWidget {
   final String? imageRoute;
-  final ValueChanged<File>? onImageChanged;
   final String? uploadRoute;
+  final ValueChanged<File>? onUpload;
   final BoxShape shape;
   final double? width;
   final double? height;
@@ -18,8 +18,8 @@ class imageLoader extends StatefulWidget {
   const imageLoader({
     super.key,
     this.imageRoute,
-    this.onImageChanged,
     this.uploadRoute,
+    this.onUpload,
     this.shape = BoxShape.rectangle,
     this.width,
     this.height,
@@ -31,81 +31,85 @@ class imageLoader extends StatefulWidget {
 }
 
 class _imageLoaderState extends State<imageLoader> {
-  File? _localImageFile;
-  bool _isLoading = false;
   bool _isUploading = false;
+  Widget _imageWidget = const Center(child: CircularProgressIndicator());
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
+  }
 
   @override
   void didUpdateWidget(imageLoader oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageRoute != widget.imageRoute) {
+      _loadImage();
+    }
+  }
+
+  Future<void> _loadImage() async {
+    if (widget.imageRoute == null) {
       setState(() {
-        _localImageFile = null;
+        _imageWidget = Image.asset('assets/genericAccount.png', fit: widget.fit);
       });
+      return;
+    }
+
+    setState(() {
+      _imageWidget = const Center(child: CircularProgressIndicator());
+    });
+
+    if (widget.imageRoute!.contains("/private/var/mobile/Containers/Data/Application/")) {
+      setState(() {
+        _imageWidget = Image.file(File(widget.imageRoute!), fit: widget.fit);
+      });
+    } else {
+      try {
+        final data = await NetworkService().getImage(widget.imageRoute!);
+        if (data != null) {
+          setState(() {
+            _imageWidget = Image.memory(Uint8List.fromList(data), fit: widget.fit);
+          });
+        } else {
+          setState(() {
+            _imageWidget = Image.asset('assets/genericAccount.png', fit: widget.fit);
+          });
+        }
+      } catch (e) {
+        debugPrint('Error loading image: $e');
+        setState(() {
+          _imageWidget = Image.asset('assets/genericAccount.png', fit: widget.fit);
+        });
+      }
     }
   }
 
   Future<void> _pickAndUploadImage(ImageSource source) async {
-    final picker = ImagePicker();
-    
     try {
-      final pickedFile = await picker.pickImage(
-        source: source,
-        imageQuality: 85,
-      );
-      
-      if (pickedFile == null || !mounted) return;
+      final pickedFile = await ImagePicker().pickImage(source: source, imageQuality: 85);
+      if (pickedFile == null) return;
 
       final imageFile = File(pickedFile.path);
-      
-      // Update UI immediately with selected image
-      setState(() {
-        _localImageFile = imageFile;
-        _isUploading = true;
-      });
+      setState(() => _isUploading = true);
 
-      // Upload to backend
-      if (widget.uploadRoute != null) {
-        await NetworkService().uploadFile(
-          imageFile,
-          widget.uploadRoute!,
-          'profile.jpg',
-          context,
-        );
-        
-        widget.onImageChanged?.call(imageFile);
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Image uploaded successfully')),
-          );
-        }
+      final response = await NetworkService().uploadFile(imageFile, widget.uploadRoute!, 'profile.jpg', context);
+      if(response.statusCode != 200) {
+        setState(() => _isUploading = false);
+        return;
       }
+      widget.onUpload?.call(imageFile);
     } catch (e) {
       debugPrint('Error uploading image: $e');
-      if (mounted) {
-        setState(() {
-          _localImageFile = null; // Revert on error
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload image: ${e.toString()}')),
-        );
-      }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isUploading = false;
-        });
-      }
+      setState(() => _isUploading = false);
     }
   }
 
-  Future<void> _showImageSourceDialog() async {
-    if (widget.uploadRoute == null) return;
-
-    await showDialog<void>(
+  void _showImageSourceDialog() {
+    showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: const Text('Select Image'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -114,56 +118,20 @@ class _imageLoaderState extends State<imageLoader> {
               leading: const Icon(Icons.photo_library),
               title: const Text('Choose from Gallery'),
               onTap: () {
-                Navigator.of(dialogContext).pop();
+                Navigator.pop(ctx);
                 _pickAndUploadImage(ImageSource.gallery);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a Photo'),
-              onTap: () {
-                Navigator.of(dialogContext).pop();
-                _pickAndUploadImage(ImageSource.camera);
               },
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
+            onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancel'),
           ),
         ],
       ),
     );
-  }
-
-  Widget _buildImage() {
-    // Show local file if available (just uploaded)
-    if (_localImageFile != null) {
-      return Image.file(_localImageFile!, fit: widget.fit);
-    }
-
-    // Show network image if route provided
-    if (widget.imageRoute != null) {
-      return FutureBuilder<List<int>?>(
-        future: NetworkService().getImage(widget.imageRoute!),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-            return Image.asset('assets/genericAccount.png', fit: widget.fit);
-          }
-          
-          return Image.memory(Uint8List.fromList(snapshot.data!), fit: widget.fit);
-        },
-      );
-    }
-
-    // Default placeholder
-    return Image.asset('assets/genericAccount.png', fit: widget.fit);
   }
 
   @override
@@ -174,59 +142,41 @@ class _imageLoaderState extends State<imageLoader> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Container(
-            decoration: BoxDecoration(shape: widget.shape),
-            clipBehavior: widget.shape == BoxShape.circle 
-                ? Clip.antiAlias 
-                : Clip.hardEdge,
-            child: _buildImage(),
-          ),
-          if (widget.uploadRoute != null) _buildEditButton(),
-          if (_isUploading) _buildUploadingOverlay(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditButton() {
-    return Positioned(
-      bottom: 0,
-      right: 0,
-      child: GestureDetector(
-        onTap: _showImageSourceDialog,
-        child: Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+          if (widget.shape == BoxShape.circle)
+            ClipOval(child: _imageWidget)
+          else
+            _imageWidget,
+          if (widget.uploadRoute != null)
+            Align(
+              alignment: Alignment.bottomRight,
+              child: GestureDetector(
+                onTap: _showImageSourceDialog,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: globals.secondaryColor,
+                    ),
+                    child: Icon(Icons.add, color: globals.backgroundColor, size: 24),
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: Icon(
-            Icons.edit,
-            color: globals.accentColor,
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUploadingOverlay() {
-    return Container(
-      decoration: BoxDecoration(
-        shape: widget.shape,
-        color: Colors.black.withOpacity(0.5),
-      ),
-      child: const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        ),
+            ),
+          if (_isUploading)
+            Container(
+              decoration: BoxDecoration(
+                shape: widget.shape,
+                color: Colors.black.withOpacity(0.5),
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
