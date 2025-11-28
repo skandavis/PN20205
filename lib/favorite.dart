@@ -13,25 +13,22 @@ class favoriteIcon extends StatefulWidget {
 
 class _favoriteIconState extends State<favoriteIcon> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     (widget.activity.favoritized.toString());
     bool favorite = widget.activity.favoritized;
     return IconButton(
-      onPressed: () {
+      onPressed: () async {
+        if (favorite) {
+          final response = await NetworkService().patchNoData('activities/${widget.activity.id}/favoritize');
+          if(response.statusCode != 200) return;
+        } else {
+          final response = await NetworkService().patchNoData('activities/${widget.activity.id}/unfavoritize');
+          if(response.statusCode != 200) return;
+        }
         setState(() {
           globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].toogleFavorite();
           favorite = !favorite;
         });
-        if (favorite) {
-          NetworkService().patchNoData('activities/${widget.activity.id}/favoritize');
-        } else {
-          NetworkService().patchNoData('activities/${widget.activity.id}/unfavoritize');
-        }
       },
       icon: Icon(
         favorite ? Icons.favorite : Icons.favorite_border,

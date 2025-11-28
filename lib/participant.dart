@@ -17,7 +17,7 @@ class Participant {
     required this.city,
     required this.state,
     required this.description,
-    required this.image,
+    this.image,
   });
 
   void displayParticipantDetails() {
@@ -48,5 +48,14 @@ class Participant {
       gender: json["gender"],
       image: json["photo"] == null ? null :json["photo"]["url"].substring(1) 
     );
+  }
+
+  void updateInfo(Map<String, dynamic> json)
+  {
+    name = json['name'];
+    description = json['about'];
+    age = json["age"];
+    city = json["city"];
+    gender = json["gender"];
   }
 }

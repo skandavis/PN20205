@@ -25,16 +25,12 @@ class profileImageCircle extends StatefulWidget {
 
 class _profileImageCircleState extends State<profileImageCircle> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      height: widget.size.toDouble(),
-      width: widget.size.toDouble(),
-      child: imageLoader(imageRoute: widget.imageUrl, uploadRoute: widget.uploadRoute, onUpload: widget.onImageChanged,shape: BoxShape.circle,)
+    return imageLoader(
+      imageRoute: widget.imageUrl, 
+      uploadRoute: widget.uploadRoute, 
+      onUpload: widget.onImageChanged, 
+      circle: true,size: widget.size.toDouble(),
     );
   }
 }

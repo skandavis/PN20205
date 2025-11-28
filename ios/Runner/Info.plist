@@ -26,10 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>This app needs access to calendar to add events</string>
-	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
-	<string>This app needs access to calendar to write events</string>
+	    <key>NSCalendarsUsageDescription</key>
+    <string>Calendars</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Calendar full access</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -48,6 +48,10 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>calendar</string>
 	</array>
 </dict>
 </plist>

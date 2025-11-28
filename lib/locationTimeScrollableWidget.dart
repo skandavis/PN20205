@@ -27,7 +27,8 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
         children: [
           GestureDetector(
             onTap: () {
-              utils.addEventWithPermission("Nagarathar Pillayar Nombu", "Description TBD", widget.location, widget.startTime, widget.endTime);
+              
+              utils.addEventToCalendar("Nagarathar Pillayar Nombu", "Description TBD", widget.location, widget.startTime, widget.endTime, context);
               // final event = Event(
               //   title: "Nagarathar Pillayar Nombu",
               //   description: "Description TBD",
@@ -48,7 +49,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
           Column(
             children: [
               Text(
-                DateFormat('MMMM d, y h:mm a').format(widget.startTime),
+                DateFormat('MMM d, y h:mm a').format(widget.startTime),
                 style:  TextStyle(
                   color: Colors.white,
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
@@ -56,7 +57,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
                 ),
               ),
               Text(
-                DateFormat('MMMM d, y h:mm a').format(widget.endTime),
+                DateFormat('MMM d, y h:mm a').format(widget.endTime),
                 style:  TextStyle(
                   color: Colors.white,
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,

@@ -1,5 +1,4 @@
 import 'package:NagaratharEvents/customDialogBox.dart';
-import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -27,11 +26,6 @@ class _notificationBubbleState extends State<notificationBubble> {
   @override
   Widget build(BuildContext context) {
 
-    void removeNotification() async {
-      NetworkService().deleteRoute('notifications/${widget.notification.id}');
-      widget.delete();
-    }
-
     void showDialogBox() {
       showDialog(
         context: context,
@@ -47,7 +41,7 @@ class _notificationBubbleState extends State<notificationBubble> {
                     ),
                 GestureDetector(
                   onTap: () {
-                    removeNotification();
+                    widget.delete();
                     Navigator.pop(context);
                   },
                   child: Container(

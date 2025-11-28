@@ -7,20 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
 class participantRow extends StatefulWidget {
-  Participant participant;
+  int participantIndex;
   Activity activity;
-  participantRow({super.key, required this.participant, required this.activity});
+  participantRow({super.key, required this.participantIndex, required this.activity});
 
   @override
   State<participantRow> createState() => _participantRowState();
 }
 
 class _participantRowState extends State<participantRow> {
+  late int activityIndex = globals.totalActivities!.indexOf(widget.activity);
+  late Participant participant = widget.activity.participants[widget.participantIndex];
   void onImageUpdated(File image) {
     setState(() {
-      int index = globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].participants.indexOf(widget.participant);
-      globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].participants[index].image = image.path;
-      widget.participant.image = image.path;
+      globals.totalActivities![activityIndex].participants[widget.participantIndex].image = image.path;
+      participant.image = image.path;
       debugPrint("image.path: ${image.path}");
     });
   }
@@ -30,9 +31,14 @@ class _participantRowState extends State<participantRow> {
       context: context,
       builder: (BuildContext context) {
         return ParticipantDetailDialog(
-          participant: widget.participant,
+          participant: participant,
           onImageUpdated: onImageUpdated,
-          onDataChanged: () => setState(() {}),
+          onDataChanged: (data){
+            setState(() {
+              participant.updateInfo(data);
+              globals.totalActivities![activityIndex].participants[widget.participantIndex].updateInfo(data);
+            });
+          },
         );
       },
     );
@@ -42,38 +48,41 @@ class _participantRowState extends State<participantRow> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: displayParticipantDetails,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          profileImageCircle(
-            key: ValueKey(widget.participant.image), // Add this key
-            imageUrl: widget.participant.image,
-            size: 75,
-            expandable: false,
-          ),
-          const SizedBox(width: 10),
-          SizedBox(
-            height: 75,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  widget.participant.name,
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * .6,
-                  child: Text(
-                    widget.participant.description,
-                    style: TextStyle(color: Colors.white),
-                    overflow: TextOverflow.ellipsis,
-                   ),
-                ),
-              ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            profileImageCircle(
+              key: ValueKey(participant.image), // Add this key
+              imageUrl: participant.image,
+              size: 75,
+              expandable: false,
             ),
-          )
-        ],
+            const SizedBox(width: 10),
+            SizedBox(
+              height: 75,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    participant.name,
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * .6,
+                    child: Text(
+                      participant.description,
+                      style: TextStyle(color: Colors.white),
+                      overflow: TextOverflow.ellipsis,
+                     ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

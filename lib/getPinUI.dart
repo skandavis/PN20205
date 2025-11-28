@@ -35,7 +35,7 @@ class _getPinUIState extends State<getPinUI> {
         context: context,
         builder: (BuildContext context) {
           return customDialogBox(
-            height: 250,
+            height: 300,
             title: "Email Sent", 
             body: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -55,9 +55,9 @@ class _getPinUIState extends State<getPinUI> {
   }
   void sendPin(String email, BuildContext context) async{
     if (email.isEmpty ) {
-      email = "viswanathanmanickam5@gmail.com";
-      // utils.snackBarMessage(context, 'Please enter email');
-      // return;
+      // email = "viswanathanmanickam5@gmail.com";
+      utils.snackBarMessage(context, 'Please enter email');
+      return;
     } 
     if (utils.isValidEmail(email)) {
       registerUser(email).then((statusCode) 

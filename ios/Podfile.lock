@@ -1,7 +1,7 @@
 PODS:
-  - add_2_calendar (0.0.1):
-    - Flutter
   - app_set_id (1.3.0):
+    - Flutter
+  - device_calendar (0.0.1):
     - Flutter
   - Firebase/CoreOnly (12.4.0):
     - FirebaseCore (~> 12.4.0)
@@ -96,8 +96,8 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - add_2_calendar (from `.symlinks/plugins/add_2_calendar/ios`)
   - app_set_id (from `.symlinks/plugins/app_set_id/ios`)
+  - device_calendar (from `.symlinks/plugins/device_calendar/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
@@ -125,10 +125,10 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
-  add_2_calendar:
-    :path: ".symlinks/plugins/add_2_calendar/ios"
   app_set_id:
     :path: ".symlinks/plugins/app_set_id/ios"
+  device_calendar:
+    :path: ".symlinks/plugins/device_calendar/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_messaging:
@@ -153,8 +153,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  add_2_calendar: e626377f607d055070093cbd56abd1fafa1a02a5
   app_set_id: b40d083ce275bb3b915e35177907df514eb5d428
+  device_calendar: b55b2c5406cfba45c95a59f9059156daee1f74ed
   Firebase: f07b15ae5a6ec0f93713e30b923d9970d144af3e
   firebase_core: f1aafb21c14f497e5498f7ffc4dc63cbb52b2594
   firebase_messaging: c17a29984eafce4b2997fe078bb0a9e0b06f5dde
@@ -178,6 +178,6 @@ SPEC CHECKSUMS:
   ua_client_hints: 92fe0d139619b73ec9fcb46cc7e079a26178f586
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
-PODFILE CHECKSUM: fc3ea97bc86238263bf43895f392747dddfa1bf1
+PODFILE CHECKSUM: c81a0a4fb43534e27f9c8356a854238a048509f2
 
 COCOAPODS: 1.16.2

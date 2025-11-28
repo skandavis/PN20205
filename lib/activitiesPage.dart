@@ -9,7 +9,8 @@ import 'package:NagaratharEvents/activityCard.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
 class activitiesPage extends StatefulWidget {
-  const activitiesPage({super.key});
+  final ValueNotifier<bool> isVisible;
+  const activitiesPage({super.key, required this.isVisible});
 
   @override
   State<activitiesPage> createState() => activitiesPageState();
@@ -22,13 +23,20 @@ class activitiesPageState extends State<activitiesPage> {
   Set<String> selectedCategories = {};
   String searchQuery = "";
   bool onlyFavorites = false;
-  bool showOld = true;
+  bool showOld = false;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    widget.isVisible.addListener(_onVisibilityChanged);
+  }
+  void _onVisibilityChanged() {
+    if (widget.isVisible.value) {
+      _loadData();
+    } else {
+      // is not visible
+    }
   }
 
   Future<void> _loadData() async {
@@ -40,7 +48,7 @@ class activitiesPageState extends State<activitiesPage> {
   }
 
   Future<void> _loadActivities(bool forceRefresh) async {
-    final data = await NetworkService().getMultipleRoute('activities', context, forceRefresh: forceRefresh);
+    final data = await NetworkService().getMultipleRoute('activities', forceRefresh: forceRefresh);
     if (data != null) {
       globals.totalActivities = data.map((item) => Activity.fromJson(item)).toList();
     }
@@ -52,9 +60,17 @@ class activitiesPageState extends State<activitiesPage> {
   }
 
   Future<void> _loadCategories() async {
-    final data = await NetworkService().getMultipleRoute('categories', context);
+    final data = await NetworkService().getMultipleRoute('categories');
     if (data != null) {
-      allCategories = data.map((item) => ActivityCategory.fromJson(item)).toList();
+      allCategories = data
+        .map((item) => ActivityCategory.fromJson(item))
+        .fold<Map<String, ActivityCategory>>({}, (map, category) {
+          map[category.name] = category;
+          return map;
+        })
+    .values
+    .toList();
+
     }
   }
 
@@ -67,7 +83,7 @@ class activitiesPageState extends State<activitiesPage> {
     return globals.totalActivities!.where((activity) =>
       (!onlyFavorites || activity.favoritized) &&
       (showOld || activity.startTime.isAfter(now)) &&
-      (selectedCategories.isEmpty || selectedCategories.contains(activity.category)) &&
+      (selectedCategories.isEmpty || selectedCategories.contains(activity.main)) &&
       (query.isEmpty || activity.name.toLowerCase().contains(query) || activity.category.toLowerCase().contains(query))
     ).toList();
   }
@@ -79,7 +95,6 @@ class activitiesPageState extends State<activitiesPage> {
     showOld = false;
     selectedCategories.clear();
   });
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -171,7 +186,7 @@ class activitiesPageState extends State<activitiesPage> {
   }
 
   Widget _buildActivityList() {
-    final activities = _filteredActivities;
+    List<Activity> activities = _filteredActivities;
     final hasFilters = searchQuery.isNotEmpty || selectedCategories.isNotEmpty || onlyFavorites || showOld;
     
     if (activities.isEmpty) {
@@ -182,7 +197,7 @@ class activitiesPageState extends State<activitiesPage> {
             Icon(hasFilters ? Icons.search_off : Icons.event_busy, size: 64, color: Colors.white54),
             const SizedBox(height: 12),
             Text(
-              hasFilters ? "No events match your filters." : "No events available.",
+              hasFilters ? "No activities match your filters." : "No activities available.",
               style: TextStyle(color: Colors.white70),
             ),
             if (hasFilters)
@@ -204,7 +219,11 @@ class activitiesPageState extends State<activitiesPage> {
           itemCount: activities.length,
           itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: activityCard(activity: activities[index]),
+            child: activityCard(activity: activities[index], callback: (){
+              setState(() {
+                // activities = _filteredActivities;
+              });
+            }),
           ),
         ),
       ),

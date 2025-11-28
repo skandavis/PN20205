@@ -24,7 +24,7 @@ class ActivityCategory {
   // Factory constructor to create Category from a JSON map
   factory ActivityCategory.fromJson(Map<String, dynamic> json) {
     return ActivityCategory(
-      name: json['category'],
+      name: json['main'],
       photoUrl: json["photoUrl"]
     );
   }

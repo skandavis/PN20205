@@ -4,8 +4,9 @@ import 'package:NagaratharEvents/globals.dart' as globals;
 
 class ImageCarousel extends StatefulWidget {
   String? uploadPath;
+  Function(String)? onUpload;
   final List<String> imageUrls;
-  ImageCarousel({super.key, required this.imageUrls, this.uploadPath});
+  ImageCarousel({super.key, required this.imageUrls, this.uploadPath, this.onUpload});
 
   @override
   _ImageCarouselState createState() => _ImageCarouselState();
@@ -31,7 +32,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
             widget.imageUrls.add(image.path);
             _initializeImageLoaders();
           });
-            
+          if(widget.onUpload != null) widget.onUpload!(image.path);
           debugPrint(widget.imageUrls.toString());
             // widget.imageUrls[widget.imageUrls.indexOf(imageUrl)] = image.path;                
         },

@@ -18,18 +18,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var pages = {
-    "Home" : const mainPage(),
-    "Activities" : const activitiesPage(),
-    "Notifications" : const notificationsPage(),
-    "FAQ" : const faqPage(),
-    "Contact Us" : const contactUsPage(),
-    "Settings" : const settingsPage(),
+  final pageControllers = List.generate(6, (_) => ValueNotifier<bool>(false));
+
+  late var pages = {
+    "Home" : mainPage(isVisible: pageControllers[0]),
+    "Activities" : activitiesPage(isVisible: pageControllers[1],),
+    "Notifications" : notificationsPage(isVisible: pageControllers[2],),
+    "FAQ" : faqPage(isVisible: pageControllers[3],),
+    "Contact Us" : contactUsPage(isVisible: pageControllers[4],),
+    "Settings" : settingsPage(isVisible: pageControllers[5],),
   }.entries.toList();
 
   @override
   void initState() {
     super.initState();
+    pageControllers[0].value = true;
   }
   
   @override
@@ -49,10 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: globals.backgroundColor,
         ),
         backgroundColor: globals.backgroundColor,
-        body: Container(
-          decoration: const BoxDecoration(),
-          clipBehavior: Clip.hardEdge,
-          child: pages[widget.selectedIndex].value
+        body: IndexedStack(
+          index: widget.selectedIndex,
+          children: pages.map((e) => e.value).toList(),
         ),
         bottomNavigationBar: BottomNavigationBar(
           selectedFontSize: Theme.of(context).textTheme.bodyLarge?.fontSize ?? 14.0,
@@ -98,6 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
           currentIndex: widget.selectedIndex,
           onTap: (int index) {
+          pageControllers[widget.selectedIndex].value = false;
+          pageControllers[index].value = true;
             setState(() {
               widget.selectedIndex = index;
             });

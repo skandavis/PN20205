@@ -5,6 +5,8 @@ class Activity {
   String name;
   String description;
   String location;
+  String main;
+  String sub;
   int duration;
   DateTime startTime;
   String category;
@@ -21,7 +23,9 @@ class Activity {
     required this.description,
     required this.startTime,
     required this.duration,
+    required this.main,
     required this.location,
+    required this.sub,
     required this.category,
     required this.favorites,
     required this.likes,
@@ -67,6 +71,8 @@ class Activity {
       location: json['location'],
       duration: json['duration'],
       startTime: DateTime.parse(json['startTime']).toLocal(),
+      main: json['main'],
+      sub: json['sub'],
       category: json["category"],
       favorites: json["favoritized"],
       likes: json["liked"],

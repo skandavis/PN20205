@@ -15,8 +15,6 @@ import 'globals.dart' as globals;
 import 'utils.dart' as utils;
 import 'package:ua_client_hints/ua_client_hints.dart';
 
-const int timeoutSecs = 10;
-
 class NetworkService {
   static final NetworkService _instance = NetworkService._internal();
   factory NetworkService() => _instance;
@@ -27,20 +25,20 @@ class NetworkService {
   
   PersistCookieJar? cookieJar;
   bool _initialized = false;
-  
+
   NetworkService._internal() {
     dio = Dio(BaseOptions(
       validateStatus: (status)=> true,
-      connectTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       sendTimeout: const Duration(seconds: 10),
+      baseUrl: globals.url
     ));
     // dio = AppDio.getInstance();
   }
 
   Future<void> _initIfNeeded() async {
     if (_initialized) return;
-
     final dir = await getApplicationDocumentsDirectory();
     
     await _setupCookies(dir);
@@ -49,7 +47,6 @@ class NetworkService {
     
     // cacheManager.cleanup();
     imageService = ImageService(dio, cacheManager);
-    
     _initialized = true;
   }
 
@@ -65,17 +62,20 @@ class NetworkService {
           options.headers.addAll(myVar);
           handler.next(options);
         },
-        onResponse: (response, handler) {
+        onResponse: (response, handler) async {
+          if(response.requestOptions.extra['skipIntercept'] == true) {
+            return handler.next(response);
+          }
           final context = globals.navigatorKey.currentContext;
           if (response.statusCode == 400) {
             // Bad request
           } else if (response.statusCode == 413) {
             utils.snackBarMessage(context!, 'Image too large!');
             print('Image too large');
-          } else if (response.statusCode == 403) {
-            // Forbidden
+          } else if (response.statusCode == 498) {
+            return handler.resolve(await refresh(response.requestOptions));
           } else if (response.statusCode == 500) {
-            // Server problem
+            utils.snackBarMessage(context!, 'Internal Server Error! Try again later.');
           } else if (response.statusCode == 404) {
             utils.snackBarMessage(context!, 'Resource not found!');
           } else if (response.statusCode == 401) {
@@ -105,34 +105,47 @@ class NetworkService {
     );
   }
   
-  Future<dynamic> getRoute(String route, BuildContext context, bool forceRefresh) async {
+  Future<Response> refresh(RequestOptions options) async
+  {
+    await dio.get('auth/refresh-token');
+    debugPrint('Refreshing token');
+    if(options.data is FormData)
+    {
+      FormData formData = options.data as FormData;
+      return await dio.post(options.path, data: formData,options: Options(headers: {'Content-Type': 'multipart/form-data'}));
+    }
+    return dio.fetch(options);
+  }
+
+  Future<Response<dynamic>> getRoute(String route, bool forceRefresh) async {
     await _initIfNeeded();
     if (!forceRefresh) {
       final cached = await cacheManager.loadResource(route);
-      if (cached != null) return cached;
+      if (cached != null) Response (requestOptions: RequestOptions(path: route), data: cached);
     }
 
     try {
       final response = await dio
-          .get('${globals.url}$route');
-      
+          .get(route);
+
       if (response.statusCode == 200 && response.data != null) {
         final headers = _normalizeHeaders(response.headers.map);
         await cacheManager.saveResource(route, response.data, headers);
-        return response.data;
+        return response;
       }
       
       print("Non-200 status (${response.statusCode}), loading from cache");
-      return await cacheManager.loadResource(route);
+      return Response (requestOptions: RequestOptions(path: route), data: await cacheManager.loadResource(route));
       
     } catch (e) {
       debugPrint(e.toString());
-      return await cacheManager.loadResource(route);
+      return Response (requestOptions: RequestOptions(path: route), data: await cacheManager.loadResource(route));
     }
   }
 
-  Future<List<dynamic>?> getMultipleRoute(String route, BuildContext context, {bool forceRefresh = false}) async {
-    final data = await getRoute(route, context, forceRefresh);
+  Future<List<dynamic>?> getMultipleRoute(String route, {bool forceRefresh = false}) async {
+    final response = await getRoute(route, forceRefresh);
+    final data = response.data;
     
     if (data is List<dynamic>) {
       data.forEach(print);
@@ -146,8 +159,9 @@ class NetworkService {
     return null;
   }
 
-  Future<Map<String, dynamic>?> getSingleRoute(String route, BuildContext context, {bool forceRefresh = false}) async {
-    final data = await getRoute(route, context, forceRefresh);
+  Future<Map<String, dynamic>?> getSingleRoute(String route, {bool forceRefresh = false}) async {
+    final response = await getRoute(route, forceRefresh);
+    final data = response.data;
     
     if (data is Map<String, dynamic>) {
       print(data.toString());
@@ -165,71 +179,71 @@ class NetworkService {
     await _initIfNeeded();
     
     try {
-      return await dio
-          .post('${globals.url}$route', data: json.encode(data))
-          .timeout(Duration(seconds: timeoutSecs));
-      
+      return await dio.post(
+        route, 
+        data: json.encode(data),
+        options: Options(
+          extra: {"skipIntercept": true}
+        )
+      );
     } catch (e) {
       print('An error occurred: $e');
       return _createErrorResponse(route, 500);
     }
   }
   
-  Future<int> patchRoute(Map<String, dynamic> data, String route) async {
+  Future<Response<dynamic>> patchRoute(Map<String, dynamic> data, String route) async {
     await _initIfNeeded();
     
     try {
       final response = await dio
-          .patch('${globals.url}$route', data: json.encode(data))
-          .timeout(Duration(seconds: timeoutSecs));
-      return response.statusCode!;
+          .patch(route, data: json.encode(data));
+      return response;
     } catch (e) {
       print('An error occurred while patching: $e');
-      return 500;
+      return _createErrorResponse(route, 500);
     }
   }
 
-  Future<int> patchNoData(String route) async {
+  Future<Response<dynamic>> patchNoData(String route) async {
     await _initIfNeeded();
     
     try {
       final response = await dio
-          .patch('${globals.url}$route')
-          .timeout(Duration(seconds: timeoutSecs));
+          .patch(route);
       print("Status code: ${response.statusCode}");
-      return response.statusCode!;
+      return response;
     } catch (e) {
       print('Unexpected error: $e');
-      return 500;
+      return _createErrorResponse(route, 500);
     }
   }
   
-  Future<int> deleteRoute(String route) async {
+  Future<Response<dynamic>> deleteRoute(String route) async {
     await _initIfNeeded();
     
     try {
       final response = await dio
-          .delete('${globals.url}$route')
-          .timeout(Duration(seconds: timeoutSecs));
-      return response.statusCode!;
+          .delete(route);
+      return response;
       
     } catch (e) {
       print('An error occurred while deleting: $e');
-      return 500;
+      return _createErrorResponse(route, 500);
     }
   }
   
-  Future<Response> uploadFile(File file, String route, String fileName, BuildContext context) async {
+  Future<Response> uploadFile(MultipartFile file, String route, String fileName, BuildContext context) async {
     await _initIfNeeded();
     
     final formData = FormData.fromMap({
-      'photo': await MultipartFile.fromFile(file.path),
+      'file': file,
       'name': fileName
     });
 
     try {
       final response = await dio.post(
-        '${globals.url}$route',
+        route,
         data: formData,
         options: Options(headers: {'Content-Type': 'multipart/form-data'}),
       );

@@ -27,7 +27,7 @@ class _categoryLabelState extends State<categoryLabel> {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
             child: Center(
               child: Text(
-                widget.activity.category,
+                widget.activity.main,
                 style: const TextStyle(color: Colors.white),
               ),
             ),

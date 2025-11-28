@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class ParticipantDetailDialog extends StatefulWidget {
   final Participant participant;
   final Function(File) onImageUpdated;
-  final VoidCallback onDataChanged;
+  final Function(Map<String,dynamic>) onDataChanged;
 
   const ParticipantDetailDialog({
     super.key,
@@ -51,7 +51,16 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
     super.dispose();
   }
 
-  void saveChanges() {
+  void saveChanges() async{
+    Map<String, dynamic> data = {
+      'name': nameController.text,
+      'about': descriptionController.text,
+      'gender': selectedGender,
+      'city': selectedCity,
+      'age': selectedAge
+    };
+    final response = await NetworkService().patchRoute(data, 'participants/${widget.participant.id}');
+    if(response.statusCode != 200) return;
     setState(() {
       widget.participant.name = nameController.text;
       widget.participant.description = descriptionController.text;
@@ -60,14 +69,7 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
       widget.participant.age = selectedAge;
       isEditing = false;
     });
-    NetworkService().patchRoute({
-      'name': nameController.text,
-      'about': descriptionController.text,
-      'gender': selectedGender,
-      'city': selectedCity,
-      'age': selectedAge
-    }, 'participants/${widget.participant.id}');
-    widget.onDataChanged();
+    widget.onDataChanged(data);
   }
 
   void cancelEditing() {

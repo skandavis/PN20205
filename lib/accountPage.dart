@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/profileImageCircle.dart';
@@ -39,16 +38,6 @@ class _accountPageState extends State<accountPage> {
   void initState() {
     super.initState();
     getDeviceId();
-  }
-
-  void sendData() async {
-    await NetworkService().patchRoute({
-      // "email": "viswanathanmanickam5@gmail.com",
-      "name": controllers[0].text,
-      "phoneNumber":controllers[1].text,
-      "city": controllers[2].text,
-
-    }, 'users');
   }
 
   @override
@@ -97,7 +86,7 @@ class _accountPageState extends State<accountPage> {
               ),
               SizedBox(
                 height: MediaQuery.sizeOf(context).height*.3,
-                child:  ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context,index){
+                child:  ListView.builder(itemCount: inputFocusNodes.length,itemBuilder: (context, index){
                   return Column(
                     children: [
                       formInput(
@@ -123,19 +112,26 @@ class _accountPageState extends State<accountPage> {
               ),
               
               GestureDetector(
-                onTap: () {
+                onTap: () async{
                   for(TextEditingController controller in controllers){
                     if(controller.text.isEmpty){
                       utils.snackBarMessage(context, "Please fill all the fields!",color: Colors.red);
                       return;
                     }
                   }
+                  final response = await  NetworkService().patchRoute({
+                    // "email": "viswanathanmanickam5@gmail.com",
+                    "name": controllers[0].text,
+                    "phoneNumber":controllers[1].text,
+                    "city": controllers[2].text,
+
+                  }, 'users');
+                  if(response.statusCode != 200) return;
                   user.setPersonalInfo({
                     'name':controllers[0].text,
                     'phone':controllers[1].text,
                     'city':controllers[2].text
                   });
-                  sendData();
                   utils.snackBarMessage(context, "Account Details Updated!",color: Colors.green);
                   Navigator.of(context).pop();
                 },

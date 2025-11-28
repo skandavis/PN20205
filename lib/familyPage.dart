@@ -24,22 +24,32 @@ class _familyPageState extends State<familyPage> {
   @override
   void initState() {
     super.initState();
-    if(family != null) return;
     loadFamily();
   }
+
+  void loadFamily() {
+    if(family != null) return;
+    NetworkService().getMultipleRoute("users/family-users", forceRefresh: true).then((response) {
+      if(response == null) return;
+      setState(() {
+        family = response.map((item) => FamilyMember.fromJson(item)).toList();
+      });
+    });
+  }
+
   void createUser() {
     if(!utils.isValidEmail(emailController.text))
     {
       utils.snackBarMessage(context, '${emailController.text}is an invalid email');
-      emailController.text = "sskandamani@gmail.com";
-      // return;
+      // emailController.text = "sskandamani@gmail.com";
+      return;
     }
     if (nameController.text.isEmpty || emailController.text.isEmpty || relationController.text.isEmpty) {
       utils.snackBarMessage(context, 'Please enter name, email and relation');
-      nameController.text = "Cornelius Cornwallus Coconut";
-      emailController.text = "sskandamani@gmail.com";
-      relationController.text = "Son";
-      // return;
+      // nameController.text = "Cornelius Cornwallus Coconut";
+      // emailController.text = "sskandamani@gmail.com";
+      // relationController.text = "Son";
+      return;
     }
     NetworkService().postRoute({
       'email': emailController.text,
@@ -48,7 +58,8 @@ class _familyPageState extends State<familyPage> {
       'relation': relationController.text}, 
       'users').then((response) {
         setState(() {
-          family!.add(FamilyMember.fromJson(response.data)); // Add the new user to the list of family members.response.data);
+          family!.add(FamilyMember.fromJson(response.data));
+          debugPrint(family.toString());  
         });
       });
     nameController.clear();
@@ -147,19 +158,20 @@ class _familyPageState extends State<familyPage> {
                 icon: Icons.groups,
               ),
               GestureDetector(
-                onTap: () {
-                  setState(() {
-                    family![index].name = nameController.text;
-                    family![index].email = emailController.text;
-                    family![index].relation = emailController.text;
-                  });
-                  NetworkService().patchRoute({
+                onTap: () async{
+                  final response = await NetworkService().patchRoute({
                     "email": emailController.text,
                     "name": nameController.text,
                     "relation": relationController.text
                     },
                     'users/family-users/${family![index].id}'
                   );
+                  if(response.statusCode != 200) return;
+                  setState(() {
+                    family![index].name = nameController.text;
+                    family![index].email = emailController.text;
+                    family![index].relation = emailController.text;
+                  });
                   nameController.clear();
                   emailController.clear();
                   relationController.clear();
@@ -188,15 +200,6 @@ class _familyPageState extends State<familyPage> {
         );
       },
     );
-  }
-
-  void loadFamily() {
-    NetworkService().getMultipleRoute("users/family-users", context, forceRefresh: true).then((response) {
-      if(response == null) return;
-      setState(() {
-        family = response.map((item) => FamilyMember.fromJson(item)).toList();
-      });
-    });
   }
 
   @override
@@ -259,8 +262,9 @@ class _familyPageState extends State<familyPage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    NetworkService().deleteRoute("users/family-users/${family![index - 1].id}");
+                  onTap: () async {
+                    final response = await NetworkService().deleteRoute("users/family-users/${family![index - 1].id}");
+                    if(response.statusCode != 200) return;
                     setState(() {
                       family!.removeAt(index - 1);
                     });

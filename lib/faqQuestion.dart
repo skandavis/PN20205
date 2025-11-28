@@ -55,6 +55,7 @@ class _faqQuestionState extends State<faqQuestion> {
               Row(
                 children: [
                   Container(
+                    width: (MediaQuery.of(context).size.width * .8)-20,
                     child: Text(
                       widget.answer,
                       style: TextStyle(

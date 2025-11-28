@@ -16,10 +16,6 @@ class formInput extends StatefulWidget {
 }
 class _formInputState extends State<formInput> {
   @override
-  void initState() {
-    super.initState();
-  }
-  @override
   Widget build(BuildContext context) {
     return TextField(
       keyboardType: widget.inputType ?? TextInputType.text,

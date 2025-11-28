@@ -15,7 +15,8 @@ import 'utils.dart' as utils;
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 class enterPinUI extends StatefulWidget {
   String ApnsToken;
-  enterPinUI({super.key, required this.ApnsToken});
+  Function() updateLoading;
+  enterPinUI({super.key, required this.ApnsToken, required this.updateLoading});
 
   @override
   State<enterPinUI> createState() => _enterPinUIState();
@@ -23,6 +24,8 @@ class enterPinUI extends StatefulWidget {
 class _enterPinUIState extends State<enterPinUI> {
   String pin = '';
   Future<int> authenticate(int pin) async {
+    widget.updateLoading();
+    // await Future.delayed(Duration(seconds: 10));
     final response = await NetworkService().postRoute(
     {
       // "email": "viswanathanmanickam5@gmail.com",
@@ -41,12 +44,22 @@ class _enterPinUIState extends State<enterPinUI> {
         globals.mainPageImages.add(photo["url"].substring(1));
       } 
     }
+    widget.updateLoading();
     return response.statusCode!;
   }
   void login (String pin, BuildContext context) {
     if(pin.isEmpty){
-      // pin = "505637";
-      utils.snackBarMessage(context, 'Please enter pin');
+      utils.snackBarMessage(context, 'Please enter PIN');
+      return;
+    }
+    if(pin.length<6){
+      utils.snackBarMessage(context, 'PIN must be 6 digits');
+      return;
+    }
+    try{
+      int.parse(pin);
+    }catch(e){
+      utils.snackBarMessage(context, 'PIN must be numeric');
       return;
     }
     authenticate(int.parse(pin))
@@ -78,50 +91,54 @@ class _enterPinUIState extends State<enterPinUI> {
   }
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
       children: [
         Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            multiDigitInput(
-              digits: 6,
-              onChanged: (code) {
-                setState(() {
-                  pin = code;
-                });
-              },
-              onSubmitted: () {
+            Column(
+              children: [
+                multiDigitInput(
+                  digits: 6,
+                  onChanged: (code) {
+                    setState(() {
+                      pin = code;
+                    });
+                  },
+                  onSubmitted: () {
+                    login(pin, context);
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => loginPage(sentPassword: false,),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Didn't get an Email",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            submitButton(
+              text: "Login", 
+              onSubmit: (){
                 login(pin, context);
               },
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => loginPage(sentPassword: false,),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Didn't get an Email",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            )
           ],
-        ),
-        submitButton(
-          text: "Login", 
-          onSubmit: (){
-            login(pin, context);
-          },
         ),
       ],
     );

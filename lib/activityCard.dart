@@ -7,42 +7,25 @@ import 'package:NagaratharEvents/expandedActivityPage.dart';
 import 'package:NagaratharEvents/favorite.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/imageCarousel.dart';
+import 'package:intl/intl.dart';
 
 class activityCard extends StatefulWidget {
   Activity activity;
+  Function? callback;
   activityCard({
     super.key,
     required this.activity,
+    this.callback
   });
 
   @override
   State<activityCard> createState() => _activityCardState();
 }
 
-@override
 class _activityCardState extends State<activityCard> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     DateTime startTime = widget.activity.startTime;
-    List<String> monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -54,6 +37,7 @@ class _activityCardState extends State<activityCard> {
           ),
         ).then((_){
           setState(() {
+            if(widget.callback != null) widget.callback!();
           });
         });
       },
@@ -86,7 +70,7 @@ class _activityCardState extends State<activityCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        monthNames[startTime.month - 1].substring(0, 3),
+                        DateFormat('MMM').format(startTime),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
@@ -119,7 +103,7 @@ class _activityCardState extends State<activityCard> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          utils.addEventWithPermission(widget.activity.name, widget.activity.description, widget.activity.location, startTime, startTime.add(Duration(minutes: widget.activity.duration)));
+                          utils.addEventToCalendar(widget.activity.name, widget.activity.description, widget.activity.location, startTime, startTime.add(Duration(minutes: widget.activity.duration)),context);
                         },
                         child: Icon(
                           Icons.event,
@@ -193,10 +177,14 @@ class _activityCardState extends State<activityCard> {
                     const Icon(
                       Icons.pin_drop,
                     ),
-                    Text(
-                      widget.activity.location,
-                      style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
+                    SizedBox(
+                    width: MediaQuery.sizeOf(context).width*.4,
+                      child: Text(
+                        widget.activity.location,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
+                        ),
                       ),
                     ),
                   ],
@@ -207,7 +195,7 @@ class _activityCardState extends State<activityCard> {
                       color: globals.backgroundColor,
                       borderRadius: BorderRadius.circular(5)),
                   child: Text(
-                    "${startTime.hour > 12 ? startTime.hour - 12 : startTime.hour}:${startTime.minute} ${startTime.hour > 12 ? "PM" : "AM"}",
+                    DateFormat('h:mm a').format(startTime),
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

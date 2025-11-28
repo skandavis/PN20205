@@ -9,19 +9,18 @@ import 'package:NagaratharEvents/phoneNumberFormatter.dart';
 import 'utils.dart' as utils;
 import 'package:NagaratharEvents/globals.dart' as globals;
 
+User user = User.instance;
+
 class contactUsPage extends StatefulWidget {
-  const contactUsPage({super.key});
+  final ValueNotifier<bool> isVisible;
+  const contactUsPage({super.key, required this.isVisible});
 
   @override
   State<contactUsPage> createState() => _contactUsPageState();
 }
 
-
-User user = User.instance;
-
 class _contactUsPageState extends State<contactUsPage> {
   static List<committee>? committees;
-  // static List<dynamic> committeeIDs = [];
   static int selectedIndex = 0;
   TextEditingController nameController = TextEditingController(text: user.name);
   TextEditingController cityController = TextEditingController(text: user.city);
@@ -35,25 +34,56 @@ class _contactUsPageState extends State<contactUsPage> {
   FocusNode messageFocus = FocusNode();
   FocusNode departmentFocus = FocusNode();
   bool loading = false;
-  Future<bool> sendMessage() async => NetworkService().postRoute(
-      {
-        'name': nameController.text,
-        'city': cityController.text,
-        'phoneNumber': phoneController.text,
-        "committeeId": committees![selectedIndex].id,
-        'subject': subjectController.text,
-        'message': messageController.text,
-      },
-      'contact',
-    ).then((statusCode){
-      return statusCode == 200;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.isVisible.addListener(_onVisibilityChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.isVisible.removeListener(_onVisibilityChanged);
+    super.dispose();
+  }
+
+  void _onVisibilityChanged() {
+    if (widget.isVisible.value) {
+      getCommittees();
+      updateUserDetails();
+    } else {
+      // is not visible
+    }
+  }
+
+  void updateUserDetails() {
+    setState(() {
+      nameController = TextEditingController(text: user.name);
+      cityController = TextEditingController(text: user.city);
+      phoneController = TextEditingController(text: user.phone);
     });
+  }
+
+  Future<bool> sendMessage() async{
+    final response = await NetworkService().postRoute({
+      'name': nameController.text,
+      'city': cityController.text,
+      'phoneNumber': phoneController.text,
+      "committeeId": committees![selectedIndex].id,
+      'subject': subjectController.text,
+      'message': messageController.text,
+    },
+    'contact',
+    );
+    return response.statusCode == 200;
+  }
 
   void updateDepartment(int value) {
     setState(() {
       selectedIndex = value;
     });
   }
+
   Future<void> submitForm()
   async {
     FocusScope.of(context).unfocus();
@@ -86,11 +116,13 @@ class _contactUsPageState extends State<contactUsPage> {
       utils.snackBarMessage(context, 'Not all fields are filled in!');
     }
   }
+
   void getCommittees() async{
+    if(committees != null) return;
     setState(() {
       loading = true;      
     });
-    NetworkService().getMultipleRoute('committees', context).then((committeesSent){
+    NetworkService().getMultipleRoute('committees').then((committeesSent){
       if(committeesSent == null) return;
       setState(() {
         committees = committeesSent.map((item) => committee.fromJson(item)).toList();
@@ -98,14 +130,7 @@ class _contactUsPageState extends State<contactUsPage> {
       });
     });
   }
-  @override
-  void initState() {
-    if(committees == null)
-    {
-      getCommittees();
-    }
-    super.initState();
-  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

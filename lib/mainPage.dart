@@ -6,7 +6,6 @@ import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
-import 'package:NagaratharEvents/fullMapPage.dart';
 import 'package:NagaratharEvents/imageCarousel.dart';
 import 'package:NagaratharEvents/locationTimeScrollableWidget.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,7 +13,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
 class mainPage extends StatefulWidget {
-  const mainPage({super.key});
+  final ValueNotifier<bool> isVisible;
+  const mainPage({super.key, required this.isVisible});
 
   @override
   State<mainPage> createState() => _mainPageState();
@@ -29,10 +29,27 @@ class _mainPageState extends State<mainPage> {
   @override
   void initState() {
     super.initState();
+    // widget.isVisible.addListener(_onVisibilityChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      loadInitialData();
+        loadInitialData();
     });
   }
+
+  // @override
+  // void dispose() {
+  //   widget.isVisible.removeListener(_onVisibilityChanged);
+  //   super.dispose();
+  // }
+
+  // void _onVisibilityChanged() {
+  //   if (widget.isVisible.value) {
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       loadInitialData();
+  //     });
+  //   } else {
+  //     // is not visible
+  //   }
+  // }
 
 Future<bool> requestCalendarPermission(BuildContext context) async {
   var status = await Permission.calendarFullAccess.status;
@@ -76,7 +93,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   void loadInitialData() async {
     if(!eventInfo.isLoaded)
     {
-      final response = await NetworkService().getSingleRoute("events", context, forceRefresh: true);
+      final response = await NetworkService().getSingleRoute("events", forceRefresh: true);
       if(response == null) return;
       setState(() {
         user.fromJson(response.remove('user'));
@@ -86,7 +103,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
         }
       });
     }
-    if(false)
+    if(user.firstTime)
     {
       await Navigator.push(
         context,
@@ -186,8 +203,8 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
               Locationtimescrollablewidget(
                 description: (eventInfo.description ),
                 geolocation: center,
-                startTime: DateTime(2025,6,22,12,30),
-                endTime: DateTime(2025,7,22,19,30), 
+                startTime: eventInfo.startDate,
+                endTime: eventInfo.endDate,
                 location: ("${eventInfo.address}\n ${eventInfo.city}, ${eventInfo.state} ${eventInfo.zip}")
               ),
               SizedBox(
@@ -249,24 +266,14 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
         if(eventInfo.isLoaded)
         SizedBox(
           height: MediaQuery.sizeOf(context).height*.4,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FullMapPage(center: center),
+          child: AbsorbPointer(
+            child: GoogleMap(
+              onMapCreated: onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: center , // Fallback
+                  zoom: 11.0,
                 ),
-              );
-            },
-            child: AbsorbPointer(
-              child: GoogleMap(
-                onMapCreated: onMapCreated,
-                  initialCameraPosition: CameraPosition(
-                    target: center , // Fallback
-                    zoom: 11.0,
-                  ),
-                zoomControlsEnabled: false,
-              ),
+              zoomControlsEnabled: false,
             ),
           ),
         ),

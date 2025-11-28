@@ -8,16 +8,14 @@ import 'package:intl/intl.dart';
 class attribute extends StatefulWidget {
   bool isEditable;
   final String attributeTitle;
-  String attributeValue;
-  bool isDate;
-  void Function(String?, DateTime?)? onValueChange;
+  dynamic attributeValue;
+  Future<int> Function(String?, DateTime?)? onValueChange;
   attribute({
     super.key,
     required this.isEditable,
     required this.attributeTitle,
     required this.attributeValue,
     this.onValueChange,
-    this.isDate = false,
   });
 
   @override
@@ -45,13 +43,14 @@ class _attributeState extends State<attribute> {
                 icon: Icons.pin_drop,
               ),
               GestureDetector(
-                onTap: () {
-                  setState(() {
+                onTap: () async{
+                  if(widget.onValueChange != null) {
+                    final statusCode = await widget.onValueChange!(controller.text, null);
+                    if(statusCode != 200) return;      
+                  }
+                  setState((){
                     widget.attributeValue = controller.text;
                   });
-                  if(widget.onValueChange != null) {
-                    widget.onValueChange!(controller.text, null);
-                  }
                   Navigator.pop(context, controller.text);
                 },
                 child: Container(
@@ -83,7 +82,7 @@ class _attributeState extends State<attribute> {
   Future<void> _selectDateTime(BuildContext context) async {
     debugPrint("Selecting date and time");
     
-    DateTime selectedDateTime = DateTime.now();
+    DateTime selectedDateTime = widget.attributeValue;
     
     // Show Cupertino date-time picker
     await showCupertinoModalPopup(
@@ -129,9 +128,9 @@ class _attributeState extends State<attribute> {
                   ),
                   child: CupertinoDatePicker(
                     mode: CupertinoDatePickerMode.dateAndTime,
-                    initialDateTime: DateTime.now(),
-                    minimumDate: DateTime.now().subtract(Duration(days: 3)),
-                    maximumDate: DateTime.now().add(Duration(days: 3)),
+                    initialDateTime: widget.attributeValue,
+                    minimumDate: widget.attributeValue,
+                    maximumDate: widget.attributeValue.add(Duration(days: 2)),
                     onDateTimeChanged: (DateTime newDateTime) {
                       selectedDateTime = newDateTime;
                     },
@@ -143,18 +142,13 @@ class _attributeState extends State<attribute> {
         );
       },
     );
-
-    // Format as "MMMM DD, HH:mm"
-    final String formattedDate = DateFormat('MMM dd, h:mm a').format(selectedDateTime);
-    
-    print("Selected date and time: $selectedDateTime");
-    setState(() {
-      widget.attributeValue = formattedDate;
-    });
-    
     if(widget.onValueChange != null) {
-      widget.onValueChange!(null, selectedDateTime);
+      final statusCode = await widget.onValueChange!(null, selectedDateTime);
+      if(statusCode != 200) return;      
     }
+    setState(() {
+      widget.attributeValue = DateFormat('MMM dd, h:mm a').format(selectedDateTime);
+    });
   }
 
   @override
@@ -162,31 +156,28 @@ class _attributeState extends State<attribute> {
     return Expanded(
       child: InkWell(
         onTap: (){
-          if(widget.isDate) {
+          if(widget.attributeValue is DateTime) {
             _selectDateTime(context);
           } else {
             _editValue();
           } 
         },
         borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Text(
-                widget.attributeTitle,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 16),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                widget.attributeValue,
-                style: const TextStyle(color: Colors.white70, fontSize: 13),
-              ),
-            ],
-          ),
+        child: Column(
+          children: [
+            Text(
+              widget.attributeTitle,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 16),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              widget.attributeValue is DateTime ? DateFormat('MMM dd, h:mm a').format(widget.attributeValue) : widget.attributeValue,
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+          ],
         ),
       ),
     );

@@ -9,7 +9,8 @@ import 'utils.dart' as utils;
 import 'package:NagaratharEvents/notification.dart';
 
 class notificationsPage extends StatefulWidget {
-  const notificationsPage({super.key});
+  final ValueNotifier<bool> isVisible;
+  const notificationsPage({super.key, required this.isVisible});
 
   @override
   State<notificationsPage> createState() => _notificationsPageState();
@@ -21,8 +22,38 @@ class _notificationsPageState extends State<notificationsPage> {
   static Set<String> newMessageIds = {};
   User user = User.instance;
 
+  @override
+  void initState() {
+    super.initState();
+    widget.isVisible.addListener(_onVisibilityChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.isVisible.removeListener(_onVisibilityChanged);
+    super.dispose();
+  }
+
+  void _onVisibilityChanged() {
+    if (widget.isVisible.value) {
+      loadMessages();
+    } else {
+      // is not visible
+    }
+  }
+
+  void loadMessages() {
+    if (messages != null) return;
+    NetworkService().getMultipleRoute('notifications').then((value) {
+      if (value == null) return;
+      setState(() {
+        messages = value.map((item) => Notification.fromJson(item)).toList();
+      });
+    });
+  }
 
   void sendMessage(Response response) async {
+      if(response.statusCode != 200) return;
       final newNotification = Notification.fromJson(response.data);
       setState(() {
         if(messages == null){
@@ -34,24 +65,8 @@ class _notificationsPageState extends State<notificationsPage> {
       });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    if (messages !=null) return;
-    loadMessages();
-  }
-
-  void loadMessages() {
-    NetworkService().getMultipleRoute('notifications', context).then((value) {
-      if (value == null) return;
-      setState(() {
-        messages = value.map((item) => Notification.fromJson(item)).toList();
-      });
-    });
-  }
-
   void loadNewMessages() async{
-    final fetched = await NetworkService().getMultipleRoute('notifications', context, forceRefresh: true);
+    final fetched = await NetworkService().getMultipleRoute('notifications', forceRefresh: true);
     if (fetched == null) return;
 
     final fetchedList = fetched
@@ -96,14 +111,16 @@ class _notificationsPageState extends State<notificationsPage> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: messages!.length,
                 itemBuilder: (context, index) {
-                  final message = messages![index];
+                  final message = messages!.reversed.toList()[index];
                   final isNew = newMessageIds.contains(message.id);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: notificationBubble(
                       newMessage: isNew,
                       notification: message,
-                      delete: () {
+                      delete: () async {
+                        final response = await NetworkService().deleteRoute('notifications/${messages![index].id}');
+                        if(response.statusCode != 200) return;
                         setState(() {
                           messages!.removeAt(index);
                           newMessageIds.remove(message.id);

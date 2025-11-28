@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/networkService.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -10,19 +11,17 @@ class imageLoader extends StatefulWidget {
   final String? imageRoute;
   final String? uploadRoute;
   final ValueChanged<File>? onUpload;
-  final BoxShape shape;
-  final double? width;
-  final double? height;
+  final bool circle;
+  final double? size;
   final BoxFit fit;
 
-  const imageLoader({
+  imageLoader({
     super.key,
     this.imageRoute,
     this.uploadRoute,
     this.onUpload,
-    this.shape = BoxShape.rectangle,
-    this.width,
-    this.height,
+    this.circle = false,
+    this.size,
     this.fit = BoxFit.cover,
   });
 
@@ -32,7 +31,7 @@ class imageLoader extends StatefulWidget {
 
 class _imageLoaderState extends State<imageLoader> {
   bool _isUploading = false;
-  Widget _imageWidget = const Center(child: CircularProgressIndicator());
+  Widget? _imageWidget;
 
   @override
   void initState() {
@@ -40,25 +39,17 @@ class _imageLoaderState extends State<imageLoader> {
     _loadImage();
   }
 
-  @override
-  void didUpdateWidget(imageLoader oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.imageRoute != widget.imageRoute) {
-      _loadImage();
-    }
-  }
-
   Future<void> _loadImage() async {
+    if(_imageWidget != null) return;
+    debugPrint("imageRoute: ${widget.imageRoute}");
     if (widget.imageRoute == null) {
       setState(() {
-        _imageWidget = Image.asset('assets/genericAccount.png', fit: widget.fit);
+        _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
       });
       return;
     }
-
-    setState(() {
-      _imageWidget = const Center(child: CircularProgressIndicator());
-    });
+    // _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
+    // return;
 
     if (widget.imageRoute!.contains("/private/var/mobile/Containers/Data/Application/")) {
       setState(() {
@@ -67,19 +58,21 @@ class _imageLoaderState extends State<imageLoader> {
     } else {
       try {
         final data = await NetworkService().getImage(widget.imageRoute!);
+        if(!mounted) return;
         if (data != null) {
           setState(() {
             _imageWidget = Image.memory(Uint8List.fromList(data), fit: widget.fit);
           });
         } else {
           setState(() {
-            _imageWidget = Image.asset('assets/genericAccount.png', fit: widget.fit);
+            _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
           });
         }
       } catch (e) {
         debugPrint('Error loading image: $e');
+        if(!mounted) return;
         setState(() {
-          _imageWidget = Image.asset('assets/genericAccount.png', fit: widget.fit);
+          _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
         });
       }
     }
@@ -93,7 +86,7 @@ class _imageLoaderState extends State<imageLoader> {
       final imageFile = File(pickedFile.path);
       setState(() => _isUploading = true);
 
-      final response = await NetworkService().uploadFile(imageFile, widget.uploadRoute!, 'profile.jpg', context);
+      final response = await NetworkService().uploadFile(await MultipartFile.fromFile(imageFile.path), widget.uploadRoute!, 'profile.jpg', context);
       if(response.statusCode != 200) {
         setState(() => _isUploading = false);
         return;
@@ -137,15 +130,17 @@ class _imageLoaderState extends State<imageLoader> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.width,
-      height: widget.height,
+      width: widget.size,
+      height: widget.size,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (widget.shape == BoxShape.circle)
-            ClipOval(child: _imageWidget)
+          if(_imageWidget == null)
+            const Center(child: CircularProgressIndicator())
+          else if (widget.circle)
+            ClipOval(child: _imageWidget!)
           else
-            _imageWidget,
+            _imageWidget!,
           if (widget.uploadRoute != null)
             Align(
               alignment: Alignment.bottomRight,
@@ -167,7 +162,7 @@ class _imageLoaderState extends State<imageLoader> {
           if (_isUploading)
             Container(
               decoration: BoxDecoration(
-                shape: widget.shape,
+                shape: widget.circle? BoxShape.circle: BoxShape.rectangle,
                 color: Colors.black.withOpacity(0.5),
               ),
               child: const Center(

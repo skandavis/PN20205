@@ -8,13 +8,34 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
 class settingsPage extends StatefulWidget {
-  const settingsPage({super.key});
+  final ValueNotifier<bool> isVisible;
+  const settingsPage({super.key, required this.isVisible});
 
   @override
   State<settingsPage> createState() => _settingsPageState();
 }
 
 class _settingsPageState extends State<settingsPage> {
+
+  void initState() {
+    super.initState();
+    widget.isVisible.addListener(_onVisibilityChanged);
+  }
+  
+  @override
+  void dispose() {
+    widget.isVisible.removeListener(_onVisibilityChanged);
+    super.dispose();
+  }
+
+  void _onVisibilityChanged() {
+    if (widget.isVisible.value) {
+      // is visible;
+    } else {
+      // is not visible
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(

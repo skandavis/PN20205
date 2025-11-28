@@ -8,7 +8,7 @@ class User {
   // Properties
   String id = '';
   String role = '';
-  bool firstTime = true;
+  bool firstTime = false;
   String name = '';
   String city = '';
   String phone = '';
@@ -22,7 +22,7 @@ class User {
     primaryUser = json['primaryUserId'];
     photo = json["photo"] == null ? null : json["photo"]["url"].substring(1);
     email = json["email"];
-    // firstTime = json['isFirstTime'];
+    firstTime = json['isFirstTime'];
     name = json['name'] ?? name;
     city = json['city'] ?? city;
     phone = json['phoneNumber'] ?? phone;

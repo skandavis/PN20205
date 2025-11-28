@@ -27,21 +27,27 @@ class expandedActivityPage extends StatefulWidget {
 
 class _expandedActivityPageState extends State<expandedActivityPage> {
   bool ellipsis = true;
-@override
-  void initState() {
-    super.initState();
-  }
-  void updateActivity(String? location, DateTime? startTime) {
+
+  Future<int> updateActivity(String? location, DateTime? startTime) async{
      if(location != null)
     {
-      NetworkService().patchRoute({"location": location}, "activities/${widget.activity.id}");
-      globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].location = location;
+      final response = await NetworkService().patchRoute({"location": location}, "activities/${widget.activity.id}");
+      if(response.statusCode == 200)
+      {
+        globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].location = location;
+      }
+      return response.statusCode!;
     }
     if(startTime != null)
     {
-      NetworkService().patchRoute({"startTime": startTime}, "activities/${widget.activity.id}");
-      globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].startTime = startTime;
+      final response = await NetworkService().patchRoute({"startTime": startTime.toIso8601String()}, "activities/${widget.activity.id}");
+      if(response.statusCode == 200)
+      {
+        globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].startTime = startTime;
+      }
+      return response.statusCode!;
     }
+    return 500;
   }
   @override
   Widget build(BuildContext context) {
@@ -86,6 +92,8 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                   child: ImageCarousel(
                     imageUrls: widget.activity.images,
                     uploadPath: 'activities/${widget.activity.id}/photo',
+                    onUpload: (image) {
+                    },
                   ),
                 ),
               ],
@@ -111,23 +119,29 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                             ),
                           ],
                         ),
+                        SizedBox(
+                          height: 15,
+                        ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Text(widget.activity.sub,style: TextStyle(color: Colors.white),),
                             categoryLabel(
                               activity: widget.activity,
                             ),
                           ],
                         ),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             attribute(
-                              isDate: true,
                               onValueChange: updateActivity,
                               isEditable: true,
                               attributeTitle: "Date",
-                              attributeValue: DateFormat('MMM dd, H:mm a').format(widget.activity.startTime),
+                              attributeValue: widget.activity.startTime,
                             ),
                             const myVerticaldivider(),
                             attribute(
@@ -168,7 +182,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                                 children: List.generate(widget.activity.participants.length, (index) {
                                   return Column(
                                     children: [
-                                      participantRow(participant: widget.activity.participants[index], activity: widget.activity,),
+                                      participantRow(participantIndex: index, activity: widget.activity,),
                                       SizedBox(height: 25,)
                                     ],
                                   );

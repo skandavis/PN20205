@@ -85,17 +85,14 @@ class CacheManager {
       final metaFile = File('${basePath.path}.meta');
 
       if (!await dataFile.exists() || !await metaFile.exists()) return null;
-      // Read metadata
       final metaJson = jsonDecode(await metaFile.readAsString());
       
-      // Check expiry
       if (_isExpired(metaJson)) {
         await dataFile.delete();
         await metaFile.delete();
         return null;
       }
 
-      // Read image bytes
       return await dataFile.readAsBytes();
     } catch (e) {
       print('Failed to load image cache: $e');

@@ -18,13 +18,13 @@ class sendMessageDialog extends StatefulWidget {
 
 class _sendMessageDialogState extends State<sendMessageDialog> {
 TextEditingController messageController = TextEditingController();
-
+bool isPush = false;
 void updateIsPush() {
-  globals.isPush = !globals.isPush;
+  isPush = !isPush;
 }
 void sendMessage(BuildContext context) async {
   final messageText = messageController.text.trim();
-  (globals.isPush.toString());
+  (isPush.toString());
   if (messageText.isEmpty)
   {
     utils.snackBarMessage(context, 'Please enter a message');
@@ -37,7 +37,7 @@ void sendMessage(BuildContext context) async {
     Navigator.pop(context);
     return;
   } 
-  final type = globals.isPush ? "P" : "N";
+  final type = isPush ? "P" : "N";
   final response = await NetworkService().postRoute(
     {
       'message': messageText,
@@ -49,7 +49,7 @@ void sendMessage(BuildContext context) async {
   if (response.statusCode! == 200) {
     setState(() {
       messageController.clear();
-      globals.isPush = false;
+      isPush = false;
     });
 
     utils.snackBarMessage(context, "Message Sent!", color: Colors.green);
