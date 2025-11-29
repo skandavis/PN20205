@@ -1,6 +1,6 @@
 
+import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/networkService.dart';
-import 'package:NagaratharEvents/profileImageCircle.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/services.dart';
 import 'package:NagaratharEvents/phoneNumberFormatter.dart';
@@ -61,13 +61,15 @@ class _accountPageState extends State<accountPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              profileImageCircle(
+              imageLoader(
+                key: ValueKey(user.photo),
                 size: 75,
-                imageUrl:user.photo,
-                uploadRoute:"users/photo",
-                onImageChanged: (file) {
+                circle: true,
+                imageRoute: user.photo,
+                uploadRoute: "users/photo",
+                onUpload: (file) {
                   setState(() {
-                    user.photo = file.path;
+                    user.photo = file.path;                    
                   });
                 },
               ),

@@ -11,11 +11,9 @@ import 'package:intl/intl.dart';
 
 class activityCard extends StatefulWidget {
   Activity activity;
-  Function? callback;
   activityCard({
     super.key,
     required this.activity,
-    this.callback
   });
 
   @override
@@ -35,10 +33,8 @@ class _activityCardState extends State<activityCard> {
               activity: widget.activity,
             ),
           ),
-        ).then((_){
-          setState(() {
-            if(widget.callback != null) widget.callback!();
-          });
+        ).then((value){
+          setState(() {});
         });
       },
       child: Container(

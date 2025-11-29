@@ -14,7 +14,6 @@ class favoriteIcon extends StatefulWidget {
 class _favoriteIconState extends State<favoriteIcon> {
   @override
   Widget build(BuildContext context) {
-    (widget.activity.favoritized.toString());
     bool favorite = widget.activity.favoritized;
     return IconButton(
       onPressed: () async {

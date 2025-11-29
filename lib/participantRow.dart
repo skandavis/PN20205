@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/participant.dart';
 import 'package:NagaratharEvents/participantDetailDialog.dart';
-import 'package:NagaratharEvents/profileImageCircle.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
@@ -53,11 +53,12 @@ class _participantRowState extends State<participantRow> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            profileImageCircle(
-              key: ValueKey(participant.image), // Add this key
-              imageUrl: participant.image,
+            imageLoader(
+              onUpload: onImageUpdated,
+              imageRoute: participant.image,
+              circle: true,
+              key: ValueKey(participant.image),
               size: 75,
-              expandable: false,
             ),
             const SizedBox(width: 10),
             SizedBox(

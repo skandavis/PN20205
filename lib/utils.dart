@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:NagaratharEvents/customDialogBox.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -85,6 +84,12 @@ Future<void> addEventToCalendar(String name, String desc, String eventLocation, 
     print("No calendars available");
     return;
   }
+
+    // _initializeImageLoaders();
+  debugPrint(calendars[0].accountName.toString());
+  debugPrint(calendars[0].accountType.toString());
+  debugPrint(calendars[0].id.toString());
+  debugPrint(calendars[0].name.toString());
 
   // Let user pick a calendar
   final selectedCalendar = await showDialog<Calendar>(

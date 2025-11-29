@@ -7,7 +7,7 @@ class profileImageCircle extends StatefulWidget {
   final bool expandable;
   final String? uploadRoute;
   Function(File)? onImageChanged;
-  final String? imageUrl;
+  String? imageUrl;
   final int size;
 
   profileImageCircle({
@@ -29,7 +29,12 @@ class _profileImageCircleState extends State<profileImageCircle> {
     return imageLoader(
       imageRoute: widget.imageUrl, 
       uploadRoute: widget.uploadRoute, 
-      onUpload: widget.onImageChanged, 
+      onUpload: (file){
+        widget.onImageChanged!(file);
+        setState(() {
+          widget.imageUrl = file.path;          
+        });
+      }, 
       circle: true,size: widget.size.toDouble(),
     );
   }

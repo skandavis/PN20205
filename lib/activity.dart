@@ -112,4 +112,9 @@ class Activity {
     liked = !liked;
     likes += liked ? 1 : -1;
   }
+
+  void addImage(String image)
+  {
+    images.add(image);
+  }
 }

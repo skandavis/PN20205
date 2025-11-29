@@ -59,7 +59,6 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   }
   (status.toString());
   if (status.isPermanentlyDenied||status.isDenied) {
-    // Show dialog to guide user to settings
     bool openSettings = await showDialog(
       context: context,
       builder: (context) => AlertDialog(

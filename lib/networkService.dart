@@ -237,7 +237,7 @@ class NetworkService {
     await _initIfNeeded();
     
     final formData = FormData.fromMap({
-      'file': file,
+      'photo': file,
       'name': fileName
     });
 

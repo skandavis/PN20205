@@ -12,10 +12,6 @@ import 'package:NagaratharEvents/imageCarousel.dart';
 import 'package:NagaratharEvents/thumbsUpIcon.dart';
 import 'package:NagaratharEvents/verticalDivider.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
-import 'package:intl/intl.dart';
-
-
-
 
 class expandedActivityPage extends StatefulWidget {
   Activity activity;
@@ -27,7 +23,6 @@ class expandedActivityPage extends StatefulWidget {
 
 class _expandedActivityPageState extends State<expandedActivityPage> {
   bool ellipsis = true;
-
   Future<int> updateActivity(String? location, DateTime? startTime) async{
      if(location != null)
     {
@@ -92,8 +87,6 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                   child: ImageCarousel(
                     imageUrls: widget.activity.images,
                     uploadPath: 'activities/${widget.activity.id}/photo',
-                    onUpload: (image) {
-                    },
                   ),
                 ),
               ],

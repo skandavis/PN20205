@@ -17,6 +17,7 @@ class settingsPage extends StatefulWidget {
 
 class _settingsPageState extends State<settingsPage> {
 
+  @override
   void initState() {
     super.initState();
     widget.isVisible.addListener(_onVisibilityChanged);

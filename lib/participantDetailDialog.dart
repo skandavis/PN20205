@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/gradientTextField.dart';
+import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/participant.dart';
-import 'package:NagaratharEvents/profileImageCircle.dart';
 import 'package:flutter/material.dart';
 
 class ParticipantDetailDialog extends StatefulWidget {
@@ -121,11 +121,13 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                 child: Column(
                   children: [
                     Center(
-                      child: profileImageCircle(
+                      child: imageLoader(
+                        key: ValueKey(participant.image),
+                        circle: true,
                         size: 150,
-                        imageUrl: participant.image,
+                        imageRoute: participant.image,
                         uploadRoute: "participants/${participant.id}/photo",
-                        onImageChanged: (file){
+                        onUpload: (file){
                           setState(() => participant.image = file.path);
                           widget.onImageUpdated(file);
                         },

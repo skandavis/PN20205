@@ -219,11 +219,9 @@ class activitiesPageState extends State<activitiesPage> {
           itemCount: activities.length,
           itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: activityCard(activity: activities[index], callback: (){
-              setState(() {
-                // activities = _filteredActivities;
-              });
-            }),
+            child: activityCard(
+              activity: activities[index], 
+            ),
           ),
         ),
       ),

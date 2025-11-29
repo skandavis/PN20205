@@ -13,8 +13,6 @@ class imageLoader extends StatefulWidget {
   final ValueChanged<File>? onUpload;
   final bool circle;
   final double? size;
-  final BoxFit fit;
-
   imageLoader({
     super.key,
     this.imageRoute,
@@ -22,7 +20,6 @@ class imageLoader extends StatefulWidget {
     this.onUpload,
     this.circle = false,
     this.size,
-    this.fit = BoxFit.cover,
   });
 
   @override
@@ -30,11 +27,13 @@ class imageLoader extends StatefulWidget {
 }
 
 class _imageLoaderState extends State<imageLoader> {
+  final BoxFit boxFit = BoxFit.cover;
   bool _isUploading = false;
   Widget? _imageWidget;
 
   @override
   void initState() {
+    debugPrint("imageRoute: ${widget.imageRoute}");
     super.initState();
     _loadImage();
   }
@@ -44,16 +43,16 @@ class _imageLoaderState extends State<imageLoader> {
     debugPrint("imageRoute: ${widget.imageRoute}");
     if (widget.imageRoute == null) {
       setState(() {
-        _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
+        _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: boxFit) : Image.asset('assets/genericPhoto.png', fit: boxFit);
       });
       return;
     }
-    // _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
+    // _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: fit) : Image.asset('assets/genericPhoto.png', fit: fit);
     // return;
 
     if (widget.imageRoute!.contains("/private/var/mobile/Containers/Data/Application/")) {
       setState(() {
-        _imageWidget = Image.file(File(widget.imageRoute!), fit: widget.fit);
+        _imageWidget = Image.file(File(widget.imageRoute!), fit: boxFit);
       });
     } else {
       try {
@@ -61,18 +60,18 @@ class _imageLoaderState extends State<imageLoader> {
         if(!mounted) return;
         if (data != null) {
           setState(() {
-            _imageWidget = Image.memory(Uint8List.fromList(data), fit: widget.fit);
+            _imageWidget = Image.memory(Uint8List.fromList(data), fit: boxFit);
           });
         } else {
           setState(() {
-            _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
+            _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: boxFit) : Image.asset('assets/genericPhoto.png', fit: boxFit);
           });
         }
       } catch (e) {
         debugPrint('Error loading image: $e');
         if(!mounted) return;
         setState(() {
-          _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: widget.fit) : Image.asset('assets/genericPhoto.png', fit: widget.fit);
+          _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: boxFit) : Image.asset('assets/genericPhoto.png', fit: boxFit);
         });
       }
     }
@@ -87,11 +86,15 @@ class _imageLoaderState extends State<imageLoader> {
       setState(() => _isUploading = true);
 
       final response = await NetworkService().uploadFile(await MultipartFile.fromFile(imageFile.path), widget.uploadRoute!, 'profile.jpg', context);
-      if(response.statusCode != 200) {
-        setState(() => _isUploading = false);
-        return;
+      // if(response.statusCode != 200) {
+      //   setState(() => _isUploading = false);
+      //   return;
+      // }
+      if(widget.uploadRoute != null)
+      {
+        widget.onUpload?.call(imageFile);
       }
-      widget.onUpload?.call(imageFile);
+      debugPrint('hi');
     } catch (e) {
       debugPrint('Error uploading image: $e');
     } finally {
