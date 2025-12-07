@@ -4,8 +4,8 @@ import 'package:NagaratharEvents/multiDigitInput.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert'; // For JSON encoding
 import 'package:NagaratharEvents/globals.dart' as globals;
+import 'dart:convert';
 import 'package:NagaratharEvents/homePage.dart';
 import 'package:NagaratharEvents/loginPage.dart';
 import 'package:NagaratharEvents/submit.dart';
@@ -14,9 +14,8 @@ import 'utils.dart' as utils;
 
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 class enterPinUI extends StatefulWidget {
-  String ApnsToken;
   Function() updateLoading;
-  enterPinUI({super.key, required this.ApnsToken, required this.updateLoading});
+  enterPinUI({super.key, required this.updateLoading});
 
   @override
   State<enterPinUI> createState() => _enterPinUIState();
@@ -25,24 +24,22 @@ class _enterPinUIState extends State<enterPinUI> {
   String pin = '';
   Future<int> authenticate(int pin) async {
     widget.updateLoading();
-    // await Future.delayed(Duration(seconds: 10));
     final response = await NetworkService().postRoute(
     {
       // "email": "viswanathanmanickam5@gmail.com",
       // "deviceID":"C94E3948-77C0-43DE-864F-D31CE817284B",
-      "deviceAPN":  widget.ApnsToken,
+      "deviceAPN":  globals.ApnsToken,
       "passcode": pin,
       // "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
-    }, 'auth/verify-otp');
+    }, 'auth/verify-otp',
+    skipIntercept: true);
     if(response.statusCode == 200){
       final SharedPreferencesAsync prefs = SharedPreferencesAsync();
       prefs.setBool('loggedIn', true);
       final responseMap = json.decode(response.data) as Map<String, dynamic>;
       User.instance.fromJson(responseMap.remove('user'));
       EventInfo.instance.fromJson(responseMap);
-      for (var photo in responseMap["photos"]) {
-        globals.mainPageImages.add(photo["url"].substring(1));
-      } 
+      EventInfo.instance.addImages(responseMap["photos"]);
     }
     widget.updateLoading();
     return response.statusCode!;
@@ -75,17 +72,9 @@ class _enterPinUIState extends State<enterPinUI> {
               ),
             );
             break;
-          case 400:
-            utils.snackBarMessage(context, 'Bad Request');
-            break;
           case 401:
             utils.snackBarMessage(context, 'PIN is invalid for account!');
             break;
-          case 408:
-            utils.snackBarMessage(context, 'Server Timed Out!');
-            break;
-          default:
-            utils.snackBarMessage(context, 'Internal Server Error!');
         }
     });
   }

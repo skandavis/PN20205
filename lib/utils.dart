@@ -7,52 +7,17 @@ import 'package:timezone/timezone.dart' as tz;
 
 final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
 
-  void snackBarMessage(BuildContext context, String message,{Color color = const Color.fromARGB(255, 255, 51, 0)})
-  {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: color,
-        content:
-            Text(message),
-      ),
-    );
-  }
+void snackBarMessage(BuildContext context, String message,{Color color = const Color.fromARGB(255, 255, 51, 0)})
+{
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: color,
+      content:
+          Text(message),
+    ),
+  );
+}
 
-// Future<bool> requestCalendarPermission(BuildContext context) async {
-//   final status = await Permission.calendarWriteOnly.status;
-
-//   if (status.isGranted) return true;
-
-//   final newStatus = await Permission.calendarWriteOnly.request();
-
-//   if (newStatus.isGranted) return true;
-
-//   // ask user to open settings
-//   if (newStatus.isDenied || newStatus.isPermanentlyDenied) {
-//     await showDialog(
-//       context: context,
-//       builder: (_) => AlertDialog(
-//         title: Text("Permission Required"),
-//         content: Text("Enable calendar access in Settings to add events."),
-//         actions: [
-//           TextButton(
-//             child: Text("Cancel"),
-//             onPressed: () => Navigator.pop(context),
-//           ),
-//           TextButton(
-//             child: Text("Open Settings"),
-//             onPressed: () {
-//               Navigator.pop(context);
-//               openAppSettings();
-//             },
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   return false;
-// }
 Future<bool> requestCalendarPermission() async {
   // Ask for permissions
   var permissionsGranted = await _deviceCalendarPlugin.hasPermissions();
@@ -68,7 +33,6 @@ Future<bool> requestCalendarPermission() async {
 Future<void> addEventToCalendar(String name, String desc, String eventLocation, DateTime start, DateTime end, BuildContext context) async {
   final hasPermission = await requestCalendarPermission();
   if (!hasPermission) {
-    print("Calendar permission not granted!");
     return;
   }
 
@@ -81,17 +45,9 @@ Future<void> addEventToCalendar(String name, String desc, String eventLocation, 
   final calendars = calendarsResult.data;
 
   if (calendars == null || calendars.isEmpty) {
-    print("No calendars available");
     return;
   }
 
-    // _initializeImageLoaders();
-  debugPrint(calendars[0].accountName.toString());
-  debugPrint(calendars[0].accountType.toString());
-  debugPrint(calendars[0].id.toString());
-  debugPrint(calendars[0].name.toString());
-
-  // Let user pick a calendar
   final selectedCalendar = await showDialog<Calendar>(
     context: context,
     builder: (BuildContext context) {
@@ -117,17 +73,14 @@ Future<void> addEventToCalendar(String name, String desc, String eventLocation, 
   );
 
   if (selectedCalendar == null) {
-    print("No calendar selected");
     return;
   }
 
-  // Check if calendar is read-only
   if (selectedCalendar.isReadOnly ?? false) {
     snackBarMessage(context, "Calendar is read-only");
     return;
   }
 
-  // Create event
   Event event = Event(
     selectedCalendar.id,
     title: name,
@@ -137,14 +90,10 @@ Future<void> addEventToCalendar(String name, String desc, String eventLocation, 
     end: endLoc,
   );
 
-  // Save event
   final createResult = await _deviceCalendarPlugin.createOrUpdateEvent(event);
 
   if (createResult!.isSuccess) {
     snackBarMessage(context, "Event added successfully!", color: Colors.green);
-    print("Event added successfully!");
-  } else {
-    print("Failed to add event");
   }
 }
 

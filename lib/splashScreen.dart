@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/messageReciever.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/homePage.dart';
 import 'package:NagaratharEvents/introPage.dart';
@@ -22,16 +24,26 @@ class _SplashScreenState extends State<SplashScreen> {
             builder: (context) =>
                 widget.showMainPage ? MyHomePage() : const introPage()),
       );
+      getAndCheckToken();
     });
+  }
+
+  getAndCheckToken() async {
+    globals.ApnsToken = await requestNotificationPermission(context, !widget.showMainPage);
+    bool? enabled = await prefs.getBool('notificationsEnabled');
+    if(enabled == null) return;
+    if(enabled == globals.ApnsToken.isNotEmpty) return;
+    //send token to backend
+    prefs.setBool('notificationsEnabled', globals.ApnsToken.isNotEmpty);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
-            Color.fromARGB(255, 24, 19, 118),
+            globals.darkAccent,
             Colors.black,
           ], begin: Alignment.centerLeft, end: Alignment.centerRight),
         ),

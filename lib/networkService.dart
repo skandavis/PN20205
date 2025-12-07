@@ -63,25 +63,26 @@ class NetworkService {
           handler.next(options);
         },
         onResponse: (response, handler) async {
-          if(response.requestOptions.extra['skipIntercept'] == true) {
-            return handler.next(response);
-          }
           final context = globals.navigatorKey.currentContext;
-          if (response.statusCode == 400) {
-            // Bad request
+          if (response.statusCode == 403) {
+            utils.snackBarMessage(context!, "You're not authorized!");
           } else if (response.statusCode == 413) {
             utils.snackBarMessage(context!, 'Image too large!');
-            print('Image too large');
           } else if (response.statusCode == 498) {
             return handler.resolve(await refresh(response.requestOptions));
           } else if (response.statusCode == 500) {
             utils.snackBarMessage(context!, 'Internal Server Error! Try again later.');
           } else if (response.statusCode == 404) {
+            if(response.requestOptions.extra['skipIntercept'] == true) {
+              return handler.next(response);
+            }
             utils.snackBarMessage(context!, 'Resource not found!');
           } else if (response.statusCode == 401) {
+            if(response.requestOptions.extra['skipIntercept'] == true) {
+              return handler.next(response);
+            }
             final SharedPreferencesAsync prefs = SharedPreferencesAsync();
             prefs.remove('loggedIn');
-            globals.mainPageImages.clear();
             // globals.totalActivities.clear();
             Navigator.pushReplacement(
               context!,
@@ -97,7 +98,7 @@ class NetworkService {
           if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-            utils.snackBarMessage(globals.navigatorKey.currentContext!, 'Connection timed out!');
+            utils.snackBarMessage(globals.navigatorKey.currentContext!, 'Internet connection timed out. Check your connection and try again.');
           }
           return handler.next(e);
         },
@@ -108,7 +109,6 @@ class NetworkService {
   Future<Response> refresh(RequestOptions options) async
   {
     await dio.get('auth/refresh-token');
-    debugPrint('Refreshing token');
     if(options.data is FormData)
     {
       FormData formData = options.data as FormData;
@@ -134,11 +134,9 @@ class NetworkService {
         return response;
       }
       
-      print("Non-200 status (${response.statusCode}), loading from cache");
       return Response (requestOptions: RequestOptions(path: route), data: await cacheManager.loadResource(route));
       
     } catch (e) {
-      debugPrint(e.toString());
       return Response (requestOptions: RequestOptions(path: route), data: await cacheManager.loadResource(route));
     }
   }
@@ -148,12 +146,10 @@ class NetworkService {
     final data = response.data;
     
     if (data is List<dynamic>) {
-      data.forEach(print);
       return data;
     }
     
     if (data is Map<String, dynamic>) {
-      print("Single object received. Not Multiple!");
     }
     
     return null;
@@ -164,30 +160,28 @@ class NetworkService {
     final data = response.data;
     
     if (data is Map<String, dynamic>) {
-      print(data.toString());
       return data;
     }
     
     if (data is List<dynamic>) {
-      print("Multiple objects received. Not Single!");
     }
     
     return null;
   }
   
-  Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route) async {
+  Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route, {bool skipIntercept = false}) async {
     await _initIfNeeded();
     
     try {
-      return await dio.post(
+      final response = await dio.post(
         route, 
         data: json.encode(data),
-        options: Options(
+        options: skipIntercept ? Options(
           extra: {"skipIntercept": true}
-        )
+        ) : null
       );
+      return response;
     } catch (e) {
-      print('An error occurred: $e');
       return _createErrorResponse(route, 500);
     }
   }
@@ -200,7 +194,6 @@ class NetworkService {
           .patch(route, data: json.encode(data));
       return response;
     } catch (e) {
-      print('An error occurred while patching: $e');
       return _createErrorResponse(route, 500);
     }
   }
@@ -211,10 +204,8 @@ class NetworkService {
     try {
       final response = await dio
           .patch(route);
-      print("Status code: ${response.statusCode}");
       return response;
     } catch (e) {
-      print('Unexpected error: $e');
       return _createErrorResponse(route, 500);
     }
   }
@@ -228,7 +219,6 @@ class NetworkService {
       return response;
       
     } catch (e) {
-      print('An error occurred while deleting: $e');
       return _createErrorResponse(route, 500);
     }
   }
@@ -237,7 +227,7 @@ class NetworkService {
     await _initIfNeeded();
     
     final formData = FormData.fromMap({
-      'photo': file,
+      'file': file,
       'name': fileName
     });
 
@@ -247,14 +237,11 @@ class NetworkService {
         data: formData,
         options: Options(headers: {'Content-Type': 'multipart/form-data'}),
       );
-      print(response.data);
       if (response.statusCode == 200) {
         utils.snackBarMessage(context, "File uploaded successfully!", color: Colors.green);  
       }
       return response;
     } catch (e) {
-      print('Failed to upload file: $e');
-      utils.snackBarMessage(context, "Failed to upload file: $e");
       return _createErrorResponse(route, 500);
     }
   }

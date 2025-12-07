@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:NagaratharEvents/activity.dart';
 import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/participant.dart';
@@ -18,11 +17,10 @@ class participantRow extends StatefulWidget {
 class _participantRowState extends State<participantRow> {
   late int activityIndex = globals.totalActivities!.indexOf(widget.activity);
   late Participant participant = widget.activity.participants[widget.participantIndex];
-  void onImageUpdated(File image) {
+  void onImageUpdated(String? image) {
     setState(() {
-      globals.totalActivities![activityIndex].participants[widget.participantIndex].image = image.path;
-      participant.image = image.path;
-      debugPrint("image.path: ${image.path}");
+      globals.totalActivities![activityIndex].participants[widget.participantIndex].image = image;
+      participant.image = image;
     });
   }
 
@@ -54,7 +52,7 @@ class _participantRowState extends State<participantRow> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             imageLoader(
-              onUpload: onImageUpdated,
+              buttonSize: 5,
               imageRoute: participant.image,
               circle: true,
               key: ValueKey(participant.image),

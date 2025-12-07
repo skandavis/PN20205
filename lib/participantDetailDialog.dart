@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 class ParticipantDetailDialog extends StatefulWidget {
   final Participant participant;
-  final Function(File) onImageUpdated;
+  final Function(String?) onImageUpdated;
   final Function(Map<String,dynamic>) onDataChanged;
 
   const ParticipantDetailDialog({
@@ -122,15 +122,20 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                   children: [
                     Center(
                       child: imageLoader(
-                        key: ValueKey(participant.image),
+                        buttonSize: 35,
                         circle: true,
                         size: 150,
                         imageRoute: participant.image,
-                        uploadRoute: "participants/${participant.id}/photo",
-                        onUpload: (file){
-                          setState(() => participant.image = file.path);
-                          widget.onImageUpdated(file);
-                        },
+                        uploadRoute: !isEditing ? "participants/${participant.id}/photo" : null,
+                        deleteRoute: isEditing ? "participants/${participant.id}/photo" : null,
+                        onDelete: isEditing ? () {
+                          participant.image = null;
+                          widget.onImageUpdated(null);
+                        } : null,
+                        onUpload:  !isEditing ? (file){
+                          participant.image = file.path;
+                          widget.onImageUpdated(file.path);
+                        } : null,
                       ),
                     ),
                     SizedBox(height: 16),

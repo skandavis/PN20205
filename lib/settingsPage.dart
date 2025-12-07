@@ -72,7 +72,6 @@ class _settingsPageState extends State<settingsPage> {
           onTap: () async {
             final SharedPreferencesAsync prefs = SharedPreferencesAsync();
             await prefs.remove('loggedIn');
-            globals.mainPageImages.clear();
             // globals.totalActivities.clear();
             Navigator.pushReplacement(
               context,

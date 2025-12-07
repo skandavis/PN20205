@@ -14,15 +14,6 @@ class Notification {
 
   });
 
-  void displayNotificationDetails() {
-    print('Notification Details:');
-    print('ID: $id');
-    print('Message: $message');
-    print('Is A Push Notification: ${type=='P' ? "Yes" : "No"}');
-    print('Created By: $creatorName');
-    print('Created At: $creationTime');
-  }
-
   // Factory constructor to create Notification from a JSON map
   factory Notification.fromJson(Map<String, dynamic> json) {
     return Notification(

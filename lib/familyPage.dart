@@ -7,7 +7,6 @@ import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 class familyPage extends StatefulWidget {
   const familyPage({super.key});
 
@@ -59,7 +58,6 @@ class _familyPageState extends State<familyPage> {
       'users').then((response) {
         setState(() {
           family!.add(FamilyMember.fromJson(response.data));
-          debugPrint(family.toString());  
         });
       });
     nameController.clear();
@@ -213,7 +211,7 @@ class _familyPageState extends State<familyPage> {
         title: Text(
           "Family",
           style: TextStyle(
-            fontFamily: GoogleFonts.arvo().fontFamily,
+            fontFamily: globals.titleFont,
             fontSize: 36,
             color: Colors.white
           ),

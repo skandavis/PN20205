@@ -97,9 +97,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
       setState(() {
         user.fromJson(response.remove('user'));
         eventInfo.fromJson(response);
-        for (var photo in response["photos"]) {
-          globals.mainPageImages.add(photo["url"].substring(1));
-        }
+        eventInfo.addImages(response["photos"]);
       });
     }
     if(user.firstTime)
@@ -131,16 +129,15 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   }
   void onMapCreated(GoogleMapController controller) async{
     mapController = controller;
-    ("Why Here Of All Places?");
     geocode();
   }
   @override
   Widget build(BuildContext context) {
     return eventInfo.isLoaded ? ListView(
       children: [
-        if(globals.mainPageImages.isNotEmpty)
+        if(eventInfo.images.isNotEmpty)
         ImageCarousel(
-          imageUrls: globals.mainPageImages,
+          imageUrls: eventInfo.images,
         ),
         Container(
           padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.05),

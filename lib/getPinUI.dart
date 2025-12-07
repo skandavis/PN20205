@@ -13,7 +13,8 @@ final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 class getPinUI extends StatefulWidget {
   String deviceID;
   final void Function(String) onPinSent;
-  getPinUI({super.key, required this.onPinSent, required this.deviceID});
+  Function() updateLoading;
+  getPinUI({super.key, required this.onPinSent, required this.deviceID, required this.updateLoading});
 
   @override
   State<getPinUI> createState() => _getPinUIState();
@@ -21,13 +22,15 @@ class getPinUI extends StatefulWidget {
 
 class _getPinUIState extends State<getPinUI> {
   Future<int> registerUser(String email) async {
+    widget.updateLoading();
     final response = await NetworkService().postRoute({
       "email": email,
       "deviceID": widget.deviceID,
       "eventId": "",
     }, 
-    "auth/request-otp");
-    prefs.setBool('gotEmail', true);
+    "auth/request-otp",
+    skipIntercept: true);
+    widget.updateLoading();
     return response.statusCode!;
   }
   void showDialogBox() async {
@@ -55,9 +58,9 @@ class _getPinUIState extends State<getPinUI> {
   }
   void sendPin(String email, BuildContext context) async{
     if (email.isEmpty ) {
-      // email = "viswanathanmanickam5@gmail.com";
-      utils.snackBarMessage(context, 'Please enter email');
-      return;
+      email = "viswanathanmanickam5@gmail.com";
+      // utils.snackBarMessage(context, 'Please enter email');
+      // return;
     } 
     if (utils.isValidEmail(email)) {
       registerUser(email).then((statusCode) 
@@ -66,16 +69,11 @@ class _getPinUIState extends State<getPinUI> {
         {
           case 200:
             User.instance.setEmail(email);
+            prefs.setBool('gotEmail', true);
             showDialogBox();
             break;
-          case 400:
-            utils.snackBarMessage(context, 'Bad Request');
-            break;
-          case 408:
-            utils.snackBarMessage(context, 'Server Timed Out!');
-            break;
-          case 500:
-            utils.snackBarMessage(context, 'Internal Server Error');
+          case 404:
+            utils.snackBarMessage(context, 'Email not registered!');
             break;
         }
       });

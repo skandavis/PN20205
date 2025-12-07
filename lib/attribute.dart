@@ -80,8 +80,6 @@ class _attributeState extends State<attribute> {
   }
 
   Future<void> _selectDateTime(BuildContext context) async {
-    debugPrint("Selecting date and time");
-    
     DateTime selectedDateTime = widget.attributeValue;
     
     // Show Cupertino date-time picker

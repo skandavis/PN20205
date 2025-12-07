@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/messageReciever.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/loginPage.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class introPage extends StatefulWidget {
@@ -31,9 +30,9 @@ class _introPageState extends State<introPage> {
     return messageReciever(
       body: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-              Color.fromARGB(255, 24, 19, 118),
+              globals.darkAccent,
               Colors.black,
             ], begin: Alignment.centerLeft, end: Alignment.centerRight),
           ),
@@ -54,7 +53,7 @@ class _introPageState extends State<introPage> {
                         "Nagarathar",
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: GoogleFonts.arvo().fontFamily,
+                          fontFamily: globals.titleFont,
                           fontSize: 36,
                         ),
                       ),

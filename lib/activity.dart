@@ -35,21 +35,6 @@ class Activity {
     required this.participants
   });
 
-  void displayActivityDetails() {
-    print('Activity Details:');
-    print('ID: $id');
-    print('Name: $name');
-    print('Description: $description');
-    print('Location: $location');
-    print('Duration: $duration minutes');
-    print('Start Time: ${startTime.toLocal()}');
-    print('Category: $category');
-    print('Favorites: $favorites');
-    print('Likes: $likes');
-    print('Is Favoritized: ${favoritized ? "Yes" : "No"}');
-    print('Is Liked: ${liked ? "Yes" : "No"}');
-    print('Images: $images');
-  }
  @override
   bool operator ==(Object other) =>
       identical(this, other) ||

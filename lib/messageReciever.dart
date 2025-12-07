@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+
 class messageReciever extends StatefulWidget {
   Widget body;
   messageReciever({super.key, required this.body});
@@ -14,14 +18,11 @@ class _messageRecieverState extends State<messageReciever> {
   void initState() {
     super.initState();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      ('Received a foreground message!');
-      ('Message data: ${message.data}');
 
       if (message.notification != null) {
-        ('Message contains a notification: ${message.notification}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.blue,
             content: Text(message.notification!.body ?? ''),
             action: SnackBarAction(
               label: message.notification!.title ?? '',
@@ -33,7 +34,6 @@ class _messageRecieverState extends State<messageReciever> {
         );
       }
     });
-    requestPermission();
   }
 
   @override
@@ -42,7 +42,7 @@ class _messageRecieverState extends State<messageReciever> {
   }
 }
 
-Future<void> requestPermission() async {
+Future<String> requestNotificationPermission(BuildContext context, bool shouldShowDialog) async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   NotificationSettings settings = await messaging.requestPermission(
@@ -51,19 +51,46 @@ Future<void> requestPermission() async {
     sound: true,
   );
 
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    ('User granted permission');
-    getApnsToken();
-  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    ('User granted provisional permission');
-  } else {
-    ('User declined or has not accepted permission');
+  switch (settings.authorizationStatus) {
+    case AuthorizationStatus.authorized:
+      return getMessagingToken();
+
+    case AuthorizationStatus.denied:
+      if (shouldShowDialog) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Notifications Disabled"),
+              content: Text(
+                "You won't receive push notifications unless you enable them in Settings. Once you do you'll need to re-open the app for the changes to take effect.",
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text("OK"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    openAppSettings();
+                  },
+                  child: Text("Open Settings"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+
+      return "";
+    default:
+      return "";
   }
 }
 
-Future<String> getApnsToken() async {
-  String? token = Platform.isAndroid
-      ? await FirebaseMessaging.instance.getToken()
-      : await FirebaseMessaging.instance.getAPNSToken();
+
+Future<String> getMessagingToken() async {
+  String? token = await FirebaseMessaging.instance.getToken();
   return token!;
 }
