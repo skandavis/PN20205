@@ -44,7 +44,7 @@ class _getPinUIState extends State<getPinUI> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  "We have sent a 6-digit PIN to your email to your email to verify your account. Please check it and reenter it.",
+                  "We have sent a 6-digit PIN to your email to verify your account. Please check it and enter it.",
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -58,9 +58,9 @@ class _getPinUIState extends State<getPinUI> {
   }
   void sendPin(String email, BuildContext context) async{
     if (email.isEmpty ) {
-      email = "viswanathanmanickam5@gmail.com";
-      // utils.snackBarMessage(context, 'Please enter email');
-      // return;
+      // email = "viswanathanmanickam5@gmail.com";
+      utils.snackBarMessage(context, 'Please enter email');
+      return;
     } 
     if (utils.isValidEmail(email)) {
       registerUser(email).then((statusCode) 

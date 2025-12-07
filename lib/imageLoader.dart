@@ -114,8 +114,6 @@ class _imageLoaderState extends State<imageLoader> {
 
   // MARK: - Image Upload
   Future<void> _pickAndUploadImage(ImageSource source) async {
-    if (!await _handlePermissions()) return;
-
     final imageFile = await _pickImage(source);
     if (imageFile == null) return;
 
@@ -128,11 +126,8 @@ class _imageLoaderState extends State<imageLoader> {
     if (status.isDenied) {
       status = await Permission.photos.request();
     }
-
-    if (status.isPermanentlyDenied) {
-      return await _showPermissionDialog();
-    } else if (!status.isGranted) {
-      await _showPermissionDeniedDialog();
+  if (status.isDenied||status.isPermanentlyDenied) {
+      await _showPermissionDialog();
       return false;
     }
 
@@ -145,7 +140,7 @@ class _imageLoaderState extends State<imageLoader> {
       builder: (context) => AlertDialog(
         title: const Text('Permission Required'),
         content: const Text(
-          'Photo access has been permanently denied. Would you like to open settings to enable it?',
+          'Photo access has been permanently denied. This function needs access to your photos.',
         ),
         actions: [
           TextButton(
@@ -164,24 +159,6 @@ class _imageLoaderState extends State<imageLoader> {
       openAppSettings();
     }
     return false;
-  }
-
-  Future<void> _showPermissionDeniedDialog() async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Permission Denied'),
-        content: const Text(
-          'Photo access is required to upload images. Please grant permission to continue.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   Future<File?> _pickImage(ImageSource source) async {
@@ -311,7 +288,11 @@ class _imageLoaderState extends State<imageLoader> {
     return Align(
       alignment: Alignment.bottomRight,
       child: _buildActionButton(
-        onTap: _showImageSourceDialog,
+        onTap: () async{
+          bool granted = await _handlePermissions();
+          if (!granted) return;
+          _showImageSourceDialog();
+        },
         color: globals.secondaryColor,
         icon: Icons.add,
         iconColor: globals.backgroundColor,

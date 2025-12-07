@@ -3,10 +3,10 @@ import 'package:NagaratharEvents/activity.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 //frontend server
-String baseUrl = "http://192.168.86.38:81/";
+// String baseUrl = "http://192.168.86.38:81/";
 //manickam server
 // String baseUrl = "http://192.168.86.38:8081/";
-// String baseUrl = "https://nagaratharEvents.skandasoft.com/";
+String baseUrl = "https://nagaratharEvents.skandasoft.com/";
 // String baseUrl = "https://nagaratharEvents-sbx/";
 // String baseUrl = "http://nagaratharEvents.skandasoft.com:81/";
 
