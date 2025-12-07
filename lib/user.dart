@@ -36,18 +36,7 @@ class User {
   void setEmail(String email) {
     this.email = email;
   }
-  // Display details
-  void displayUserDetails() {
-    print('User Details:');
-    print('ID: $id');
-    print('Role: $role');
-    print('Is firstTime: ${firstTime ? "Yes" : "No"}');
-    print(primaryUser == null
-        ? 'Is Primary User'
-        : "Primary User's ID is: ${primaryUser!}");
-  }
-
-  // Convert User to JSON
+  
   Map<String, dynamic> toJson() {
     return {
       'id': id,

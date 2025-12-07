@@ -32,12 +32,20 @@ class _ImageCarouselState extends State<ImageCarousel> {
   void _initializeImageLoaders() {
     _imageLoaders = widget.imageUrls.map((imageUrl) {
       return imageLoader(
+        buttonSize: 45,
+        key: ValueKey(imageUrl),
+        dontReplace: true,
         imageRoute: imageUrl,
         uploadRoute: widget.uploadPath,
         onUpload: (image) {
           setState(() {
-            widget.imageUrls.add(image.path);
-            _imageLoaders.add(imageLoader(imageRoute: image.path));
+            if(widget.imageUrls[0].startsWith('img'))
+            {
+              widget.imageUrls[0] = image.path;
+            } else{
+              widget.imageUrls.add(image.path);
+            }
+            _initializeImageLoaders();
           });
         },
       );

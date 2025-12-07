@@ -7,7 +7,6 @@ import 'package:NagaratharEvents/mainPage.dart';
 import 'package:NagaratharEvents/messageReciever.dart';
 import 'package:NagaratharEvents/settingsPage.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
-import 'package:google_fonts/google_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
   int selectedIndex = 0;
@@ -44,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(
             pages[widget.selectedIndex].key,
             style: TextStyle(
-              fontFamily: GoogleFonts.arvo().fontFamily,
+              fontFamily: globals.titleFont,
               fontSize: 36,
               color: Colors.white
               ),

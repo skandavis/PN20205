@@ -1,12 +1,11 @@
 import 'package:NagaratharEvents/getPinUI.dart';
 import 'package:NagaratharEvents/enterPinUI.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:app_set_id/app_set_id.dart';
 import 'package:NagaratharEvents/messageReciever.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 String deviceID = "";
-String ApnsToken = "";
 
 Future<String?> getDeviceID() async {
     deviceID = (await AppSetId().getIdentifier())!;
@@ -25,13 +24,16 @@ class _loginPageState extends State<loginPage> {
   bool isLoading = false;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     getDeviceID().then((onValue){
       deviceID = onValue!;
     });
-    getApnsToken().then((onValue){
-      ApnsToken = onValue;        
-    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
     return messageReciever(
       body: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -40,9 +42,9 @@ class _loginPageState extends State<loginPage> {
             children: [
               Container(
                 height: MediaQuery.of(context).size.height,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    Color.fromARGB(255, 24, 19, 118),
+                    globals.darkAccent,
                     Colors.black,
                   ], begin: Alignment.centerLeft, end: Alignment.centerRight),
                 ),
@@ -58,7 +60,7 @@ class _loginPageState extends State<loginPage> {
                             "Login",
                             style: TextStyle(
                               color: Colors.white, 
-                              fontFamily: GoogleFonts.arvo().fontFamily,
+                              fontFamily: globals.titleFont,
                               fontSize: 36, 
                               height: 1
                             ),
@@ -77,12 +79,20 @@ class _loginPageState extends State<loginPage> {
                           topRight: Radius.circular(50),
                         ),
                       ),
-                      child: widget.sentPassword? enterPinUI(ApnsToken: ApnsToken,updateLoading: () {
-                        setState(() {
-                          isLoading = !isLoading;
-                        });
-                      },):
+                      child: widget.sentPassword? 
+                      enterPinUI(
+                        updateLoading: () {
+                          setState(() {
+                            isLoading = !isLoading;
+                          });
+                        },
+                      ):
                       getPinUI(
+                        updateLoading: () {
+                          setState(() {
+                            isLoading = !isLoading;
+                          });
+                        },
                         deviceID: deviceID,
                         onPinSent: (email) {
                           setState(() {

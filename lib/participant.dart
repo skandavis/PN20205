@@ -20,13 +20,6 @@ class Participant {
     this.image,
   });
 
-  void displayParticipantDetails() {
-    print('Participant Details:');
-    print('ID: $id');
-    print('Name: $name');
-    print('Description: $description');
-    print('Images: $image');
-  }
  @override
   bool operator ==(Object other) =>
       identical(this, other) ||

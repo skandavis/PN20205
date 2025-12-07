@@ -16,6 +16,7 @@ class EventInfo {
   String subSection = "";
   String aside = "";
   int userCount = 0;
+  List<String> images = [];
   bool isLoaded = false;
 
   EventInfo._internal();
@@ -36,5 +37,13 @@ class EventInfo {
     aside = json["aside"];
     userCount = json["_count"]["registeredUsers"];
     isLoaded = true;
+  }
+
+  void addImages(List<dynamic> json)
+  {
+    images = [];
+    for (var element in json) {
+      images.add(element["url"].substring(1));
+    }
   }
 }

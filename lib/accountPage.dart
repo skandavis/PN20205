@@ -4,7 +4,6 @@ import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/services.dart';
 import 'package:NagaratharEvents/phoneNumberFormatter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/formInput.dart';
 import 'package:NagaratharEvents/messageReciever.dart';
@@ -51,7 +50,7 @@ class _accountPageState extends State<accountPage> {
           title: Text(
             "Account",
             style: TextStyle(
-              fontFamily: GoogleFonts.arvo().fontFamily,
+              fontFamily: globals.titleFont,
               fontSize: 36,
               color: Colors.white
             ),
@@ -62,15 +61,17 @@ class _accountPageState extends State<accountPage> {
           child: Column(
             children: [
               imageLoader(
-                key: ValueKey(user.photo),
+                buttonSize: 25,
                 size: 75,
                 circle: true,
                 imageRoute: user.photo,
                 uploadRoute: "users/photo",
+                deleteRoute: "users/photo",
+                onDelete: () {
+                  user.photo = null;
+                },
                 onUpload: (file) {
-                  setState(() {
-                    user.photo = file.path;                    
-                  });
+                  user.photo = file.path;                    
                 },
               ),
               const SizedBox(

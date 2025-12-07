@@ -6,17 +6,28 @@ import 'package:NagaratharEvents/networkService.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'utils.dart' as utils;
 
 class imageLoader extends StatefulWidget {
   final String? imageRoute;
   final String? uploadRoute;
-  final ValueChanged<File>? onUpload;
+  final String? deleteRoute;
+  final Function(File)? onUpload;
+  final Function()? onDelete;
   final bool circle;
+  final bool dontReplace;
   final double? size;
-  imageLoader({
+  final double buttonSize;
+
+  const imageLoader({
     super.key,
     this.imageRoute,
+    required this.buttonSize,
+    this.dontReplace = false,
+    this.deleteRoute,
     this.uploadRoute,
+    this.onDelete,
     this.onUpload,
     this.circle = false,
     this.size,
@@ -27,79 +38,188 @@ class imageLoader extends StatefulWidget {
 }
 
 class _imageLoaderState extends State<imageLoader> {
-  final BoxFit boxFit = BoxFit.cover;
+  static const BoxFit boxFit = BoxFit.cover;
   bool _isUploading = false;
+  bool noImage = false;
   Widget? _imageWidget;
 
   @override
   void initState() {
-    debugPrint("imageRoute: ${widget.imageRoute}");
     super.initState();
     _loadImage();
   }
 
+  // MARK: - Image Loading
   Future<void> _loadImage() async {
-    if(_imageWidget != null) return;
-    debugPrint("imageRoute: ${widget.imageRoute}");
-    if (widget.imageRoute == null) {
-      setState(() {
-        _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: boxFit) : Image.asset('assets/genericPhoto.png', fit: boxFit);
-      });
+    if (_imageWidget != null) return;
+
+    final route = widget.imageRoute;
+    if (route == null) {
+      _setPlaceholderImage();
       return;
     }
-    // _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: fit) : Image.asset('assets/genericPhoto.png', fit: fit);
-    // return;
 
-    if (widget.imageRoute!.contains("/private/var/mobile/Containers/Data/Application/")) {
-      setState(() {
-        _imageWidget = Image.file(File(widget.imageRoute!), fit: boxFit);
-      });
+    if (_isNetworkRoute(route)) {
+      await _loadNetworkImage(route);
     } else {
-      try {
-        final data = await NetworkService().getImage(widget.imageRoute!);
-        if(!mounted) return;
-        if (data != null) {
-          setState(() {
-            _imageWidget = Image.memory(Uint8List.fromList(data), fit: boxFit);
-          });
-        } else {
-          setState(() {
-            _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: boxFit) : Image.asset('assets/genericPhoto.png', fit: boxFit);
-          });
-        }
-      } catch (e) {
-        debugPrint('Error loading image: $e');
-        if(!mounted) return;
-        setState(() {
-          _imageWidget = widget.circle ? Image.asset('assets/genericAccount.png', fit: boxFit) : Image.asset('assets/genericPhoto.png', fit: boxFit);
-        });
-      }
+      _setLocalImage(route);
     }
   }
 
-  Future<void> _pickAndUploadImage(ImageSource source) async {
+  bool _isNetworkRoute(String route) =>
+      route.startsWith('api') || route.startsWith('img');
+
+  Future<void> _loadNetworkImage(String route) async {
     try {
-      final pickedFile = await ImagePicker().pickImage(source: source, imageQuality: 85);
-      if (pickedFile == null) return;
+      final data = await NetworkService().getImage(route);
+      if (!mounted) return;
 
-      final imageFile = File(pickedFile.path);
-      setState(() => _isUploading = true);
-
-      final response = await NetworkService().uploadFile(await MultipartFile.fromFile(imageFile.path), widget.uploadRoute!, 'profile.jpg', context);
-      // if(response.statusCode != 200) {
-      //   setState(() => _isUploading = false);
-      //   return;
-      // }
-      if(widget.uploadRoute != null)
-      {
-        widget.onUpload?.call(imageFile);
+      if (data != null) {
+        _setMemoryImage(data);
+      } else {
+        _setPlaceholderImage();
       }
-      debugPrint('hi');
     } catch (e) {
-      debugPrint('Error uploading image: $e');
+      if (!mounted) return;
+      _setPlaceholderImage();
+    }
+  }
+
+  void _setMemoryImage(List<int> data) {
+    setState(() {
+      _imageWidget = Image.memory(Uint8List.fromList(data), fit: boxFit);
+      noImage = false;
+    });
+  }
+
+  void _setLocalImage(String path) {
+    setState(() {
+      _imageWidget = Image.file(File(path), fit: boxFit);
+    });
+  }
+
+  void _setPlaceholderImage() {
+    setState(() {
+      _imageWidget = _buildPlaceholderWidget();
+      noImage = true;
+    });
+  }
+
+  Widget _buildPlaceholderWidget() {
+    final asset = widget.circle 
+        ? 'assets/genericAccount.png' 
+        : 'assets/genericPhoto.png';
+    return Image.asset(asset, fit: boxFit);
+  }
+
+  // MARK: - Image Upload
+  Future<void> _pickAndUploadImage(ImageSource source) async {
+    if (!await _handlePermissions()) return;
+
+    final imageFile = await _pickImage(source);
+    if (imageFile == null) return;
+
+    await _uploadImage(imageFile);
+  }
+
+  Future<bool> _handlePermissions() async {
+    var status = await Permission.photos.status;
+
+    if (status.isDenied) {
+      status = await Permission.photos.request();
+    }
+
+    if (status.isPermanentlyDenied) {
+      return await _showPermissionDialog();
+    } else if (!status.isGranted) {
+      await _showPermissionDeniedDialog();
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<bool> _showPermissionDialog() async {
+    final shouldOpen = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Permission Required'),
+        content: const Text(
+          'Photo access has been permanently denied. Would you like to open settings to enable it?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldOpen == true) {
+      openAppSettings();
+    }
+    return false;
+  }
+
+  Future<void> _showPermissionDeniedDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Permission Denied'),
+        content: const Text(
+          'Photo access is required to upload images. Please grant permission to continue.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<File?> _pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 85,
+    );
+
+    return pickedFile != null ? File(pickedFile.path) : null;
+  }
+
+  Future<void> _uploadImage(File imageFile) async {
+    setState(() => _isUploading = true);
+
+    try {
+      final response = await NetworkService().uploadFile(
+        await MultipartFile.fromFile(imageFile.path),
+        widget.uploadRoute!,
+        'profile.jpg',
+        context,
+      );
+
+      if (response.statusCode == 200) {
+        _handleUploadSuccess(imageFile);
+      }
+    } catch (e) {
     } finally {
       setState(() => _isUploading = false);
     }
+  }
+
+  void _handleUploadSuccess(File imageFile) {
+    if (!widget.dontReplace) {
+      setState(() {
+        _imageWidget = Image.file(imageFile, fit: boxFit);
+      });
+    }
+    widget.onUpload?.call(imageFile);
   }
 
   void _showImageSourceDialog() {
@@ -130,6 +250,25 @@ class _imageLoaderState extends State<imageLoader> {
     );
   }
 
+  // MARK: - Image Deletion
+  Future<void> deleteImage() async {
+    final response = await NetworkService().deleteRoute(widget.deleteRoute!);
+
+    if (response.statusCode == 200) {
+      _handleDeleteSuccess();
+    }
+  }
+
+  void _handleDeleteSuccess() {
+    if (!widget.dontReplace) {
+      _setPlaceholderImage();
+      utils.snackBarMessage(context, 'Image deleted successfully',
+          color: Colors.green);
+    }
+    widget.onDelete?.call();
+  }
+
+  // MARK: - Build Methods
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -138,43 +277,76 @@ class _imageLoaderState extends State<imageLoader> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if(_imageWidget == null)
-            const Center(child: CircularProgressIndicator())
-          else if (widget.circle)
-            ClipOval(child: _imageWidget!)
-          else
-            _imageWidget!,
-          if (widget.uploadRoute != null)
-            Align(
-              alignment: Alignment.bottomRight,
-              child: GestureDetector(
-                onTap: _showImageSourceDialog,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 15.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: globals.secondaryColor,
-                    ),
-                    child: Icon(Icons.add, color: globals.backgroundColor, size: 24),
-                  ),
-                ),
-              ),
-            ),
-          if (_isUploading)
-            Container(
-              decoration: BoxDecoration(
-                shape: widget.circle? BoxShape.circle: BoxShape.rectangle,
-                color: Colors.black.withOpacity(0.5),
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ),
-            ),
+          _buildImageContent(),
+          if (_isUploading) _buildLoadingOverlay(),
+          if (widget.uploadRoute != null) _buildUploadButton(),
+          if (widget.deleteRoute != null && !noImage) _buildDeleteButton(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildImageContent() {
+    if (_imageWidget == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return widget.circle ? ClipOval(child: _imageWidget!) : _imageWidget!;
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Container(
+      decoration: BoxDecoration(
+        shape: widget.circle ? BoxShape.circle : BoxShape.rectangle,
+        color: Colors.black.withOpacity(0.5),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUploadButton() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: _buildActionButton(
+        onTap: _showImageSourceDialog,
+        color: globals.secondaryColor,
+        icon: Icons.add,
+        iconColor: globals.backgroundColor,
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton() {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: _buildActionButton(
+        onTap: deleteImage,
+        color: Colors.red,
+        icon: Icons.close,
+        iconColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required VoidCallback onTap,
+    required Color color,
+    required IconData icon,
+    required Color iconColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: widget.buttonSize,
+        width: widget.buttonSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+        ),
+        child: Icon(icon, color: iconColor, size: 24),
       ),
     );
   }

@@ -15,13 +15,6 @@ class ActivityCategory {
   @override
   int get hashCode => name.hashCode;
 
-  void displayCategoryDetails() {
-    print('Category Details:');
-    print('Name: $name');
-    print('PhotoURL: $photoUrl');
-  }
-
-  // Factory constructor to create Category from a JSON map
   factory ActivityCategory.fromJson(Map<String, dynamic> json) {
     return ActivityCategory(
       name: json['main'],

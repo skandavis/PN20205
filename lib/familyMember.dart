@@ -10,11 +10,6 @@ class FamilyMember {
     required this.relation
   });
 
-  void displayFamilyMemberDetails() {
-    print('FamilyMember Details:');
-    print('ID: $id');
-    print('Name: $name');
-  }
  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
