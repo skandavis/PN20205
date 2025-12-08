@@ -31,7 +31,7 @@ class _attributeState extends State<attribute> {
       context: context,
       builder: (BuildContext context) {
         return customDialogBox(
-          height: 250,
+          height: 300,
           title: "Location", 
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -58,14 +58,14 @@ class _attributeState extends State<attribute> {
                     borderRadius: BorderRadius.circular(25),
                     color: globals.secondaryColor,
                   ),
-                  width: 100,
-                  height: 40,
+                  width: 130,
+                  height: 50,
                   child: Center(
                     child: Text(
                       "Save",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize
+                        fontSize: globals.subTitleFontSize
                       ),
                     ),
                   ),
@@ -97,16 +97,25 @@ class _attributeState extends State<attribute> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    CupertinoButton(
+                    GestureDetector(
                       child: Text(
                         'Done',
                         style: TextStyle(
+                          decoration: TextDecoration.none,
                           color: globals.accentColor,
                           fontWeight: FontWeight.bold,
+                          fontSize: globals.bodyFontSize
                         ),
                       ),
-                      onPressed: () {
+                      onTap: () async {
                         Navigator.of(context).pop();
+                        if(widget.onValueChange != null) {
+                          final statusCode = await widget.onValueChange!(null, selectedDateTime);
+                          if(statusCode != 200) return;      
+                        }
+                        setState(() {
+                          widget.attributeValue = DateFormat('MMM dd, h:mm a').format(selectedDateTime);
+                        });
                       },
                     ),
                   ],
@@ -119,7 +128,7 @@ class _attributeState extends State<attribute> {
                     textTheme: CupertinoTextThemeData(
                       dateTimePickerTextStyle: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: globals.bodyFontSize,
                       ),
                     ),
                     brightness: Brightness.dark,
@@ -140,20 +149,13 @@ class _attributeState extends State<attribute> {
         );
       },
     );
-    if(widget.onValueChange != null) {
-      final statusCode = await widget.onValueChange!(null, selectedDateTime);
-      if(statusCode != 200) return;      
-    }
-    setState(() {
-      widget.attributeValue = DateFormat('MMM dd, h:mm a').format(selectedDateTime);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: InkWell(
-        onTap: (){
+        onDoubleTap: (){
           if(widget.attributeValue is DateTime) {
             _selectDateTime(context);
           } else {
@@ -165,15 +167,20 @@ class _attributeState extends State<attribute> {
           children: [
             Text(
               widget.attributeTitle,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 16),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: globals.smallFontSize
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               widget.attributeValue is DateTime ? DateFormat('MMM dd, h:mm a').format(widget.attributeValue) : widget.attributeValue,
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: globals.smallFontSize
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

@@ -38,7 +38,7 @@ class _selectableCategoryLabelState extends State<selectableCategoryLabel> {
         child: Center(
           child: Text(
             widget.category.name,
-            style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize, color: Colors.black),
+            style: TextStyle(fontSize: globals.paraFontSize, color: Colors.black),
           ),
         ),
       ),

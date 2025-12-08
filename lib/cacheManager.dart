@@ -127,41 +127,82 @@ class CacheManager {
     return DateTime.now().millisecondsSinceEpoch > expiryTime;
   }
 
-  Future<void> cleanup() async {
-    await for (final entity in cacheDir.list()) {
-      if (entity is! File) continue;
+  Future<void> cleanup({
+    Duration? olderThan,
+    bool deleteExpired = true,
+    bool deleteAll = false,
+  }) async {
+    try {
+      if (!await cacheDir.exists()) return;
 
-      final path = entity.path;
+      final cutoffTime = olderThan != null
+          ? DateTime.now().millisecondsSinceEpoch - olderThan.inMilliseconds
+          : null;
 
-      try {
-        if (path.endsWith('.json')) {
-          // Resource cache
-          final jsonData = jsonDecode(await entity.readAsString());
-          if (_isExpired(jsonData)) {
+      await for (final entity in cacheDir.list()) {
+        if (entity is! File) continue;
+
+        try {
+          if (deleteAll) {
             await entity.delete();
+            continue;
           }
-        } else if (path.endsWith('.meta')) {
-          // Image cache
-          final jsonData = jsonDecode(await entity.readAsString());
-          if (_isExpired(jsonData)) {
-            print("Deleting expired image cache: $path");
-            final basePath = path.substring(0, path.length - 5);
-            final dataFile = File('$basePath.data');
-            if (await dataFile.exists()) await dataFile.delete();
-            await entity.delete();
+
+          // Handle metadata files (.meta) - check expiry from metadata
+          if (entity.path.endsWith('.meta')) {
+            final metaJson = jsonDecode(await entity.readAsString());
+            
+            final shouldDelete = (deleteExpired && _isExpired(metaJson)) ||
+                (cutoffTime != null && metaJson['timestamp'] < cutoffTime);
+
+            if (shouldDelete) {
+              // Delete both .meta and .data files for images
+              await entity.delete();
+              final dataFile = File(entity.path.replaceAll('.meta', '.data'));
+              if (await dataFile.exists()) await dataFile.delete();
+            }
           }
-        } else {
-          await entity.delete();
+          // Handle resource cache files (.json)
+          else if (entity.path.endsWith('.json')) {
+            final jsonData = jsonDecode(await entity.readAsString());
+            
+            final shouldDelete = (deleteExpired && _isExpired(jsonData)) ||
+                (cutoffTime != null && jsonData['timestamp'] < cutoffTime);
+
+            if (shouldDelete) await entity.delete();
+          }
+          // Handle orphaned .data files
+          else if (entity.path.endsWith('.data')) {
+            final metaFile = File(entity.path.replaceAll('.data', '.meta'));
+            if (!await metaFile.exists()) {
+              await entity.delete();
+            }
+          }
+        } catch (e) {
+          print('Failed to process ${entity.path}: $e');
         }
-      } catch (_) {
-        // JSON parse failed then delete the file (and its paired data file if it's a meta)
-        if (path.endsWith('.meta')) {
-          final basePath = path.substring(0, path.length - 5);
-          final dataFile = File('$basePath.data');
-          if (await dataFile.exists()) await dataFile.delete();
-        }
-        await entity.delete();
       }
+
+      print('Cache cleanup completed');
+    } catch (e) {
+      print('Cache cleanup failed: $e');
+    }
+  }
+
+  Future<int> getCacheSize() async {
+    try {
+      if (!await cacheDir.exists()) return 0;
+
+      int totalSize = 0;
+      await for (final entity in cacheDir.list(recursive: true)) {
+        if (entity is File) {
+          totalSize += await entity.length();
+        }
+      }
+      return totalSize;
+    } catch (e) {
+      print('Failed to calculate cache size: $e');
+      return 0;
     }
   }
 }

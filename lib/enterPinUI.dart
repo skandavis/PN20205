@@ -14,8 +14,9 @@ import 'utils.dart' as utils;
 
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 class enterPinUI extends StatefulWidget {
+  String deviceID;
   Function() updateLoading;
-  enterPinUI({super.key, required this.updateLoading});
+  enterPinUI({super.key, required this.updateLoading, required this.deviceID});
 
   @override
   State<enterPinUI> createState() => _enterPinUIState();
@@ -27,7 +28,7 @@ class _enterPinUIState extends State<enterPinUI> {
     final response = await NetworkService().postRoute(
     {
       // "email": "viswanathanmanickam5@gmail.com",
-      // "deviceID":"C94E3948-77C0-43DE-864F-D31CE817284B",
+      "deviceID":widget.deviceID,
       "deviceAPN":  globals.ApnsToken,
       "passcode": pin,
       // "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
@@ -68,7 +69,7 @@ class _enterPinUIState extends State<enterPinUI> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => MyHomePage(),
+                builder: (context) => homePage(),
               ),
             );
             break;
@@ -110,9 +111,10 @@ class _enterPinUIState extends State<enterPinUI> {
                           ),
                         );
                       },
-                      child: const Text(
+                      child: Text(
                         "Didn't get an Email",
                         style: TextStyle(
+                          fontSize: globals.paraFontSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

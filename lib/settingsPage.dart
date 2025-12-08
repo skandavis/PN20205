@@ -1,4 +1,5 @@
 import 'package:NagaratharEvents/familyPage.dart';
+import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/accountPage.dart';
@@ -47,7 +48,7 @@ class _settingsPageState extends State<settingsPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const accountPage(),
+                builder: (context) => accountPage(firstTime: false,),
               ),
             );
           },
@@ -70,9 +71,11 @@ class _settingsPageState extends State<settingsPage> {
           ),
         GestureDetector(
           onTap: () async {
+            await NetworkService().getRoute("auth/logout", true);
             final SharedPreferencesAsync prefs = SharedPreferencesAsync();
             await prefs.remove('loggedIn');
             // globals.totalActivities.clear();
+            NetworkService().clearCache();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(

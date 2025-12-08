@@ -18,7 +18,10 @@ class _createNotificationButtonState extends State<createNotificationButton> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return sendMessageDialog(route: widget.route,sendMessage: widget.sendMessage);
+        return sendMessageDialog(
+          route: widget.route,
+          sendMessage: widget.sendMessage
+        );
       },
     );
   }

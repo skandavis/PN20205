@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:NagaratharEvents/messageReciever.dart';
+import 'package:NagaratharEvents/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/homePage.dart';
 import 'package:NagaratharEvents/introPage.dart';
@@ -25,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                widget.showMainPage ? MyHomePage() : const introPage()),
+                widget.showMainPage ? homePage() : const introPage()),
       );
       getAndCheckToken();
     });
@@ -36,8 +37,8 @@ class _SplashScreenState extends State<SplashScreen> {
     if(!widget.showMainPage) return;
     bool? hasPermission = await prefs.getBool('notificationPermission');
     prefs.setBool('notificationPermission', globals.ApnsToken.isNotEmpty);
-    if(globals.ApnsToken.isNotEmpty == hasPermission!){
-      //send to backend
+    if(globals.ApnsToken.isNotEmpty != hasPermission!){
+      NetworkService().patchRoute({"deviceAPN": globals.ApnsToken}, "devices");
     }
   }
 
@@ -45,9 +46,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
-            Color.fromARGB(255, 24, 19, 118),
+            globals.darkAccent,
             Colors.black,
           ], begin: Alignment.centerLeft, end: Alignment.centerRight),
         ),

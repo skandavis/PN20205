@@ -172,22 +172,18 @@ class _imageLoaderState extends State<imageLoader> {
 
   Future<void> _uploadImage(File imageFile) async {
     setState(() => _isUploading = true);
+    final response = await NetworkService().uploadFile(
+      await MultipartFile.fromFile(imageFile.path),
+      widget.uploadRoute!,
+      'profile.jpg',
+      context,
+    );
 
-    try {
-      final response = await NetworkService().uploadFile(
-        await MultipartFile.fromFile(imageFile.path),
-        widget.uploadRoute!,
-        'profile.jpg',
-        context,
-      );
-
-      if (response.statusCode == 200) {
-        _handleUploadSuccess(imageFile);
-      }
-    } catch (e) {
-    } finally {
-      setState(() => _isUploading = false);
+    if (response.statusCode == 200) {
+      _handleUploadSuccess(imageFile);
     }
+  
+    setState(() => _isUploading = false);
   }
 
   void _handleUploadSuccess(File imageFile) {

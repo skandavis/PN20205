@@ -1,4 +1,5 @@
 
+import 'package:NagaratharEvents/homePage.dart';
 import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
@@ -15,7 +16,8 @@ String deviceID = "";
 User user = User.instance;
 
 class accountPage extends StatefulWidget {
-  const accountPage({super.key});
+  bool firstTime;
+  accountPage({super.key, required this.firstTime});
 
   @override
   State<accountPage> createState() => _accountPageState();
@@ -51,7 +53,7 @@ class _accountPageState extends State<accountPage> {
             "Account",
             style: TextStyle(
               fontFamily: globals.titleFont,
-              fontSize: 36,
+              fontSize: globals.titleFontSize,
               color: Colors.white
             ),
           ),
@@ -62,7 +64,7 @@ class _accountPageState extends State<accountPage> {
             children: [
               imageLoader(
                 buttonSize: 25,
-                size: 75,
+                size: 100,
                 circle: true,
                 imageRoute: user.photo,
                 uploadRoute: "users/photo",
@@ -79,9 +81,9 @@ class _accountPageState extends State<accountPage> {
               ),
               Text(
                 user.email,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: globals.subTitleFontSize,
                 ),
               ),
               const SizedBox(
@@ -118,7 +120,11 @@ class _accountPageState extends State<accountPage> {
                 onTap: () async{
                   for(TextEditingController controller in controllers){
                     if(controller.text.isEmpty){
-                      utils.snackBarMessage(context, "Please fill all the fields!",color: Colors.red);
+                      utils.snackBarMessage(context, "Please fill all the fields!");
+                      return;
+                    }
+                    if(controllers[1].text.length != 12){
+                      utils.snackBarMessage(context, "Please enter a valid phone number!");
                       return;
                     }
                   }
@@ -136,11 +142,16 @@ class _accountPageState extends State<accountPage> {
                     'city':controllers[2].text
                   });
                   utils.snackBarMessage(context, "Account Details Updated!",color: Colors.green);
-                  Navigator.of(context).pop();
+                  if(widget.firstTime){
+                    user.firstTime = false;
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  homePage(),));
+                  }else{
+                    Navigator.pop(context);
+                  }
                 },
                 child: Container(
-                  width: MediaQuery.of(context).size.width * .8,
-                  height: 50,
+                  width: 250,
+                  height: 70,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: globals.secondaryColor,
@@ -152,7 +163,7 @@ class _accountPageState extends State<accountPage> {
                         "Save",
                         style: TextStyle(
                           color: globals.backgroundColor,
-                          fontSize: 24,
+                          fontSize: globals.subTitleFontSize,
                         ),
                       ),
                     ],

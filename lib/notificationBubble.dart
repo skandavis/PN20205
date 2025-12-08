@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:NagaratharEvents/notification.dart';
-
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class notificationBubble extends StatefulWidget {
   Notification notification;
@@ -31,14 +31,15 @@ class _notificationBubbleState extends State<notificationBubble> {
         context: context,
         builder: (BuildContext context) {
           return customDialogBox(
-            height: 375,
+            height: 350,
             title: "Delete Notification",
             body: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text("Are you really sure you want to delete this notification? Understand that this change will affect all users in the event.",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                Text(
+                  "Are you really sure you want to delete this notification? Understand that this change will affect all users in the event.",
+                  style: TextStyle(fontSize: globals.paraFontSize),
+                ),
                 GestureDetector(
                   onTap: () {
                     widget.delete();
@@ -56,7 +57,7 @@ class _notificationBubbleState extends State<notificationBubble> {
                         "Delete",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16
+                          fontSize: globals.subTitleFontSize
                         ),
                       ),
                     ),
@@ -76,10 +77,10 @@ class _notificationBubbleState extends State<notificationBubble> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              widget.notification.creatorName == "You" ? widget.notification.creatorName : "${widget.notification.creatorName.split(' ')[0]} ${widget.notification.creatorName.split(' ')[1][0]}.",
+              widget.notification.creatorName.contains(' ') ? "${widget.notification.creatorName.split(' ')[0]} ${widget.notification.creatorName.split(' ')[1][0]}." : widget.notification.creatorName,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                fontSize: globals.paraFontSize,
                 fontWeight: FontWeight.bold
               ),
             ),
@@ -87,7 +88,7 @@ class _notificationBubbleState extends State<notificationBubble> {
               DateFormat('EE MMM d, h:mm a').format(widget.notification.creationTime),
               style:  TextStyle(
                 color: Colors.white,
-                fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
+                fontSize: globals.paraFontSize,
               ),
             ),
           ],
@@ -95,7 +96,7 @@ class _notificationBubbleState extends State<notificationBubble> {
         const SizedBox(
           height: 5,
         ),
-        if(user.isAdmin())
+        if(user.isAdmin)
           Slidable(
             endActionPane: ActionPane(
               motion: const StretchMotion(),
@@ -130,12 +131,15 @@ class _notificationBubbleState extends State<notificationBubble> {
                 padding: const EdgeInsets.all(12.5),
                 child: Text(
                   widget.notification.message,
-                  style: TextStyle(color: Colors.black, fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize),
+                  style: TextStyle(
+                    color: Colors.black, 
+                    fontSize: globals.bodyFontSize
+                  ),
                 ),
               ),
             ),
           ),
-        if(!user.isAdmin())
+        if(!user.isAdmin)
           Container(
             width: MediaQuery.sizeOf(context).width * 1,
             decoration: const BoxDecoration(
@@ -151,7 +155,7 @@ class _notificationBubbleState extends State<notificationBubble> {
               padding: const EdgeInsets.all(12.5),
               child: Text(
                 widget.notification.message,
-                style: const TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: globals.bodyFontSize),
               ),
             ),
           )

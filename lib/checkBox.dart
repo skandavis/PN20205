@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class Check extends StatefulWidget {
   bool isChecked = false;
@@ -45,7 +46,7 @@ class _CheckState extends State<Check> {
           widget.name,
           style: TextStyle(
             color: widget.color,
-            fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize, // 🔧 Increase font size as needed
+            fontSize: globals.paraFontSize,
           ),
         ),
       ],

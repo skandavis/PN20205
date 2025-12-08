@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class customDialogBox extends StatefulWidget {
   final String title;
@@ -46,8 +47,7 @@ class _customDialogBoxState extends State<customDialogBox> {
                   widget.title,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize:
-                        Theme.of(context).textTheme.titleMedium?.fontSize,
+                    fontSize: globals.subTitleFontSize,
                   ),
                 ),
               ),

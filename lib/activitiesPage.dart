@@ -25,6 +25,7 @@ class activitiesPageState extends State<activitiesPage> {
   bool onlyFavorites = false;
   bool showOld = false;
   bool isLoading = true;
+  bool onlyToday = false;
 
   @override
   void initState() {
@@ -79,13 +80,28 @@ class activitiesPageState extends State<activitiesPage> {
     
     final now = DateTime.now();
     final query = searchQuery.toLowerCase();
-    
-    return globals.totalActivities!.where((activity) =>
-      (!onlyFavorites || activity.favoritized) &&
-      (showOld || activity.startTime.isAfter(now)) &&
-      (selectedCategories.isEmpty || selectedCategories.contains(activity.main)) &&
-      (query.isEmpty || activity.name.toLowerCase().contains(query) || activity.category.toLowerCase().contains(query))
-    ).toList();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+
+    return globals.totalActivities!.where((activity) {
+
+      if (onlyFavorites && !activity.favoritized) return false;
+
+      if (!showOld && activity.startTime.isBefore(now)) return false;
+
+      if (onlyToday) {
+        if (!(activity.startTime.isAfter(today.subtract(const Duration(milliseconds: 1))) &&
+              activity.startTime.isBefore(tomorrow))) {
+          return false;
+        }
+      }
+
+      if (selectedCategories.isNotEmpty && !selectedCategories.contains(activity.main)) return false;
+
+      if (query.isNotEmpty && !activity.name.toLowerCase().contains(query) && !activity.category.toLowerCase().contains(query)) return false;
+
+      return true;
+    }).toList();
   }
 
   void _clearFilters() => setState(() {
@@ -93,6 +109,7 @@ class activitiesPageState extends State<activitiesPage> {
     searchQuery = "";
     onlyFavorites = false;
     showOld = false;
+    onlyToday = false;
     selectedCategories.clear();
   });
   @override
@@ -113,7 +130,7 @@ class activitiesPageState extends State<activitiesPage> {
       child: TextField(
         controller: searchController,
         onChanged: (query) => setState(() => searchQuery = query.toLowerCase().trim()),
-        style: TextStyle(color: Colors.white, fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
+        style: TextStyle(color: Colors.white, fontSize: globals.bodyFontSize),
         decoration: InputDecoration(
           hintText: "Search events...",
           hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
@@ -158,10 +175,19 @@ class activitiesPageState extends State<activitiesPage> {
             foregroundColor: globals.accentColor,
             backgroundColor: Colors.white,
           ),
+          const SizedBox(width: 8),
+          backgoundDynamicIcon(
+            icon: Icons.today,
+            active: onlyToday,
+            onTap: (val) => setState(() => onlyToday = val),
+            foregroundColor: Colors.blue,
+            backgroundColor: Colors.white,
+          ),
         ],
       ),
     );
   }
+
 
   Widget _buildCategoryList() {
     return SizedBox(

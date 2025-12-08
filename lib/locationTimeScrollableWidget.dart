@@ -52,7 +52,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
                 DateFormat('MMM d, y h:mm a').format(widget.startTime),
                 style:  TextStyle(
                   color: Colors.white,
-                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                  fontSize: globals.paraFontSize,
                   decoration: TextDecoration.none,
                 ),
               ),
@@ -60,7 +60,7 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
                 DateFormat('MMM d, y h:mm a').format(widget.endTime),
                 style:  TextStyle(
                   color: Colors.white,
-                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                  fontSize: globals.paraFontSize,
                   decoration: TextDecoration.none,
                 ),
               ),

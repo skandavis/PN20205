@@ -19,20 +19,18 @@ class _messageRecieverState extends State<messageReciever> {
     super.initState();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
 
-      if (message.notification != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.blue,
-            content: Text(message.notification!.body ?? ''),
-            action: SnackBarAction(
-              label: message.notification!.title ?? '',
-              onPressed: () {
-                // Handle action
-              },
-            ),
+      if (message.notification == null) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.blue,
+          content: Text(
+
+            message.notification?.body ?? '',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-        );
-      }
+        ),
+      );
     });
   }
 
@@ -53,10 +51,14 @@ Future<String> requestNotificationPermission(BuildContext context, bool shouldSh
 
   switch (settings.authorizationStatus) {
     case AuthorizationStatus.authorized:
+    if(shouldShowDialog){
+      prefs.setBool('notificationPermission', true);
+    }
       return getMessagingToken();
 
     case AuthorizationStatus.denied:
       if (shouldShowDialog) {
+        prefs.setBool('notificationPermission', false);
         showDialog(
           context: context,
           builder: (context) {

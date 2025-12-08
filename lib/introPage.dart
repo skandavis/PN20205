@@ -54,7 +54,7 @@ class _introPageState extends State<introPage> {
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: globals.titleFont,
-                          fontSize: 36,
+                          fontSize: globals.titleFontSize,
                         ),
                       ),
                     ],
@@ -65,7 +65,7 @@ class _introPageState extends State<introPage> {
                         "Welcome Back",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: Theme.of(context).textTheme.headlineLarge?.fontSize,
+                          fontSize: globals.subTitleFontSize,
                         ),
                       ),
                       const SizedBox(
@@ -95,7 +95,7 @@ class _introPageState extends State<introPage> {
                               "Login",
                               style: TextStyle(
                                 color: globals.backgroundColor,
-                                fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,                              
+                                fontSize: globals.subTitleFontSize,                              
                               ),
                             ),
                           ),

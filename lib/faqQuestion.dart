@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class faqQuestion extends StatefulWidget {
   String question;
@@ -38,7 +39,7 @@ class _faqQuestionState extends State<faqQuestion> {
                   child: Text(
                     widget.question,
                     style: TextStyle(
-                      fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                      fontSize: globals.bodyFontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -59,7 +60,7 @@ class _faqQuestionState extends State<faqQuestion> {
                     child: Text(
                       widget.answer,
                       style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize: globals.bodyFontSize,
                       ),
                     ),
                   ),

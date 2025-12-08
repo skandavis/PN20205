@@ -1,6 +1,5 @@
 import 'package:NagaratharEvents/activity.dart';
 import 'package:NagaratharEvents/sendMessageDialog.dart';
-import 'package:NagaratharEvents/user.dart';
 import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/expandedActivityPage.dart';
@@ -71,13 +70,13 @@ class _activityCardState extends State<activityCard> {
                         DateFormat('MMM').format(startTime),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                          fontSize: globals.bodyFontSize,
                         ),
                       ),
                       Text(
                         startTime.day.toString(),
                         style: TextStyle(
-                          fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
+                          fontSize: globals.paraFontSize
                         ),
                       )
                     ],
@@ -90,10 +89,15 @@ class _activityCardState extends State<activityCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.activity.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: Theme.of(context).textTheme.titleMedium?.fontSize
+                  Container(
+                    width: MediaQuery.of(context).size.width * .5,
+                    child: Text(
+                      overflow: TextOverflow.ellipsis,
+                      widget.activity.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: globals.subTitleFontSize
+                      ),
                     ),
                   ),
                   Row(
@@ -111,7 +115,7 @@ class _activityCardState extends State<activityCard> {
                       favoriteIcon(
                         activity: widget.activity,
                       ),
-                      if(User.instance.isAdmin())
+                      if(widget.activity.isActivityAdmin)
                       GestureDetector(
                         onTap: () {
                           showDialog(
@@ -142,7 +146,7 @@ class _activityCardState extends State<activityCard> {
                       widget.activity.description,
                       style: TextStyle(
                         overflow: TextOverflow.ellipsis,
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
+                        fontSize: globals.paraFontSize
                       ),
                     ),
                   ),
@@ -158,7 +162,7 @@ class _activityCardState extends State<activityCard> {
                           style:  TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
+                            fontSize: globals.paraFontSize
                           ),
                         ),
                       ),
@@ -181,7 +185,7 @@ class _activityCardState extends State<activityCard> {
                         widget.activity.location,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
+                          fontSize: globals.paraFontSize,
                         ),
                       ),
                     ),
@@ -197,7 +201,7 @@ class _activityCardState extends State<activityCard> {
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
+                      fontSize: globals.paraFontSize
                     ),
                   ),
                 ),
@@ -226,7 +230,7 @@ class _activityCardState extends State<activityCard> {
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                    fontSize: globals.subTitleFontSize,
                   ),
                 ),
               ),

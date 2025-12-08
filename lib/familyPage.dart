@@ -113,7 +113,7 @@ class _familyPageState extends State<familyPage> {
                       "Add",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16
+                        fontSize: globals.subTitleFontSize
                       ),
                     ),
                   ),
@@ -189,7 +189,7 @@ class _familyPageState extends State<familyPage> {
                       "Update",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16
+                        fontSize: globals.subTitleFontSize
                       ),
                     ),
                   ),
@@ -213,8 +213,8 @@ class _familyPageState extends State<familyPage> {
         title: Text(
           "Family",
           style: TextStyle(
-            fontFamily: GoogleFonts.arvo().fontFamily,
-            fontSize: 36,
+            fontFamily: globals.titleFont,
+            fontSize: globals.titleFontSize,
             color: Colors.white
           ),
         ),

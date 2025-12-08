@@ -1,3 +1,4 @@
+import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:flutter/material.dart';
 
 class settingsOption extends StatefulWidget {
@@ -14,7 +15,6 @@ class _settingsOptionState extends State<settingsOption> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      // color: Colors.red,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -32,7 +32,7 @@ class _settingsOptionState extends State<settingsOption> {
                 widget.name,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                  fontSize: globals.subTitleFontSize,
                   color: Colors.white
                 ),
               ),

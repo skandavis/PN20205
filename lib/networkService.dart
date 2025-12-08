@@ -71,12 +71,14 @@ class NetworkService {
           } else if (response.statusCode == 498) {
             return handler.resolve(await refresh(response.requestOptions));
           } else if (response.statusCode == 500) {
-            utils.snackBarMessage(context!, 'Internal Server Error! Try again later.');
+            utils.snackBarMessage(context!, 'Something Went Wrong! Try again later.');
           } else if (response.statusCode == 404) {
             if(response.requestOptions.extra['skipIntercept'] == true) {
               return handler.next(response);
             }
             utils.snackBarMessage(context!, 'Resource not found!');
+          } else if(response.statusCode == 400){
+            utils.snackBarMessage(context!, 'Request Failed!');
           } else if (response.statusCode == 401) {
             if(response.requestOptions.extra['skipIntercept'] == true) {
               return handler.next(response);
@@ -121,7 +123,7 @@ class NetworkService {
     await _initIfNeeded();
     if (!forceRefresh) {
       final cached = await cacheManager.loadResource(route);
-      if (cached != null) Response (requestOptions: RequestOptions(path: route), data: cached);
+      if (cached != null) return Response (requestOptions: RequestOptions(path: route), data: cached);
     }
 
     try {
@@ -169,6 +171,10 @@ class NetworkService {
     return null;
   }
   
+  void clearCache() {
+    cacheManager.cleanup(deleteAll: true);
+  }
+
   Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route, {bool skipIntercept = false}) async {
     await _initIfNeeded();
     

@@ -4,11 +4,11 @@ class EventInfo {
 
   String id = "";
   String name = "";
-  String city = "";
-  String state = "";
+  String city = "Fort Worth";
+  String state = "TX";
   int zip = 0;
-  String country = "";
-  String address = "";
+  String country = "USA";
+  String address = "815 Main St";
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
   String description = "";

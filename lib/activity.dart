@@ -14,6 +14,7 @@ class Activity {
   int likes;
   bool favoritized;
   bool liked;
+  bool isActivityAdmin;
   List<String> images;
   List<Participant> participants;
 
@@ -32,7 +33,8 @@ class Activity {
     required this.favoritized,
     required this.liked,
     required this.images,
-    required this.participants
+    required this.participants,
+    required this.isActivityAdmin,
   });
 
  @override
@@ -64,6 +66,7 @@ class Activity {
       favoritized: json["favorite"],
       liked: json["likes"],
       images: images,
+      isActivityAdmin: json["isActivityAdmin"],
       participants: (json["participants"]as List).map((item) => Participant.fromJson(item)).toList().cast<Participant>()
     );
   }

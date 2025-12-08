@@ -1,3 +1,4 @@
+import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:flutter/material.dart';
 
 class multiDigitInput extends StatefulWidget {
@@ -100,8 +101,8 @@ class _multiDigitInputState extends State<multiDigitInput> {
                     alignment: Alignment.center,
                     child: Text(
                       digit.trim(),
-                      style: const TextStyle(
-                        fontSize: 24,
+                      style: TextStyle(
+                        fontSize: globals.subTitleFontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

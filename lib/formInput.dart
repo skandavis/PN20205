@@ -28,7 +28,10 @@ class _formInputState extends State<formInput> {
       maxLines: widget.lines,
       focusNode: widget.focusNode,
       controller: widget.controller,
-      style: TextStyle(color: Colors.white,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize),
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: globals.paraFontSize
+      ),
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
@@ -49,8 +52,9 @@ class _formInputState extends State<formInput> {
           widget.label,
           style: TextStyle(
             color: widget.focusNode.hasFocus? globals.iceBlue:widget.controller.text.isEmpty? Colors.red:  globals.secondaryColor,
-            fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
-            fontWeight: FontWeight.bold),
+            fontSize: globals.subTitleFontSize,
+            fontWeight: FontWeight.bold
+          ),
         ),
         fillColor: const Color.fromARGB(255, 10, 5, 70),
       ),

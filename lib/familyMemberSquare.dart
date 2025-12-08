@@ -1,6 +1,7 @@
 import 'package:NagaratharEvents/familyMember.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class familyMemberSquare extends StatefulWidget {
   final FamilyMember  familyMember;
@@ -53,7 +54,7 @@ class _familyMemberSquareState extends State<familyMemberSquare> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Icon(Icons.person, size: 64, color: textColor),
-          SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(widget.familyMember.name, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold),)),
+          SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(widget.familyMember.name, style: TextStyle(color: textColor, fontSize: globals.bodyFontSize, fontWeight: FontWeight.bold),)),
         ],
       ),
     );

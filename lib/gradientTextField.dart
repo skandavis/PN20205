@@ -91,14 +91,13 @@ class _gradientTextFieldState extends State<gradientTextField> {
                         widget.label,
                         style: TextStyle(
                           color: Colors.grey.shade600,
-                          fontSize: 12,
                         ),
                       ),
                       TextField(
                         keyboardType: widget.keyboardType ?? TextInputType.text,
                         maxLines: widget.maxLines ?? 1,
                         controller: widget.controller,
-                        cursorHeight: 16,
+                        cursorHeight: globals.paraFontSize,
                         focusNode: focusNode,
                         decoration: InputDecoration.collapsed(
                           hintText: widget.hint,

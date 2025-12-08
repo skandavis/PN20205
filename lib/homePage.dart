@@ -8,15 +8,15 @@ import 'package:NagaratharEvents/messageReciever.dart';
 import 'package:NagaratharEvents/settingsPage.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
-class MyHomePage extends StatefulWidget {
+class homePage extends StatefulWidget {
   int selectedIndex = 0;
-  MyHomePage({super.key});
+  homePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<homePage> createState() => _homePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _homePageState extends State<homePage> {
   final pageControllers = List.generate(6, (_) => ValueNotifier<bool>(false));
 
   late var pages = {
@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
             pages[widget.selectedIndex].key,
             style: TextStyle(
               fontFamily: globals.titleFont,
-              fontSize: 36,
+              fontSize: globals.titleFontSize,
               color: Colors.white
               ),
             ),

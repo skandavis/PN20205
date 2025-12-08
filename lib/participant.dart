@@ -8,7 +8,8 @@ class Participant {
   String gender;
   String description;
   String? image;
-
+  String email;
+  bool isEditable;
   Participant({
     required this.id,
     required this.name,
@@ -17,6 +18,8 @@ class Participant {
     required this.city,
     required this.state,
     required this.description,
+    required this.email,
+    required this.isEditable,
     this.image,
   });
 
@@ -39,6 +42,8 @@ class Participant {
       state: json["state"],
       city: json["city"],
       gender: json["gender"],
+      email: json["emailId"] ?? '',
+      isEditable: json["isEditable"],
       image: json["photo"] == null ? null :json["photo"]["url"].substring(1) 
     );
   }

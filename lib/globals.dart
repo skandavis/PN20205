@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 //frontend server
 // String baseUrl = "http://192.168.86.38:81/";
 //manickam server
-// String baseUrl = "http://192.168.86.38:8081/";
-String baseUrl = "https://nagaratharEvents.skandasoft.com/";
+String baseUrl = "http://192.168.86.38:8081/";
+// String baseUrl = "https://nagaratharEvents.skandasoft.com/";
 // String baseUrl = "https://nagaratharEvents-sbx/";
 // String baseUrl = "http://nagaratharEvents.skandasoft.com:81/";
 
@@ -21,6 +21,12 @@ Color iceBlue = Color.fromARGB(255, 13, 182, 255);
 Color darkAccent = Color.fromARGB(255, 24, 19, 118);
 
 String? titleFont = GoogleFonts.arvo().fontFamily;
+double smallFontSize = 12;
+double paraFontSize = 14;
+double bodyFontSize = 16;
+double subTitleFontSize = 24;
+double titleFontSize = 36;
+
 
 List<Activity>? totalActivities;
 String ApnsToken = "";

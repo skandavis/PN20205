@@ -41,7 +41,7 @@ class _dropDownState extends State<dropDown> {
         Text(
           widget.label,
           style: TextStyle(
-            fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+            fontSize: globals.bodyFontSize,
             color: globals.secondaryColor,
             fontWeight: FontWeight.w600,
           ),
@@ -69,7 +69,7 @@ class _dropDownState extends State<dropDown> {
 
             style: TextStyle(
               color: Colors.white,
-              fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+              fontSize: globals.paraFontSize,
             ),
 
             decoration: InputDecoration(
@@ -97,7 +97,7 @@ class _dropDownState extends State<dropDown> {
                     value,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                      fontSize: globals.paraFontSize,
                     ),
                   ),
                 );

@@ -46,42 +46,51 @@ class _participantRowState extends State<participantRow> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: displayParticipantDetails,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            imageLoader(
-              buttonSize: 5,
-              imageRoute: participant.image,
-              circle: true,
-              key: ValueKey(participant.image),
-              size: 75,
-            ),
-            const SizedBox(width: 10),
-            SizedBox(
-              height: 75,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          imageLoader(
+            buttonSize: 5,
+            imageRoute: participant.image,
+            circle: true,
+            key: ValueKey(participant.image),
+            size: 75,
+          ),
+          const SizedBox(width: 10),
+          SizedBox(
+            height: 75,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * .6,
+                  child: Text(
                     participant.name,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    style: TextStyle(
+                      color: Colors.white, 
+                      fontSize: globals.bodyFontSize,
+                      fontWeight: FontWeight.bold
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * .6,
-                    child: Text(
-                      participant.description,
-                      style: TextStyle(color: Colors.white),
-                      overflow: TextOverflow.ellipsis,
-                     ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * .6,
+                  child: Text(
+                    participant.description,
+                    style: TextStyle(
+                      color: Colors.white, 
+                      fontSize: globals.smallFontSize,
+                      fontWeight: FontWeight.bold
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
-            )
-          ],
-        ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

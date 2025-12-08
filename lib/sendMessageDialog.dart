@@ -103,7 +103,7 @@ void sendMessage(BuildContext context) async {
                   "Send",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize
+                    fontSize: globals.subTitleFontSize
                   ),
                 ),
               ),

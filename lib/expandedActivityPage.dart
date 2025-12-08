@@ -3,10 +3,8 @@ import 'package:NagaratharEvents/createNotificationButton.dart';
 import 'package:NagaratharEvents/expandableHighlightext.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/participantRow.dart';
-import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/attribute.dart';
-import 'package:NagaratharEvents/categoryLabel.dart';
 import 'package:NagaratharEvents/favorite.dart';
 import 'package:NagaratharEvents/imageCarousel.dart';
 import 'package:NagaratharEvents/thumbsUpIcon.dart';
@@ -84,9 +82,11 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                     ).createShader(bounds);
                   },
                   blendMode: BlendMode.dstIn,
-                  child: ImageCarousel(
+                  child: widget.activity.isActivityAdmin ? ImageCarousel(
                     imageUrls: widget.activity.images,
                     uploadPath: 'activities/${widget.activity.id}/photo',
+                  ): ImageCarousel(
+                    imageUrls: widget.activity.images,
                   ),
                 ),
               ],
@@ -106,7 +106,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                             Text(
                               widget.activity.name,
                               style: TextStyle(
-                                  fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
+                                  fontSize: globals.subTitleFontSize,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -118,9 +118,31 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(widget.activity.sub,style: TextStyle(color: Colors.white),),
-                            categoryLabel(
-                              activity: widget.activity,
+                            Text(
+                              widget.activity.sub,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: globals.bodyFontSize  
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color.fromARGB(255, 149, 235, 252),
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                              child: Center(
+                                child: Text(
+                                  widget.activity.main,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: globals.paraFontSize
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -167,7 +189,15 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                               // expandableHighlightText(
                               //   text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Why do we use it? It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
                               // ),
-                              expandableHighlightText(text: widget.activity.description),
+                              expandableHighlightText(
+                                text: widget.activity.description,
+                                editable: widget.activity.isActivityAdmin,
+                                onTextChanged: (description) {
+                                  NetworkService().patchRoute({
+                                    "description": description
+                                  }, "activities/${widget.activity.id}");
+                                },
+                              ),
                               SizedBox(
                                 height: 25,
                               ),
@@ -188,7 +218,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                     ),
                   ),
                 ),
-                if(User.instance.isAdmin())
+                if(widget.activity.isActivityAdmin)
                 Positioned(
                   bottom: 25,
                   right:25,

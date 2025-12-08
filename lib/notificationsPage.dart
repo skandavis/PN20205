@@ -107,11 +107,13 @@ class _notificationsPageState extends State<notificationsPage> {
                 loadNewMessages();
               },
               child: ListView.builder(
+                // reverse: true,
                 controller: scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: messages!.length,
                 itemBuilder: (context, index) {
-                  final message = messages!.reversed.toList()[index];
+                  index = messages!.length - index - 1;
+                  final message = messages!.toList()[index];
                   final isNew = newMessageIds.contains(message.id);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 20),
@@ -132,7 +134,7 @@ class _notificationsPageState extends State<notificationsPage> {
               ),
             ),
           ):loadingScreen(),
-          if (user.isAdmin())
+          if (user.isAdmin)
           Positioned(
             bottom: 25,
             right:25,

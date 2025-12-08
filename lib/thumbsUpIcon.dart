@@ -52,9 +52,10 @@ class _thumbsUpIconState extends State<thumbsUpIcon> {
             Text(
               count.toString(),
               style: TextStyle(
-                  color:
-                      liked ? globals.secondaryColor : Colors.white,
-                  fontSize: 28),
+                color: liked ? globals.secondaryColor : Colors.white,
+                fontSize: globals.subTitleFontSize,
+                fontWeight: FontWeight.bold
+              ),
             )
           ],
         ),

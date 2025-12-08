@@ -122,7 +122,7 @@ class _contactUsPageState extends State<contactUsPage> {
     setState(() {
       loading = true;      
     });
-    NetworkService().getMultipleRoute('committees').then((committeesSent){
+    NetworkService().getMultipleRoute('committees', forceRefresh: true).then((committeesSent){
       if(committeesSent == null) return;
       setState(() {
         committees = committeesSent.map((item) => committee.fromJson(item)).toList();
@@ -220,7 +220,7 @@ class _contactUsPageState extends State<contactUsPage> {
                           "Send Message",
                           style: TextStyle(
                             color: globals.backgroundColor,
-                            fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                            fontSize: globals.subTitleFontSize,
                           ),
                         ),
                       ],

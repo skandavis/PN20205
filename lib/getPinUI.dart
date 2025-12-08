@@ -4,10 +4,11 @@ import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/submit.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:NagaratharEvents/utils.dart' as utils;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
-TextEditingController email = TextEditingController();
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
 class getPinUI extends StatefulWidget {
@@ -21,7 +22,8 @@ class getPinUI extends StatefulWidget {
 }
 
 class _getPinUIState extends State<getPinUI> {
-  Future<int> registerUser(String email) async {
+  TextEditingController email = TextEditingController();
+  Future<Response<dynamic>> registerUser(String email) async {
     widget.updateLoading();
     final response = await NetworkService().postRoute({
       "email": email,
@@ -31,9 +33,9 @@ class _getPinUIState extends State<getPinUI> {
     "auth/request-otp",
     skipIntercept: true);
     widget.updateLoading();
-    return response.statusCode!;
+    return response;
   }
-  void showDialogBox() async {
+  void showDialogBox(String message) async {
     final result = await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -44,8 +46,8 @@ class _getPinUIState extends State<getPinUI> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  "We have sent a 6-digit PIN to your email to verify your account. Please check it and enter it.",
-                  style: TextStyle(fontSize: 16),
+                  message,
+                  style: TextStyle(fontSize: globals.paraFontSize),
                 ),
               ],
             ),
@@ -53,24 +55,25 @@ class _getPinUIState extends State<getPinUI> {
         },
       );
     if (result == null) {
+      email.clear();
       widget.onPinSent(email.text);
     }
   }
   void sendPin(String email, BuildContext context) async{
     if (email.isEmpty ) {
-      // email = "viswanathanmanickam5@gmail.com";
-      utils.snackBarMessage(context, 'Please enter email');
-      return;
+      email = "viswanathanmanickam5@gmail.com";
+      // utils.snackBarMessage(context, 'Please enter email');
+      // return;
     } 
     if (utils.isValidEmail(email)) {
-      registerUser(email).then((statusCode) 
+      registerUser(email).then((response) 
       {
-        switch(statusCode)
+        switch(response.statusCode)
         {
           case 200:
             User.instance.setEmail(email);
             prefs.setBool('gotEmail', true);
-            showDialogBox();
+            showDialogBox(response.data);
             break;
           case 404:
             utils.snackBarMessage(context, 'Email not registered!');
@@ -89,6 +92,7 @@ class _getPinUIState extends State<getPinUI> {
         Column(
           children: [
             TextField(
+              style: TextStyle(fontSize: globals.bodyFontSize),
               onSubmitted: (email) {
                 sendPin(email, context);
               },

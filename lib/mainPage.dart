@@ -92,7 +92,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   void loadInitialData() async {
     if(!eventInfo.isLoaded)
     {
-      final response = await NetworkService().getSingleRoute("events", forceRefresh: true);
+      final response = await NetworkService().getSingleRoute("events", forceRefresh: false);
       if(response == null) return;
       setState(() {
         user.fromJson(response.remove('user'));
@@ -102,10 +102,10 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
     }
     if(user.firstTime)
     {
-      await Navigator.push(
+      await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => accountPage(),
+          builder: (context) => accountPage(firstTime: true,),
         ),
       );
     }
@@ -177,7 +177,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
                       " +${eventInfo.userCount} Going",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize: globals.bodyFontSize,
                         fontWeight: FontWeight.bold
                       ),
                     )
@@ -188,7 +188,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
                 eventInfo.description,
                 style:  TextStyle(
                   color: Colors.white, 
-                  fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
+                  fontSize: globals.subTitleFontSize,
                   fontWeight: FontWeight.bold
                 ),
                 textAlign: TextAlign.center,
@@ -214,7 +214,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
                       eventInfo.mainSection,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                        fontSize: globals.bodyFontSize,
                         fontWeight: FontWeight.w500,
                         decoration: TextDecoration.none,
                       ),
@@ -246,7 +246,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
                       child: Text(
                         eventInfo.aside,
                         style: TextStyle(color: Colors.white,
-                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        fontSize: globals.paraFontSize,
                         ),
                       ),
                     ),

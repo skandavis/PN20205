@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
 
 class submitButton extends StatelessWidget {
   Function() onSubmit;
@@ -25,7 +26,7 @@ class submitButton extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: TextStyle(color: Colors.white, fontSize:Theme.of(context).textTheme.headlineSmall?.fontSize),
+          style: TextStyle(color: Colors.white, fontSize: globals.subTitleFontSize),
         ),
       ),
     );

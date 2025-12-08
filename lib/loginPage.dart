@@ -61,7 +61,7 @@ class _loginPageState extends State<loginPage> {
                             style: TextStyle(
                               color: Colors.white, 
                               fontFamily: globals.titleFont,
-                              fontSize: 36, 
+                              fontSize: globals.titleFontSize, 
                               height: 1
                             ),
                           ),
@@ -81,6 +81,7 @@ class _loginPageState extends State<loginPage> {
                       ),
                       child: widget.sentPassword? 
                       enterPinUI(
+                        deviceID: deviceID,
                         updateLoading: () {
                           setState(() {
                             isLoading = !isLoading;
