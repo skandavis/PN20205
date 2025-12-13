@@ -46,4 +46,24 @@ class EventInfo {
       images.add(element["url"].substring(1));
     }
   }
+
+  void clear()
+  {
+    id = "";
+    name = "";
+    city = "Fort Worth";
+    state = "TX";
+    zip = 0;
+    country = "USA";
+    address = "815 Main St";
+    startDate = DateTime.now();
+    endDate = DateTime.now();
+    description = "";
+    mainSection = "";
+    subSection = "";
+    aside = "";
+    userCount = 0;
+    images = [];
+    isLoaded = false;
+  }
 }

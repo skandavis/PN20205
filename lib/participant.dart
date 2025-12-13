@@ -50,10 +50,10 @@ class Participant {
 
   void updateInfo(Map<String, dynamic> json)
   {
-    name = json['name'];
-    description = json['about'];
-    age = json["age"];
-    city = json["city"];
-    gender = json["gender"];
+    name = json['name'] ?? name;
+    description = json['about'] ?? description;
+    age = json["age"] ?? age;
+    city = json["city"] ?? city;
+    gender = json["gender"] ?? gender;
   }
 }

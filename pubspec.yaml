@@ -39,7 +39,7 @@ dependencies:
   url_launcher: ^6.3.2
   intl: ^0.20.2
   google_maps_flutter: ^2.12.3
-  google_fonts: ^6.3.2  # (or latest version)
+  google_fonts: ^6.3.2 
   firebase_messaging: ^16.0.3
   flutter_slidable: ^4.0.0
   image_picker: ^1.1.2
@@ -52,7 +52,10 @@ dependencies:
   cookie_jar: ^4.0.0
   path: any
   ua_client_hints: ^1.4.1
+  qr_flutter: ^4.1.0
   timezone: ^0.9.4
+  crypto: ^3.0.7
+  another_flushbar: ^1.12.32
 dev_dependencies:
   flutter_test:
     sdk: flutter

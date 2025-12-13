@@ -32,3 +32,4 @@ List<Activity>? totalActivities;
 String ApnsToken = "";
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+

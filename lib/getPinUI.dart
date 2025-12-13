@@ -62,7 +62,7 @@ class _getPinUIState extends State<getPinUI> {
   void sendPin(String email, BuildContext context) async{
     if (email.isEmpty ) {
       email = "viswanathanmanickam5@gmail.com";
-      // utils.snackBarMessage(context, 'Please enter email');
+      // utils.snackBarMessage('Please enter email');
       // return;
     } 
     if (utils.isValidEmail(email)) {
@@ -76,12 +76,12 @@ class _getPinUIState extends State<getPinUI> {
             showDialogBox(response.data);
             break;
           case 404:
-            utils.snackBarMessage(context, 'Email not registered!');
+            utils.snackBarMessage('Email not registered!');
             break;
         }
       });
     }else {
-      utils.snackBarMessage(context, '$email is an invalid email');
+      utils.snackBarMessage('$email is an invalid email');
     }
   }
   @override

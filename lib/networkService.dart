@@ -4,13 +4,11 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:NagaratharEvents/cacheManager.dart';
 import 'package:NagaratharEvents/imageService.dart';
-import 'package:NagaratharEvents/introPage.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as globals;
 import 'utils.dart' as utils;
 import 'package:ua_client_hints/ua_client_hints.dart';
@@ -63,36 +61,30 @@ class NetworkService {
           handler.next(options);
         },
         onResponse: (response, handler) async {
-          final context = globals.navigatorKey.currentContext;
+          bool showAboveSnackBar = response.requestOptions.extra['showAboveSnackBar'] == true;
           if (response.statusCode == 403) {
-            utils.snackBarMessage(context!, "You're not authorized!");
+            showMessage("You're not authorized!", showAboveSnackBar);
+          } else if (response.statusCode == 422) {
+            showMessage(response.data, showAboveSnackBar);
           } else if (response.statusCode == 413) {
-            utils.snackBarMessage(context!, 'Image too large!');
+            showMessage('Image too large!', showAboveSnackBar);
           } else if (response.statusCode == 498) {
             return handler.resolve(await refresh(response.requestOptions));
           } else if (response.statusCode == 500) {
-            utils.snackBarMessage(context!, 'Something Went Wrong! Try again later.');
+            showMessage('Something Went Wrong! Try again later.', showAboveSnackBar);
           } else if (response.statusCode == 404) {
             if(response.requestOptions.extra['skipIntercept'] == true) {
               return handler.next(response);
             }
-            utils.snackBarMessage(context!, 'Resource not found!');
+            showMessage('Resource not found!', showAboveSnackBar);
           } else if(response.statusCode == 400){
-            utils.snackBarMessage(context!, 'Request Failed!');
+            showMessage('Request Failed!', showAboveSnackBar);
           } else if (response.statusCode == 401) {
             if(response.requestOptions.extra['skipIntercept'] == true) {
               return handler.next(response);
             }
-            final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-            prefs.remove('loggedIn');
-            // globals.totalActivities.clear();
-            Navigator.pushReplacement(
-              context!,
-              MaterialPageRoute(
-                builder: (context) => const introPage(),
-              ),
-            );
-            utils.snackBarMessage(context, 'Unauthorized User! Try Logging In Again.');
+            utils.logout();
+            utils.snackBarMessage('Unauthorized User! Try Logging In Again.');
           }
           return handler.next(response);
         },
@@ -100,7 +92,7 @@ class NetworkService {
           if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-            utils.snackBarMessage(globals.navigatorKey.currentContext!, 'Internet connection timed out. Check your connection and try again.');
+            utils.snackBarMessage('Internet connection timed out. Check your connection and try again.');
           }
           return handler.next(e);
         },
@@ -108,6 +100,14 @@ class NetworkService {
     );
   }
   
+  void showMessage(String message, bool showAboveSnackBar) {
+    if (showAboveSnackBar) {
+      utils.snackBarAboveMessage(message);
+    } else {
+      utils.snackBarMessage(message);
+    }
+  }
+
   Future<Response> refresh(RequestOptions options) async
   {
     await dio.get('auth/refresh-token');
@@ -175,16 +175,19 @@ class NetworkService {
     cacheManager.cleanup(deleteAll: true);
   }
 
-  Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route, {bool skipIntercept = false}) async {
+  Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route, {bool skipIntercept = false, bool showAboveSnackBar = false}) async {
     await _initIfNeeded();
     
     try {
       final response = await dio.post(
         route, 
         data: json.encode(data),
-        options: skipIntercept ? Options(
-          extra: {"skipIntercept": true}
-        ) : null
+        options: Options(
+          extra: {
+            "skipIntercept": skipIntercept, 
+            "showAboveSnackBar": showAboveSnackBar
+          }
+        )
       );
       return response;
     } catch (e) {
@@ -192,12 +195,19 @@ class NetworkService {
     }
   }
   
-  Future<Response<dynamic>> patchRoute(Map<String, dynamic> data, String route) async {
+  Future<Response<dynamic>> patchRoute(Map<String, dynamic> data, String route, {showAboveSnackBar = false}) async {
     await _initIfNeeded();
     
     try {
-      final response = await dio
-          .patch(route, data: json.encode(data));
+      final response = await dio.patch(
+        route, 
+        data: json.encode(data),
+        options: Options(
+          extra: {
+            "showAboveSnackBar": showAboveSnackBar
+          }
+        )
+      );
       return response;
     } catch (e) {
       return _createErrorResponse(route, 500);
@@ -244,7 +254,7 @@ class NetworkService {
         options: Options(headers: {'Content-Type': 'multipart/form-data'}),
       );
       if (response.statusCode == 200) {
-        utils.snackBarMessage(context, "File uploaded successfully!", color: Colors.green);  
+        utils.snackBarMessage("File uploaded successfully!", color: Colors.green);  
       }
       return response;
     } catch (e) {

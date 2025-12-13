@@ -1,21 +1,50 @@
 import 'dart:async';
 import 'package:NagaratharEvents/customDialogBox.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/homePage.dart';
+import 'package:NagaratharEvents/introPage.dart';
+import 'package:NagaratharEvents/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:another_flushbar/flushbar.dart';
 
 final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
 
-void snackBarMessage(BuildContext context, String message,{Color color = const Color.fromARGB(255, 255, 51, 0)})
+void snackBarMessage(String message,{Color color = const Color.fromARGB(255, 255, 51, 0)})
 {
-  ScaffoldMessenger.of(context).showSnackBar(
+  ScaffoldMessenger.of(globals.navigatorKey.currentState!.context).showSnackBar(
     SnackBar(
       backgroundColor: color,
       content:
           Text(message),
     ),
   );
+}
+
+void logout() async {
+  await NetworkService().getRoute("auth/logout", true);
+  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+  await prefs.remove('loggedIn');
+  for(ValueNotifier<bool> controller in homePage.pageControllers){
+      controller.value = false;
+  }
+  NetworkService().clearCache();
+  Navigator.pushReplacement(
+    globals.navigatorKey.currentState!.context,
+    MaterialPageRoute(
+      builder: (context) => const introPage(),
+    ),
+  );
+}
+
+void snackBarAboveMessage(String message,{Color color = const Color.fromARGB(255, 255, 51, 0)}) {
+  Flushbar(
+    backgroundColor: color,
+    message: message,
+    duration: Duration(seconds: 2),
+  ).show(globals.navigatorKey.currentState!.context);
 }
 
 Future<bool> requestCalendarPermission() async {
@@ -77,7 +106,7 @@ Future<void> addEventToCalendar(String name, String desc, String eventLocation, 
   }
 
   if (selectedCalendar.isReadOnly ?? false) {
-    snackBarMessage(context, "Calendar is read-only");
+    snackBarMessage("Calendar is read-only");
     return;
   }
 
@@ -93,7 +122,7 @@ Future<void> addEventToCalendar(String name, String desc, String eventLocation, 
   final createResult = await _deviceCalendarPlugin.createOrUpdateEvent(event);
 
   if (createResult!.isSuccess) {
-    snackBarMessage(context, "Event added successfully!", color: Colors.green);
+    snackBarMessage("Event added successfully!", color: Colors.green);
   }
 }
 

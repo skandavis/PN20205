@@ -52,8 +52,12 @@ class _contactUsPageState extends State<contactUsPage> {
       getCommittees();
       updateUserDetails();
     } else {
-      // is not visible
+      clearCommittees();
     }
+  }
+
+  clearCommittees() {
+    committees = null;
   }
 
   void updateUserDetails() {
@@ -104,16 +108,16 @@ class _contactUsPageState extends State<contactUsPage> {
         });
         subjectController.clear();
         messageController.clear();
-        utils.snackBarMessage(context, 'Message Sent!',color: Colors.green);
+        utils.snackBarMessage('Message Sent!',color: Colors.green);
       }
       else{
         setState(() {
           loading = false;                          
         });
-        utils.snackBarMessage(context, "Unable to send Message!");
+        utils.snackBarMessage("Unable to send Message!");
       }
     } else {
-      utils.snackBarMessage(context, 'Not all fields are filled in!');
+      utils.snackBarMessage('Not all fields are filled in!');
     }
   }
 

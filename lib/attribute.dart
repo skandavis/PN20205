@@ -1,6 +1,7 @@
 import 'package:NagaratharEvents/customDialogBox.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/gradientTextField.dart';
+import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +27,6 @@ class _attributeState extends State<attribute> {
   late final controller = TextEditingController(text: widget.attributeValue);
   
   void _editValue() {
-    if(!widget.isEditable) return;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -44,9 +44,16 @@ class _attributeState extends State<attribute> {
               ),
               GestureDetector(
                 onTap: () async{
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  if(controller.text.isEmpty)
+                  {
+                    utils.snackBarAboveMessage('Please enter ${widget.attributeTitle}');
+                    return;
+                  }
                   if(widget.onValueChange != null) {
                     final statusCode = await widget.onValueChange!(controller.text, null);
                     if(statusCode != 200) return;      
+                    utils.snackBarMessage("${widget.attributeTitle} updated!", color: Colors.green);
                   }
                   setState((){
                     widget.attributeValue = controller.text;
@@ -81,8 +88,6 @@ class _attributeState extends State<attribute> {
 
   Future<void> _selectDateTime(BuildContext context) async {
     DateTime selectedDateTime = widget.attributeValue;
-    
-    // Show Cupertino date-time picker
     await showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -110,11 +115,14 @@ class _attributeState extends State<attribute> {
                       onTap: () async {
                         Navigator.of(context).pop();
                         if(widget.onValueChange != null) {
+                          setState(() {
+                          });
                           final statusCode = await widget.onValueChange!(null, selectedDateTime);
                           if(statusCode != 200) return;      
+                          utils.snackBarMessage("${widget.attributeTitle} updated!", color: Colors.green);
                         }
                         setState(() {
-                          widget.attributeValue = DateFormat('MMM dd, h:mm a').format(selectedDateTime);
+                          widget.attributeValue = selectedDateTime;
                         });
                       },
                     ),
@@ -156,11 +164,36 @@ class _attributeState extends State<attribute> {
     return Expanded(
       child: InkWell(
         onDoubleTap: (){
+          if(!widget.isEditable) return;
           if(widget.attributeValue is DateTime) {
             _selectDateTime(context);
           } else {
             _editValue();
           } 
+        },
+        onTap: (){
+          showDialog(
+            context: context, 
+            builder: (BuildContext context) {
+              return customDialogBox(
+                height: 175,
+                title: widget.attributeTitle, 
+                body: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      widget.attributeValue is DateTime ? DateFormat('MMM dd, h:mm a').format(widget.attributeValue) : widget.attributeValue,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: globals.bodyFontSize,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         },
         borderRadius: BorderRadius.circular(8),
         child: Column(
@@ -174,13 +207,16 @@ class _attributeState extends State<attribute> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              widget.attributeValue is DateTime ? DateFormat('MMM dd, h:mm a').format(widget.attributeValue) : widget.attributeValue,
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: globals.smallFontSize
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                widget.attributeValue is DateTime ? DateFormat('MMM dd, h:mm a').format(widget.attributeValue) : widget.attributeValue,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: globals.smallFontSize
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

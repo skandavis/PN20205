@@ -23,7 +23,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  tz.initializeTimeZones();   // <-- Required
+  tz.initializeTimeZones();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

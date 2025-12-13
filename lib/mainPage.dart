@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:NagaratharEvents/accountPage.dart';
 import 'package:NagaratharEvents/eventInfo.dart';
 import 'package:NagaratharEvents/expandableHighlightext.dart';
@@ -29,27 +31,29 @@ class _mainPageState extends State<mainPage> {
   @override
   void initState() {
     super.initState();
-    // widget.isVisible.addListener(_onVisibilityChanged);
+    widget.isVisible.addListener(_onVisibilityChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
         loadInitialData();
     });
   }
 
-  // @override
-  // void dispose() {
-  //   widget.isVisible.removeListener(_onVisibilityChanged);
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    widget.isVisible.removeListener(_onVisibilityChanged);
+    super.dispose();
+  }
 
-  // void _onVisibilityChanged() {
-  //   if (widget.isVisible.value) {
-  //     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //       loadInitialData();
-  //     });
-  //   } else {
-  //     // is not visible
-  //   }
-  // }
+  void _onVisibilityChanged() {
+    if (widget.isVisible.value) {
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   loadInitialData();
+      // });
+    } else {
+      eventInfo.clear(); 
+      user.clear();
+      // debugPrint('Widget is not visible');
+    }
+  }
 
 Future<bool> requestCalendarPermission(BuildContext context) async {
   var status = await Permission.calendarFullAccess.status;

@@ -30,8 +30,12 @@ static List<dynamic>? questions;
     if (widget.isVisible.value) {
       loadFaqs();
     } else {
-      // is not visible
+      clearFaqs();
     }
+  }
+
+  clearFaqs() {
+    questions = null;
   }
 
   void loadFaqs() {

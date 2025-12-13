@@ -235,7 +235,7 @@ class _imageLoaderState extends State<imageLoader> {
   void _handleDeleteSuccess() {
     if (!widget.dontReplace) {
       _setPlaceholderImage();
-      utils.snackBarMessage(context, 'Image deleted successfully',
+      utils.snackBarMessage('Image deleted successfully',
           color: Colors.green);
     }
     widget.onDelete?.call();

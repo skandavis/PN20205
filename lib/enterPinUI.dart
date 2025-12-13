@@ -37,6 +37,7 @@ class _enterPinUIState extends State<enterPinUI> {
     if(response.statusCode == 200){
       final SharedPreferencesAsync prefs = SharedPreferencesAsync();
       prefs.setBool('loggedIn', true);
+      prefs.setInt("PIN", pin);
       final responseMap = json.decode(response.data) as Map<String, dynamic>;
       User.instance.fromJson(responseMap.remove('user'));
       EventInfo.instance.fromJson(responseMap);
@@ -47,17 +48,17 @@ class _enterPinUIState extends State<enterPinUI> {
   }
   void login (String pin, BuildContext context) {
     if(pin.isEmpty){
-      utils.snackBarMessage(context, 'Please enter PIN');
+      utils.snackBarMessage('Please enter PIN');
       return;
     }
     if(pin.length<6){
-      utils.snackBarMessage(context, 'PIN must be 6 digits');
+      utils.snackBarMessage('PIN must be 6 digits');
       return;
     }
     try{
       int.parse(pin);
     }catch(e){
-      utils.snackBarMessage(context, 'PIN must be numeric');
+      utils.snackBarMessage('PIN must be numeric');
       return;
     }
     authenticate(int.parse(pin))
@@ -74,7 +75,7 @@ class _enterPinUIState extends State<enterPinUI> {
             );
             break;
           case 401:
-            utils.snackBarMessage(context, 'PIN is invalid for account!');
+            utils.snackBarMessage('PIN is invalid for account!');
             break;
         }
     });

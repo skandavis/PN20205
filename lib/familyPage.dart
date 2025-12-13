@@ -7,7 +7,7 @@ import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:NagaratharEvents/utils.dart' as utils;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 class familyPage extends StatefulWidget {
   const familyPage({super.key});
 
@@ -20,6 +20,7 @@ class _familyPageState extends State<familyPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController relationController = TextEditingController();
   static List<FamilyMember>? family;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -37,166 +38,228 @@ class _familyPageState extends State<familyPage> {
     });
   }
 
-  void createUser() {
+  void createFamilyMember() async{
+    FocusManager.instance.primaryFocus?.unfocus();
     if(!utils.isValidEmail(emailController.text))
     {
-      utils.snackBarMessage(context, '${emailController.text}is an invalid email');
-      // emailController.text = "sskandamani@gmail.com";
-      return;
+      // utils.snackBarAboveMessage('${emailController.text}is an invalid email');
+      // return;
+      emailController.text = 'john@c.com';
+      nameController.text = 'John';
+      relationController.text = 'Brother';
     }
     if (nameController.text.isEmpty || emailController.text.isEmpty || relationController.text.isEmpty) {
-      utils.snackBarMessage(context, 'Please enter name, email and relation');
-      // nameController.text = "Cornelius Cornwallus Coconut";
-      // emailController.text = "sskandamani@gmail.com";
-      // relationController.text = "Son";
+      utils.snackBarAboveMessage('Please enter name, email and relation');
       return;
     }
-    NetworkService().postRoute({
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final response = await NetworkService().postRoute({
       'email': emailController.text,
       'name': nameController.text, 
       'type':'Family', 
       'relation': relationController.text}, 
-      'users').then((response) {
-        setState(() {
-          family!.add(FamilyMember.fromJson(response.data));
-          debugPrint(family.toString());  
-        });
+      'users',
+      showAboveSnackBar: true,
+    );
+    await Future.delayed(const Duration(milliseconds: 1000));
+    setState(() {
+      isLoading = false;
+    });
+
+    if(response.statusCode == 200){
+      setState(() {
+        family!.add(FamilyMember.fromJson(response.data));
       });
+      utils.snackBarMessage('Family member added!', color: Colors.green);
+      if(!mounted) return;
+      Navigator.pop(context);
+    }
+  }
+
+  void editFamilyMember(int index) async{
+    FocusManager.instance.primaryFocus?.unfocus();
+    if(!utils.isValidEmail(emailController.text))
+    {
+      utils.snackBarAboveMessage('${emailController.text}is an invalid email');
+      return;
+    }
+    if (nameController.text.isEmpty || emailController.text.isEmpty || relationController.text.isEmpty) {
+      utils.snackBarAboveMessage('Please enter name, email and relation');
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final response = await NetworkService().patchRoute({
+      "email": emailController.text,
+      "name": nameController.text,
+      "relation": relationController.text
+      },
+      'users/family-users/${family![index].id}',
+      showAboveSnackBar: true
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if(response.statusCode == 200)
+    {
+      setState(() {
+        family![index].name = nameController.text;
+        family![index].email = emailController.text;
+        family![index].relation = relationController.text;
+      });
+      utils.snackBarMessage('Family member updated!', color: Colors.green);
+      if(!mounted) return;
+      Navigator.pop(context);
+    }
+  }
+
+  void createFamilyMemberDialog() {
     nameController.clear();
     emailController.clear();
     relationController.clear();
-    Navigator.of(context).pop(); // Close dialog
-  }
-
-  void createUserDialog() {
     showDialog(
       context: context,
       useSafeArea: true,
       builder: (BuildContext context) {
-        return customDialogBox(
-          title: "Add Family Member",
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              gradientTextField(
-                controller: nameController,
-                hint: "Ex: John",
-                label: "Name", 
-                icon: Icons.person,
-              ),
-              gradientTextField(
-                controller: emailController,
-                hint: "Ex: John@gmail.com",
-                label: "Email", 
-                icon: Icons.mail,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              gradientTextField(
-                controller: relationController,
-                hint: "Ex: Son",
-                label: "Relation", 
-                icon: Icons.groups,
-              ),
-              GestureDetector(
-                onTap: () {
-                  createUser();
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: globals.secondaryColor,
-                  ),
-                  width: 150,
-                  height: 60,
-                  child: Center(
-                    child: Text(
-                      "Add",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: globals.subTitleFontSize
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return customDialogBox(
+              title: "Add Family Member",
+              body: Stack(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      gradientTextField(
+                        controller: nameController,
+                        hint: "Ex: John",
+                        label: "Name", 
+                        icon: Icons.person,
                       ),
-                    ),
+                      gradientTextField(
+                        controller: emailController,
+                        hint: "Ex: John@gmail.com",
+                        label: "Email", 
+                        icon: Icons.mail,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      gradientTextField(
+                        controller: relationController,
+                        hint: "Ex: Son",
+                        label: "Relation", 
+                        icon: Icons.groups,
+                      ),
+                      GestureDetector(
+                        onTap: isLoading ? null : createFamilyMember,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: isLoading ? Colors.grey : globals.secondaryColor,
+                          ),
+                          width: 150,
+                          height: 60,
+                          child: Center(
+                            child: isLoading
+                                ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : Text(
+                                    "Add",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: globals.subTitleFontSize
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                ),
-              )
-            ],
-          ),
+                ],
+              ),
+            );
+          }
         );
       },
     );
   }
 
-  void editUser(int index) {
+  void editFamilyMemberDialog(int index) {
     nameController.text = family![index].name;
     emailController.text = family![index].email;
     relationController.text = family![index].relation;
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return customDialogBox(
-          title: "Update Family Member", 
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              gradientTextField(
-                controller: nameController,
-                hint: "Ex: John",
-                label: "Name", 
-                icon: Icons.person,
-              ),
-              gradientTextField(
-                controller: emailController,
-                hint: "Ex: John@gmail.com",
-                label: "Email", 
-                icon: Icons.mail,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              gradientTextField(
-                controller: relationController,
-                hint: "Ex: Son",
-                label: "Relation", 
-                icon: Icons.groups,
-              ),
-              GestureDetector(
-                onTap: () async{
-                  final response = await NetworkService().patchRoute({
-                    "email": emailController.text,
-                    "name": nameController.text,
-                    "relation": relationController.text
-                    },
-                    'users/family-users/${family![index].id}'
-                  );
-                  if(response.statusCode != 200) return;
-                  setState(() {
-                    family![index].name = nameController.text;
-                    family![index].email = emailController.text;
-                    family![index].relation = emailController.text;
-                  });
-                  nameController.clear();
-                  emailController.clear();
-                  relationController.clear();
-                  Navigator.of(context).pop();
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: globals.secondaryColor,
-                  ),
-                  width: 150,
-                  height: 60,
-                  child: Center(
-                    child: Text(
-                      "Update",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: globals.subTitleFontSize
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Stack(
+              children: [
+                customDialogBox(
+                  title: "Update Family Member", 
+                  body: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      gradientTextField(
+                        controller: nameController,
+                        hint: "Ex: John",
+                        label: "Name", 
+                        icon: Icons.person,
                       ),
-                    ),
+                      gradientTextField(
+                        controller: emailController,
+                        hint: "Ex: John@gmail.com",
+                        label: "Email", 
+                        icon: Icons.mail,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      gradientTextField(
+                        controller: relationController,
+                        hint: "Ex: Son",
+                        label: "Relation", 
+                        icon: Icons.groups,
+                      ),
+                      GestureDetector(
+                        onTap: isLoading ? null : (){
+                          editFamilyMember(index);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: isLoading ? Colors.grey : globals.secondaryColor,
+                          ),
+                          width: 150,
+                          height: 60,
+                          child: Center(
+                            child: isLoading
+                                ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : Text(
+                                    "Update",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: globals.subTitleFontSize
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              )
-            ],
-          ),
+              ],
+            );
+          }
         );
       },
     );
@@ -233,7 +296,7 @@ class _familyPageState extends State<familyPage> {
           } else if (index == count - 1) {
             return GestureDetector(
               onTap: () {
-                createUserDialog();
+                createFamilyMemberDialog();
               },
               child: Container(
                 width: double.infinity,
@@ -255,7 +318,7 @@ class _familyPageState extends State<familyPage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    editUser(index - 1); // Open edit dialog for this user
+                    editFamilyMemberDialog(index - 1);
                   },
                   child: familyMemberSquare(
                     familyMember: family![index - 1],

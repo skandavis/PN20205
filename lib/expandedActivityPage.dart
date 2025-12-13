@@ -33,7 +33,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
     }
     if(startTime != null)
     {
-      final response = await NetworkService().patchRoute({"startTime": startTime.toIso8601String()}, "activities/${widget.activity.id}");
+      final response = await NetworkService().patchRoute({"startTime": startTime.toUtc().toIso8601String()}, "activities/${widget.activity.id}");
       if(response.statusCode == 200)
       {
         globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].startTime = startTime;
@@ -153,14 +153,14 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             attribute(
+                              isEditable: widget.activity.isActivityAdmin,
                               onValueChange: updateActivity,
-                              isEditable: true,
                               attributeTitle: "Date",
                               attributeValue: widget.activity.startTime,
                             ),
                             const myVerticaldivider(),
                             attribute(
-                              isEditable: true,
+                              isEditable: widget.activity.isActivityAdmin,
                               onValueChange: updateActivity,
                               attributeTitle: "Location",
                               attributeValue: widget.activity.location,

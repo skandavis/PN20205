@@ -38,8 +38,12 @@ class _notificationsPageState extends State<notificationsPage> {
     if (widget.isVisible.value) {
       loadMessages();
     } else {
-      // is not visible
+      clearMessages();
     }
+  }
+
+  void clearMessages() {
+    messages = null;
   }
 
   void loadMessages() {
@@ -86,7 +90,6 @@ class _notificationsPageState extends State<notificationsPage> {
 
     if (newOnes.isNotEmpty) {
       utils.snackBarMessage(
-        context,
         "${newOnes.length} new message${newOnes.length > 1 ? 's' : ''}",
         color: Colors.blue,
       );

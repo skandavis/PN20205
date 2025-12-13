@@ -26,12 +26,13 @@ class _participantRowState extends State<participantRow> {
 
   void displayParticipantDetails() {
     showDialog(
+      useRootNavigator: false,
       context: context,
       builder: (BuildContext context) {
         return ParticipantDetailDialog(
           participant: participant,
           onImageUpdated: onImageUpdated,
-          onDataChanged: (data){
+          onDataChanged: (data) {
             setState(() {
               participant.updateInfo(data);
               globals.totalActivities![activityIndex].participants[widget.participantIndex].updateInfo(data);

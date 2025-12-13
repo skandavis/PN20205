@@ -36,8 +36,13 @@ class activitiesPageState extends State<activitiesPage> {
     if (widget.isVisible.value) {
       _loadData();
     } else {
-      // is not visible
+      clearData();
     }
+  }
+
+  void clearData() {
+    globals.totalActivities = null;
+    allCategories = null;
   }
 
   Future<void> _loadData() async {

@@ -23,18 +23,16 @@ void updateIsPush() {
   isPush = !isPush;
 }
 void sendMessage(BuildContext context) async {
+  FocusManager.instance.primaryFocus?.unfocus();  
   final messageText = messageController.text.trim();
-  (isPush.toString());
   if (messageText.isEmpty)
   {
-    utils.snackBarMessage(context, 'Please enter a message');
-    Navigator.pop(context);
+    utils.snackBarAboveMessage('Please enter a message');
     return;
   } 
   if (messageText.length<5)
   {
-    utils.snackBarMessage(context, 'Message is too small');
-    Navigator.pop(context);
+    utils.snackBarAboveMessage('Message is too small');
     return;
   } 
   final type = isPush ? "P" : "N";
@@ -52,14 +50,14 @@ void sendMessage(BuildContext context) async {
       isPush = false;
     });
 
-    utils.snackBarMessage(context, "Message Sent!", color: Colors.green);
+    utils.snackBarMessage("Message Sent!", color: Colors.green);
     if(widget.sendMessage != null)
     {
       widget.sendMessage!(response);
     }
     Navigator.pop(context);
   } else {
-    utils.snackBarMessage(context, "Unable to send Message!");
+    utils.snackBarMessage("Unable to send Message!");
     Navigator.pop(context); 
   }
 }

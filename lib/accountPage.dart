@@ -1,4 +1,3 @@
-
 import 'package:NagaratharEvents/homePage.dart';
 import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/networkService.dart';
@@ -115,16 +114,15 @@ class _accountPageState extends State<accountPage> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * .025,
               ),
-              
               GestureDetector(
                 onTap: () async{
                   for(TextEditingController controller in controllers){
                     if(controller.text.isEmpty){
-                      utils.snackBarMessage(context, "Please fill all the fields!");
+                      utils.snackBarMessage("Please fill all the fields!");
                       return;
                     }
                     if(controllers[1].text.length != 12){
-                      utils.snackBarMessage(context, "Please enter a valid phone number!");
+                      utils.snackBarMessage("Please enter a valid phone number!");
                       return;
                     }
                   }
@@ -141,7 +139,7 @@ class _accountPageState extends State<accountPage> {
                     'phone':controllers[1].text,
                     'city':controllers[2].text
                   });
-                  utils.snackBarMessage(context, "Account Details Updated!",color: Colors.green);
+                  utils.snackBarMessage("Account Details Updated!",color: Colors.green);
                   if(widget.firstTime){
                     user.firstTime = false;
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  homePage(),));

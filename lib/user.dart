@@ -48,6 +48,19 @@ class User {
     };
   }
 
+  void clear() {
+    id = '';
+    role = '';
+    firstTime = false;
+    isAdmin = false;
+    name = '';
+    city = '';
+    phone = '';
+    email = '';
+    photo = null;
+    primaryUser = null;
+  }
+
   bool isPrimaryUser() {
     return primaryUser == null;
   }

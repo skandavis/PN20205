@@ -10,6 +10,18 @@ import 'package:NagaratharEvents/globals.dart' as globals;
 
 class homePage extends StatefulWidget {
   int selectedIndex = 0;
+
+  static final pageControllers = List.generate(6, (_) => ValueNotifier<bool>(false));
+
+  static final pages = {
+    "Home" : mainPage(isVisible: pageControllers[0]),
+    "Activities" : activitiesPage(isVisible: pageControllers[1],),
+    "Notifications" : notificationsPage(isVisible: pageControllers[2],),
+    "FAQ" : faqPage(isVisible: pageControllers[3],),
+    "Contact Us" : contactUsPage(isVisible: pageControllers[4],),
+    "Settings" : settingsPage(isVisible: pageControllers[5]),
+  }.entries.toList();
+
   homePage({super.key});
 
   @override
@@ -17,23 +29,13 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
-  final pageControllers = List.generate(6, (_) => ValueNotifier<bool>(false));
-
-  late var pages = {
-    "Home" : mainPage(isVisible: pageControllers[0]),
-    "Activities" : activitiesPage(isVisible: pageControllers[1],),
-    "Notifications" : notificationsPage(isVisible: pageControllers[2],),
-    "FAQ" : faqPage(isVisible: pageControllers[3],),
-    "Contact Us" : contactUsPage(isVisible: pageControllers[4],),
-    "Settings" : settingsPage(isVisible: pageControllers[5],),
-  }.entries.toList();
 
   @override
   void initState() {
     super.initState();
-    pageControllers[0].value = true;
+    homePage.pageControllers[0].value = true;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return messageReciever(
@@ -41,7 +43,7 @@ class _homePageState extends State<homePage> {
         appBar: AppBar(
           toolbarHeight: MediaQuery.of(context).size.height*.075,
           title: Text(
-            pages[widget.selectedIndex].key,
+            homePage.pages[widget.selectedIndex].key,
             style: TextStyle(
               fontFamily: globals.titleFont,
               fontSize: globals.titleFontSize,
@@ -53,7 +55,7 @@ class _homePageState extends State<homePage> {
         backgroundColor: globals.backgroundColor,
         body: IndexedStack(
           index: widget.selectedIndex,
-          children: pages.map((e) => e.value).toList(),
+          children: homePage.pages.map((e) => e.value).toList(),
         ),
         bottomNavigationBar: BottomNavigationBar(
           selectedFontSize: Theme.of(context).textTheme.bodyLarge?.fontSize ?? 14.0,
@@ -99,8 +101,8 @@ class _homePageState extends State<homePage> {
           ],
           currentIndex: widget.selectedIndex,
           onTap: (int index) {
-          pageControllers[widget.selectedIndex].value = false;
-          pageControllers[index].value = true;
+            // homePage.pageControllers[widget.selectedIndex].value = false;
+            homePage.pageControllers[index].value = true;
             setState(() {
               widget.selectedIndex = index;
             });
