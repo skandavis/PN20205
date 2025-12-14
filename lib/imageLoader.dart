@@ -20,6 +20,7 @@ class imageLoader extends StatefulWidget {
   final double? size;
   final double buttonSize;
   final bool showAboveSnackBar;
+  final bool shouldExpand;
   const imageLoader({
     super.key,
     this.imageRoute,
@@ -29,6 +30,7 @@ class imageLoader extends StatefulWidget {
     this.uploadRoute,
     this.onDelete,
     this.onUpload,
+    this.shouldExpand = true,
     this.circle = false,
     this.showAboveSnackBar = false,
     this.size,
@@ -129,38 +131,11 @@ class _imageLoaderState extends State<imageLoader> {
       status = await Permission.photos.request();
     }
   if (status.isDenied||status.isPermanentlyDenied) {
-      await _showPermissionDialog();
+      utils.showPermissionsDialog("Photo permission is required to upload images.");
       return false;
     }
 
     return true;
-  }
-
-  Future<bool> _showPermissionDialog() async {
-    final shouldOpen = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Permission Required'),
-        content: const Text(
-          'Photo access has been permanently denied. This function needs access to your photos.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Open Settings'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldOpen == true) {
-      openAppSettings();
-    }
-    return false;
   }
 
   Future<File?> _pickImage(ImageSource source) async {
@@ -279,7 +254,18 @@ class _imageLoaderState extends State<imageLoader> {
     if (_imageWidget == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return widget.circle ? ClipOval(child: _imageWidget!) : _imageWidget!;
+    Widget displayedWidget = widget.circle ? ClipOval(child: _imageWidget!) : _imageWidget!;
+    return (widget.shouldExpand && !_isUploading && !noImage) ? GestureDetector(
+      onTap: () {
+        showDialog(context: context, builder: (context) {
+          return GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: _imageWidget!
+          );
+        },);
+      },
+      child : displayedWidget,
+    ) : displayedWidget;
   }
 
   Widget _buildLoadingOverlay() {

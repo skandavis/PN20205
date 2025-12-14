@@ -42,6 +42,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
         buttonSize: 45,
         key: ValueKey(imageUrl),
         dontReplace: true,
+        shouldExpand: false,
         imageRoute: imageUrl,
         uploadRoute: widget.uploadPath,
         onUpload: (image) {

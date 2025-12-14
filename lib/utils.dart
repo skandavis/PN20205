@@ -6,6 +6,7 @@ import 'package:NagaratharEvents/introPage.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:flutter/material.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:another_flushbar/flushbar.dart';
@@ -60,9 +61,36 @@ Future<bool> requestCalendarPermission() async {
   return true;
 }
 
+void showPermissionsDialog(String message) async {
+  final shouldOpen = await showDialog<bool>(
+    context: globals.navigatorKey.currentState!.context,
+    builder: (context) => AlertDialog(
+      title: const Text('Permission Required'),
+      content: Text(
+        message,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Open Settings'),
+        ),
+      ],
+    ),
+  );
+
+  if (shouldOpen == true) {
+    openAppSettings();
+  }
+}
+
 Future<void> addEventToCalendar(String name, String desc, String eventLocation, DateTime start, DateTime end, BuildContext context) async {
   final hasPermission = await requestCalendarPermission();
-  if (!hasPermission) {
+  if (!hasPermission) {    
+    showPermissionsDialog("Calendar permission is required to add events to your calendar.");
     return;
   }
 
@@ -70,7 +98,6 @@ Future<void> addEventToCalendar(String name, String desc, String eventLocation, 
   final startLoc = tz.TZDateTime.from(start, currentLocation);
   final endLoc = tz.TZDateTime.from(end.add(Duration(hours: 1)), currentLocation);
 
-  // Get user calendars
   final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
   final calendars = calendarsResult.data;
 

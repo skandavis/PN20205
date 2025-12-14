@@ -24,7 +24,7 @@ class _customDialogBoxState extends State<customDialogBox> {
       insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: 300,
+          maxWidth: 325,
           maxHeight: widget.height.toDouble(),
         ),
         decoration: BoxDecoration(
@@ -33,8 +33,8 @@ class _customDialogBoxState extends State<customDialogBox> {
         ),
         child: Column(
           children: [
-            // Header
             Container(
+              padding: EdgeInsets.all(20),
               height: 75,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 31, 53, 76),
@@ -44,6 +44,7 @@ class _customDialogBoxState extends State<customDialogBox> {
               ),
               child: Center(
                 child: Text(
+                  overflow: TextOverflow.ellipsis,
                   widget.title,
                   style: TextStyle(
                     color: Colors.white,

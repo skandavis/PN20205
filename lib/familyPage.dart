@@ -120,11 +120,12 @@ class _familyPageState extends State<familyPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return customDialogBox(
+              height: 500,
               title: index == null ? "Add Family Member" : "Update Family Member",
               body: Stack(
                 children: [
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       gradientTextField(
                         controller: nameController,

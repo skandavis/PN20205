@@ -102,7 +102,7 @@ class _accountPageState extends State<accountPage> {
                         ]:null,
                         lines: 1,
                         controller: controllers[index],
-                        inputType: index == 1?TextInputType.phone:TextInputType.text
+                        inputType: TextInputType.text
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .025,

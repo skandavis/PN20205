@@ -39,7 +39,6 @@ class _contactUsPageState extends State<contactUsPage> {
   void initState() {
     super.initState();
     widget.isVisible.addListener(_onVisibilityChanged);
-    updateUserDetails();
   }
 
   @override
@@ -51,6 +50,7 @@ class _contactUsPageState extends State<contactUsPage> {
   void _onVisibilityChanged() {
     if (widget.isVisible.value == 1) {
       getCommittees();
+      updateUserDetails();
     } else if(widget.isVisible.value == 0) {
       clearCommittees();
     }

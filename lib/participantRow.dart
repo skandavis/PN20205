@@ -56,6 +56,7 @@ class _participantRowState extends State<participantRow> {
             circle: true,
             key: ValueKey(participant.image),
             size: 75,
+            shouldExpand: false,
           ),
           const SizedBox(width: 10),
           SizedBox(

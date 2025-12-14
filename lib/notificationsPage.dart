@@ -47,7 +47,6 @@ class _notificationsPageState extends State<notificationsPage> {
   }
 
   void loadMessages() {
-    if (messages != null) return;
     NetworkService().getMultipleRoute('notifications').then((value) {
       if (value == null) return;
       setState(() {

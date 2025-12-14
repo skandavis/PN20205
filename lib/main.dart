@@ -40,18 +40,26 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: globals.navigatorKey,
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        textTheme: GoogleFonts.notoSansTextTheme(
-          Theme.of(context).textTheme,
+    final mediaQuery = MediaQuery.of(context);
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        textScaler: mediaQuery.textScaler.clamp(
+          minScaleFactor: 0.9,
+          maxScaleFactor: 1.2,
+        ),),
+      child: MaterialApp(
+        navigatorKey: globals.navigatorKey,
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          textTheme: GoogleFonts.notoSansTextTheme(
+            Theme.of(context).textTheme,
+          ),
         ),
-      ),
-      // theme: ThemeData(),
-      home: SplashScreen(
-        showMainPage: showMainPage,
+        // theme: ThemeData(),
+        home: SplashScreen(
+          showMainPage: showMainPage,
+        ),
       ),
     );
   }

@@ -46,7 +46,7 @@ class _qrCodePageState extends State<qrCodePage> {
           foregroundColor: Colors.white,
           toolbarHeight: MediaQuery.of(context).size.height*.075,
           title: Text(
-            "Check In QR Code",
+            "Check In",
             style: TextStyle(
               fontFamily: globals.titleFont,
               fontSize: globals.titleFontSize,

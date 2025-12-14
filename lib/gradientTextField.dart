@@ -100,6 +100,11 @@ class _gradientTextFieldState extends State<gradientTextField> {
                         cursorHeight: globals.paraFontSize,
                         focusNode: focusNode,
                         decoration: InputDecoration.collapsed(
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontWeight: FontWeight.w100,
+                            fontSize: globals.paraFontSize
+                          ),
                           hintText: widget.hint,
                         ),
                       ),

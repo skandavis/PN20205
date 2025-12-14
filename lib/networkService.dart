@@ -83,7 +83,7 @@ class NetworkService {
             if(response.requestOptions.extra['skipIntercept'] == true) {
               return handler.next(response);
             }
-            // utils.logout();
+            utils.logout();
             utils.snackBarMessage('Unauthorized User! Try Logging In Again.');
           }
           return handler.next(response);
