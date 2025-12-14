@@ -85,6 +85,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                   child: widget.activity.isActivityAdmin ? ImageCarousel(
                     imageUrls: widget.activity.images,
                     uploadPath: 'activities/${widget.activity.id}/photo',
+                    fileName: "${widget.activity.name}ActivityImage.jpg",
                   ): ImageCarousel(
                     imageUrls: widget.activity.images,
                   ),

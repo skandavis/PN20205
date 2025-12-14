@@ -189,6 +189,7 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                       child: Column(
                         children: [
                           imageLoader(
+                            fileName: "${participant.name}Profile.jpg",
                             buttonSize: 35,
                             circle: true,
                             size: 150,

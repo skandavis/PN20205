@@ -250,7 +250,7 @@ class NetworkService {
     
     final formData = FormData.fromMap({
       'file': file,
-      'name': fileName
+      'name': fileName.replaceAll(" ", '')
     });
 
     try {

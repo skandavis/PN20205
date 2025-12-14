@@ -188,21 +188,4 @@ class CacheManager {
       print('Cache cleanup failed: $e');
     }
   }
-
-  Future<int> getCacheSize() async {
-    try {
-      if (!await cacheDir.exists()) return 0;
-
-      int totalSize = 0;
-      await for (final entity in cacheDir.list(recursive: true)) {
-        if (entity is File) {
-          totalSize += await entity.length();
-        }
-      }
-      return totalSize;
-    } catch (e) {
-      print('Failed to calculate cache size: $e');
-      return 0;
-    }
-  }
 }

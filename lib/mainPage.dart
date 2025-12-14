@@ -45,7 +45,6 @@ class _mainPageState extends State<mainPage> {
 
   void _onVisibilityChanged() {
     if (widget.isVisible.value == 1) {
-      debugPrint("visible");
       // WidgetsBinding.instance.addPostFrameCallback((_) {
       //   loadInitialData();
       // });

@@ -18,13 +18,15 @@ class imageLoader extends StatefulWidget {
   final bool circle;
   final bool dontReplace;
   final double? size;
-  final double buttonSize;
+  final double? buttonSize;
   final bool showAboveSnackBar;
   final bool shouldExpand;
+  final String? fileName; 
   const imageLoader({
     super.key,
     this.imageRoute,
-    required this.buttonSize,
+    this.fileName,
+    this.buttonSize,
     this.dontReplace = false,
     this.deleteRoute,
     this.uploadRoute,
@@ -152,7 +154,7 @@ class _imageLoaderState extends State<imageLoader> {
     final response = await NetworkService().uploadFile(
       await MultipartFile.fromFile(imageFile.path),
       widget.uploadRoute!,
-      'profile.jpg',
+      widget.fileName ?? "Profile.jpg",
       context,
       showAboveSnackBar: widget.showAboveSnackBar
     );
@@ -319,8 +321,8 @@ class _imageLoaderState extends State<imageLoader> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: widget.buttonSize,
-        width: widget.buttonSize,
+        height: widget.buttonSize ?? 25,
+        width: widget.buttonSize ?? 25,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: color,

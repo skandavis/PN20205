@@ -62,6 +62,7 @@ class _accountPageState extends State<accountPage> {
           child: Column(
             children: [
               imageLoader(
+                fileName: "${user.name}Profile.jpg",
                 buttonSize: 25,
                 size: 100,
                 circle: true,
