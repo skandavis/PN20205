@@ -19,6 +19,7 @@ class sendMessageDialog extends StatefulWidget {
 class _sendMessageDialogState extends State<sendMessageDialog> {
 TextEditingController messageController = TextEditingController();
 bool isPush = false;
+bool isLoading = false;
 void updateIsPush() {
   isPush = !isPush;
 }
@@ -36,6 +37,10 @@ void sendMessage(BuildContext context) async {
     return;
   } 
   final type = isPush ? "P" : "N";
+  setState(() {
+    isLoading = true;
+  });
+
   final response = await NetworkService().postRoute(
     {
       'message': messageText,
@@ -44,6 +49,9 @@ void sendMessage(BuildContext context) async {
     widget.route,
   );
 
+  setState(() {
+    isLoading = false;
+  });
   if (response.statusCode! == 200) {
     setState(() {
       messageController.clear();
@@ -53,7 +61,7 @@ void sendMessage(BuildContext context) async {
     utils.snackBarMessage("Message Sent!", color: Colors.green);
     if(widget.sendMessage != null)
     {
-      widget.sendMessage!(response);
+      await widget.sendMessage!(response);
     }
     Navigator.pop(context);
   } else {
@@ -65,48 +73,66 @@ void sendMessage(BuildContext context) async {
   Widget build(BuildContext context) {
     return customDialogBox(
       title: "Create Notification", 
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      body: Stack(
         children: [
-          gradientTextField(
-            maxLines: 5,
-            controller: messageController,
-            hint: "Ex: Meet at Main Hall",
-            label: "Message", 
-            icon: Icons.message,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Check(
-                name: "Push", 
-                onChange: updateIsPush, 
-                color: globals.iceBlue,
+              gradientTextField(
+                maxLines: 5,
+                controller: messageController,
+                hint: "Ex: Meet at Main Hall",
+                label: "Message", 
+                icon: Icons.message,
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Check(
+                    name: "Push", 
+                    onChange: updateIsPush, 
+                    color: globals.iceBlue,
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  sendMessage(context);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: globals.secondaryColor,
+                  ),
+                  width: 150,
+                  height: 60,
+                  child: Center(
+                    child: Text(
+                      "Send",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: globals.subTitleFontSize
+                      ),
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
-          GestureDetector(
-            onTap: () {
-              sendMessage(context);
-            },
+          if (isLoading)
+          Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: globals.secondaryColor,
+                color: Colors.black.withOpacity(0.45),
+                borderRadius: BorderRadius.circular(20),
               ),
-              width: 150,
-              height: 60,
-              child: Center(
-                child: Text(
-                  "Send",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: globals.subTitleFontSize
-                  ),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

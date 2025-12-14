@@ -27,7 +27,7 @@ double bodyFontSize = 16;
 double subTitleFontSize = 24;
 double titleFontSize = 36;
 
-
+bool refreshActivities = false;
 List<Activity>? totalActivities;
 String ApnsToken = "";
 

@@ -192,6 +192,7 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                             buttonSize: 35,
                             circle: true,
                             size: 150,
+                            showAboveSnackBar: true,
                             imageRoute: participant.image,
                             uploadRoute: isEditing ? "participants/${participant.id}/photo" : null,
                             deleteRoute: isEditing ? "participants/${participant.id}/photo" : null,

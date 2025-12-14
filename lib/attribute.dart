@@ -24,136 +24,200 @@ class attribute extends StatefulWidget {
 }
 
 class _attributeState extends State<attribute> {
-  late final controller = TextEditingController(text: widget.attributeValue);
   
-  void _editValue() {
-    showDialog(
+  void _editValue() async {
+    TextEditingController controller = TextEditingController(text: widget.attributeValue);
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return customDialogBox(
-          height: 300,
-          title: "Location", 
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              gradientTextField(
-                controller: controller,
-                hint: "Enter ${widget.attributeTitle}",
-                label: widget.attributeTitle, 
-                icon: Icons.pin_drop,
-              ),
-              GestureDetector(
-                onTap: () async{
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  if(controller.text.isEmpty)
-                  {
-                    utils.snackBarAboveMessage('Please enter ${widget.attributeTitle}');
-                    return;
-                  }
-                  if(widget.onValueChange != null) {
-                    final statusCode = await widget.onValueChange!(controller.text, null);
-                    if(statusCode != 200) return;      
-                    utils.snackBarMessage("${widget.attributeTitle} updated!", color: Colors.green);
-                  }
-                  setState((){
-                    widget.attributeValue = controller.text;
-                  });
-                  Navigator.pop(context, controller.text);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: globals.secondaryColor,
-                  ),
-                  width: 130,
-                  height: 50,
-                  child: Center(
-                    child: Text(
-                      "Save",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: globals.subTitleFontSize
+        bool isLoading = false;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return customDialogBox(
+              height: 300,
+              title: widget.attributeTitle,
+              body: Stack(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      gradientTextField(
+                        controller: controller,
+                        hint: "Enter ${widget.attributeTitle}",
+                        label: widget.attributeTitle,
+                        icon: Icons.pin_drop,
                       ),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        );
-      },
-    );
-    controller.clear();
-  }
+                      GestureDetector(
+                        onTap: isLoading ? null : () async {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          if (controller.text.isEmpty) {
+                            utils.snackBarAboveMessage('Please enter ${widget.attributeTitle}');
+                            return;
+                          }
+                          if (controller.text == widget.attributeValue) {
+                            utils.snackBarAboveMessage('No changes were made!');
+                            return;
+                          }
+                          setDialogState(() => isLoading = true);
+                          if (widget.onValueChange != null) {
+                            final statusCode = await widget.onValueChange!(controller.text, null);
+                            if (statusCode != 200) return;
 
-  Future<void> _selectDateTime(BuildContext context) async {
-    DateTime selectedDateTime = widget.attributeValue;
-    await showCupertinoModalPopup(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 300,
-          color: globals.backgroundColor,
-          child: Column(
-            children: [
-              Container(
-                height: 50,
-                color: globals.secondaryColor,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      child: Text(
-                        'Done',
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color: globals.accentColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: globals.bodyFontSize
+                            setDialogState(() => isLoading = false);
+                            utils.snackBarMessage(
+                              "${widget.attributeTitle} updated!",
+                              color: Colors.green,
+                            );
+                          }
+                          setState(() {
+                            widget.attributeValue = controller.text;
+                          });
+                          Navigator.pop(context, controller.text);
+                        },
+                      child: Container(
+                        width: 130,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: globals.secondaryColor,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: globals.subTitleFontSize,
+                          ),
                         ),
                       ),
-                      onTap: () async {
-                        Navigator.of(context).pop();
-                        if(widget.onValueChange != null) {
-                          setState(() {
-                          });
-                          final statusCode = await widget.onValueChange!(null, selectedDateTime);
-                          if(statusCode != 200) return;      
-                          utils.snackBarMessage("${widget.attributeTitle} updated!", color: Colors.green);
-                        }
-                        setState(() {
-                          widget.attributeValue = selectedDateTime;
-                        });
-                      },
                     ),
                   ],
                 ),
-              ),
-              // Date-time picker
-              Expanded(
-                child: CupertinoTheme(
-                  data: CupertinoThemeData(
-                    textTheme: CupertinoTextThemeData(
-                      dateTimePickerTextStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: globals.bodyFontSize,
+                if (isLoading)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.45),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    brightness: Brightness.dark,
                   ),
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.dateAndTime,
-                    initialDateTime: widget.attributeValue,
-                    minimumDate: widget.attributeValue,
-                    maximumDate: widget.attributeValue.add(Duration(days: 2)),
-                    onDateTimeChanged: (DateTime newDateTime) {
-                      selectedDateTime = newDateTime;
-                    },
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+  Future<void> _selectDateTime(BuildContext context) async {
+    bool _isLoading = false;
+    DateTime selectedDateTime = widget.attributeValue;
+
+    await showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Stack(
+              children: [
+                Container(
+                  height: 300,
+                  color: globals.backgroundColor,
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        color: globals.secondaryColor,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                setDialogState(() {
+                                  _isLoading = true;
+                                });
+            
+                                if (widget.onValueChange != null) {
+                                  final statusCode = await widget.onValueChange!(
+                                    null,
+                                    selectedDateTime,
+                                  );
+                                  if (statusCode != 200) return;
+                                  setDialogState(() {
+                                    _isLoading = false;
+                                  });
+                                  utils.snackBarMessage("${widget.attributeTitle} updated!", color: Colors.green,);
+                                  setState(() {
+                                    widget.attributeValue = selectedDateTime;
+                                  });
+                                }
+                                Navigator.of(context).pop();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Text(
+                                  'Done',
+                                  style: TextStyle(
+                                    decoration: TextDecoration.none,
+                                    color: globals.accentColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: globals.bodyFontSize,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: CupertinoTheme(
+                          data: CupertinoThemeData(
+                            textTheme: CupertinoTextThemeData(
+                              dateTimePickerTextStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: globals.bodyFontSize,
+                              ),
+                            ),
+                            brightness: Brightness.dark,
+                          ),
+                          child: CupertinoDatePicker(
+                            mode: CupertinoDatePickerMode.dateAndTime,
+                            initialDateTime: widget.attributeValue,
+                            minimumDate: widget.attributeValue,
+                            maximumDate: widget.attributeValue.add(
+                              const Duration(days: 2),
+                            ),
+                            onDateTimeChanged: (DateTime newDateTime) {
+                              selectedDateTime = newDateTime;
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
+                if (_isLoading)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.6),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
         );
       },
     );

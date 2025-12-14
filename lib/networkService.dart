@@ -67,7 +67,7 @@ class NetworkService {
           } else if (response.statusCode == 422) {
             showMessage(response.data, showAboveSnackBar);
           } else if (response.statusCode == 413) {
-            showMessage('Image too large!', showAboveSnackBar);
+            showMessage(response.data ?? 'Image way too large!', showAboveSnackBar);
           } else if (response.statusCode == 498) {
             return handler.resolve(await refresh(response.requestOptions));
           } else if (response.statusCode == 500) {
@@ -83,7 +83,7 @@ class NetworkService {
             if(response.requestOptions.extra['skipIntercept'] == true) {
               return handler.next(response);
             }
-            utils.logout();
+            // utils.logout();
             utils.snackBarMessage('Unauthorized User! Try Logging In Again.');
           }
           return handler.next(response);
@@ -92,7 +92,7 @@ class NetworkService {
           if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-            utils.snackBarMessage('Internet connection timed out. Check your connection and try again.');
+            showMessage('Internet connection timed out. Check your connection and try again.',e.requestOptions.extra['showAboveSnackBar'] == true);
           }
           return handler.next(e);
         },
@@ -226,12 +226,18 @@ class NetworkService {
     }
   }
   
-  Future<Response<dynamic>> deleteRoute(String route) async {
+  Future<Response<dynamic>> deleteRoute(String route, {showAboveSnackBar = false}) async {
     await _initIfNeeded();
     
     try {
-      final response = await dio
-          .delete(route);
+      final response = await dio.delete(
+        route,
+        options: Options(
+          extra: {
+            "showAboveSnackBar": showAboveSnackBar
+          }
+        )
+      );
       return response;
       
     } catch (e) {
@@ -239,7 +245,7 @@ class NetworkService {
     }
   }
   
-  Future<Response> uploadFile(MultipartFile file, String route, String fileName, BuildContext context) async {
+  Future<Response> uploadFile(MultipartFile file, String route, String fileName, BuildContext context, {showAboveSnackBar = false}) async {
     await _initIfNeeded();
     
     final formData = FormData.fromMap({
@@ -251,10 +257,20 @@ class NetworkService {
       final response = await dio.post(
         route,
         data: formData,
-        options: Options(headers: {'Content-Type': 'multipart/form-data'}),
+        options: Options(
+          headers: {'Content-Type': 'multipart/form-data'},
+          extra: {
+            "showAboveSnackBar": showAboveSnackBar
+          }
+        ),
       );
       if (response.statusCode == 200) {
-        utils.snackBarMessage("File uploaded successfully!", color: Colors.green);  
+        if(showAboveSnackBar)
+        {
+          utils.snackBarAboveMessage("File uploaded successfully!", color: Colors.green);
+        }else{
+          utils.snackBarMessage("File uploaded successfully!", color: Colors.green);  
+        }
       }
       return response;
     } catch (e) {

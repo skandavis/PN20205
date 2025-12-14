@@ -11,7 +11,7 @@ import 'package:NagaratharEvents/globals.dart' as globals;
 class homePage extends StatefulWidget {
   int selectedIndex = 0;
 
-  static final pageControllers = List.generate(6, (_) => ValueNotifier<bool>(false));
+  static final pageControllers = List.generate(6, (_) => ValueNotifier<int>(0));
 
   static final pages = {
     "Home" : mainPage(isVisible: pageControllers[0]),
@@ -33,7 +33,7 @@ class _homePageState extends State<homePage> {
   @override
   void initState() {
     super.initState();
-    homePage.pageControllers[0].value = true;
+    homePage.pageControllers[0].value = 1;
   }
 
   @override
@@ -101,8 +101,8 @@ class _homePageState extends State<homePage> {
           ],
           currentIndex: widget.selectedIndex,
           onTap: (int index) {
-            // homePage.pageControllers[widget.selectedIndex].value = false;
-            homePage.pageControllers[index].value = true;
+            homePage.pageControllers[widget.selectedIndex].value = 2;
+            homePage.pageControllers[index].value = 1;
             setState(() {
               widget.selectedIndex = index;
             });

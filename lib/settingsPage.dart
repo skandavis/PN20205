@@ -7,7 +7,7 @@ import 'package:NagaratharEvents/accountPage.dart';
 import 'package:NagaratharEvents/settingsOption.dart';
 
 class settingsPage extends StatefulWidget {
-  final ValueNotifier<bool> isVisible;
+  final ValueNotifier<int> isVisible;
   const settingsPage({super.key, required this.isVisible});
 
   @override
@@ -29,10 +29,10 @@ class _settingsPageState extends State<settingsPage> {
   }
 
   void _onVisibilityChanged() {
-    if (widget.isVisible.value) {
+    if (widget.isVisible.value == 1) {
       // is visible;
-    } else {
-      // is not visible
+    } else if(widget.isVisible.value == 0) {
+      // is killed
     }
   }
 

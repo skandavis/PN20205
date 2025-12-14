@@ -13,7 +13,7 @@ class ImageCarousel extends StatefulWidget {
 
 class _ImageCarouselState extends State<ImageCarousel> {
   int currentIndex = 0;
-  late List<Widget> _imageLoaders;
+  late List<imageLoader> _imageLoaders;
 
   @override
   void initState() {
@@ -24,8 +24,15 @@ class _ImageCarouselState extends State<ImageCarousel> {
   @override
   void didUpdateWidget (oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if(widget.imageUrls.length != _imageLoaders.length) {
+    if (widget.imageUrls.length != _imageLoaders.length)
+    {
       _initializeImageLoaders();
+    } 
+    for (int i = 0; i < widget.imageUrls.length; i++) {
+      if (widget.imageUrls[i] != _imageLoaders[i].imageRoute)
+      {
+        _initializeImageLoaders();
+      }
     }
   }
 
@@ -39,10 +46,11 @@ class _ImageCarouselState extends State<ImageCarousel> {
         uploadRoute: widget.uploadPath,
         onUpload: (image) {
           setState(() {
-            if(widget.imageUrls[0].startsWith('img'))
+            if(widget.imageUrls[0].startsWith('img')|| widget.imageUrls.length >= 3)
             {
-              widget.imageUrls[0] = image.path;
-            } else{
+              widget.imageUrls.removeAt(0);
+              widget.imageUrls.add(image.path);
+            } else {
               widget.imageUrls.add(image.path);
             }
             _initializeImageLoaders();

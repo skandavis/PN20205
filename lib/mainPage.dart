@@ -15,7 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
 class mainPage extends StatefulWidget {
-  final ValueNotifier<bool> isVisible;
+  final ValueNotifier<int> isVisible;
   const mainPage({super.key, required this.isVisible});
 
   @override
@@ -44,14 +44,14 @@ class _mainPageState extends State<mainPage> {
   }
 
   void _onVisibilityChanged() {
-    if (widget.isVisible.value) {
+    if (widget.isVisible.value == 1) {
+      debugPrint("visible");
       // WidgetsBinding.instance.addPostFrameCallback((_) {
       //   loadInitialData();
       // });
-    } else {
+    } else if(widget.isVisible.value == 0){
       eventInfo.clear(); 
       user.clear();
-      // debugPrint('Widget is not visible');
     }
   }
 
@@ -96,7 +96,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
   void loadInitialData() async {
     if(!eventInfo.isLoaded)
     {
-      final response = await NetworkService().getSingleRoute("events", forceRefresh: false);
+      final response = await NetworkService().getSingleRoute("events", forceRefresh: true);
       if(response == null) return;
       setState(() {
         user.fromJson(response.remove('user'));

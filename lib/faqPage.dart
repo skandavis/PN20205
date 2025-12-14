@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/faqQuestion.dart';
 
 class faqPage extends StatefulWidget {
-  final ValueNotifier<bool> isVisible;
+  final ValueNotifier<int> isVisible;
   const faqPage({super.key, required this.isVisible});
 
   @override
@@ -27,9 +27,9 @@ static List<dynamic>? questions;
   }
 
   void _onVisibilityChanged() {
-    if (widget.isVisible.value) {
+    if (widget.isVisible.value == 1) {
       loadFaqs();
-    } else {
+    } else if(widget.isVisible.value == 0) {
       clearFaqs();
     }
   }

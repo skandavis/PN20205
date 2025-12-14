@@ -9,7 +9,7 @@ import 'package:NagaratharEvents/activityCard.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
 class activitiesPage extends StatefulWidget {
-  final ValueNotifier<bool> isVisible;
+  final ValueNotifier<int> isVisible;
   const activitiesPage({super.key, required this.isVisible});
 
   @override
@@ -33,9 +33,9 @@ class activitiesPageState extends State<activitiesPage> {
     widget.isVisible.addListener(_onVisibilityChanged);
   }
   void _onVisibilityChanged() {
-    if (widget.isVisible.value) {
+    if (widget.isVisible.value == 1) {
       _loadData();
-    } else {
+    } else if(widget.isVisible.value == 0){
       clearData();
     }
   }
@@ -47,7 +47,7 @@ class activitiesPageState extends State<activitiesPage> {
 
   Future<void> _loadData() async {
     await Future.wait([
-      if (globals.totalActivities == null) _loadActivities(false),
+      if (globals.totalActivities == null || globals.refreshActivities) _loadActivities(globals.refreshActivities),
       if (allCategories == null) _loadCategories(),
     ]);
     if (mounted) setState(() => isLoading = false);
@@ -57,6 +57,7 @@ class activitiesPageState extends State<activitiesPage> {
     final data = await NetworkService().getMultipleRoute('activities', forceRefresh: forceRefresh);
     if (data != null) {
       globals.totalActivities = data.map((item) => Activity.fromJson(item)).toList();
+      globals.refreshActivities = false;
     }
   }
 
@@ -251,6 +252,9 @@ class activitiesPageState extends State<activitiesPage> {
           itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: activityCard(
+              callback: (){
+                _loadData();
+              },
               activity: activities[index], 
             ),
           ),

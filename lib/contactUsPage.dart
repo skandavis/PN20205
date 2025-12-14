@@ -12,7 +12,7 @@ import 'package:NagaratharEvents/globals.dart' as globals;
 User user = User.instance;
 
 class contactUsPage extends StatefulWidget {
-  final ValueNotifier<bool> isVisible;
+  final ValueNotifier<int> isVisible;
   const contactUsPage({super.key, required this.isVisible});
 
   @override
@@ -39,6 +39,7 @@ class _contactUsPageState extends State<contactUsPage> {
   void initState() {
     super.initState();
     widget.isVisible.addListener(_onVisibilityChanged);
+    updateUserDetails();
   }
 
   @override
@@ -48,10 +49,9 @@ class _contactUsPageState extends State<contactUsPage> {
   }
 
   void _onVisibilityChanged() {
-    if (widget.isVisible.value) {
+    if (widget.isVisible.value == 1) {
       getCommittees();
-      updateUserDetails();
-    } else {
+    } else if(widget.isVisible.value == 0) {
       clearCommittees();
     }
   }

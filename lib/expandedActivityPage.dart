@@ -24,7 +24,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
   Future<int> updateActivity(String? location, DateTime? startTime) async{
      if(location != null)
     {
-      final response = await NetworkService().patchRoute({"location": location}, "activities/${widget.activity.id}");
+      final response = await NetworkService().patchRoute({"location": location}, "activities/${widget.activity.id}", showAboveSnackBar: true);
       if(response.statusCode == 200)
       {
         globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].location = location;
@@ -33,7 +33,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
     }
     if(startTime != null)
     {
-      final response = await NetworkService().patchRoute({"startTime": startTime.toUtc().toIso8601String()}, "activities/${widget.activity.id}");
+      final response = await NetworkService().patchRoute({"startTime": startTime.toUtc().toIso8601String()}, "activities/${widget.activity.id}", showAboveSnackBar: true);
       if(response.statusCode == 200)
       {
         globals.totalActivities![globals.totalActivities!.indexOf(widget.activity)].startTime = startTime;

@@ -19,7 +19,7 @@ class imageLoader extends StatefulWidget {
   final bool dontReplace;
   final double? size;
   final double buttonSize;
-
+  final bool showAboveSnackBar;
   const imageLoader({
     super.key,
     this.imageRoute,
@@ -30,6 +30,7 @@ class imageLoader extends StatefulWidget {
     this.onDelete,
     this.onUpload,
     this.circle = false,
+    this.showAboveSnackBar = false,
     this.size,
   });
 
@@ -95,6 +96,7 @@ class _imageLoaderState extends State<imageLoader> {
   void _setLocalImage(String path) {
     setState(() {
       _imageWidget = Image.file(File(path), fit: boxFit);
+      noImage = false;
     });
   }
 
@@ -177,6 +179,7 @@ class _imageLoaderState extends State<imageLoader> {
       widget.uploadRoute!,
       'profile.jpg',
       context,
+      showAboveSnackBar: widget.showAboveSnackBar
     );
 
     if (response.statusCode == 200) {
@@ -190,6 +193,7 @@ class _imageLoaderState extends State<imageLoader> {
     if (!widget.dontReplace) {
       setState(() {
         _imageWidget = Image.file(imageFile, fit: boxFit);
+        noImage = false;
       });
     }
     widget.onUpload?.call(imageFile);
@@ -225,18 +229,30 @@ class _imageLoaderState extends State<imageLoader> {
 
   // MARK: - Image Deletion
   Future<void> deleteImage() async {
-    final response = await NetworkService().deleteRoute(widget.deleteRoute!);
-
+    setState(() {
+      _isUploading = true;
+    });
+    final response = await NetworkService().deleteRoute(
+      widget.deleteRoute!, 
+      showAboveSnackBar: widget.showAboveSnackBar
+    );
     if (response.statusCode == 200) {
       _handleDeleteSuccess();
     }
+    setState(() {
+      _isUploading = false;
+    });
   }
-
+  
   void _handleDeleteSuccess() {
     if (!widget.dontReplace) {
       _setPlaceholderImage();
-      utils.snackBarMessage('Image deleted successfully',
-          color: Colors.green);
+      if(widget.showAboveSnackBar)
+      {
+        utils.snackBarAboveMessage('Image deleted successfully', color: Colors.green);
+      }else{
+        utils.snackBarMessage('Image deleted successfully', color: Colors.green);
+      }
     }
     widget.onDelete?.call();
   }
@@ -252,8 +268,8 @@ class _imageLoaderState extends State<imageLoader> {
         children: [
           _buildImageContent(),
           if (_isUploading) _buildLoadingOverlay(),
-          if (widget.uploadRoute != null) _buildUploadButton(),
-          if (widget.deleteRoute != null && !noImage) _buildDeleteButton(),
+          if (widget.uploadRoute != null && !_isUploading) _buildUploadButton(),
+          if (widget.deleteRoute != null && !noImage && !_isUploading) _buildDeleteButton(),
         ],
       ),
     );

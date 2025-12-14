@@ -9,7 +9,7 @@ import 'utils.dart' as utils;
 import 'package:NagaratharEvents/notification.dart';
 
 class notificationsPage extends StatefulWidget {
-  final ValueNotifier<bool> isVisible;
+  final ValueNotifier<int> isVisible;
   const notificationsPage({super.key, required this.isVisible});
 
   @override
@@ -35,9 +35,9 @@ class _notificationsPageState extends State<notificationsPage> {
   }
 
   void _onVisibilityChanged() {
-    if (widget.isVisible.value) {
+    if (widget.isVisible.value == 1) {
       loadMessages();
-    } else {
+    } else if(widget.isVisible.value == 0){
       clearMessages();
     }
   }

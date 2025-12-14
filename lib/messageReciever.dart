@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'globals.dart' as globals;
 
 final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
@@ -18,7 +19,6 @@ class _messageRecieverState extends State<messageReciever> {
   void initState() {
     super.initState();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-
       if (message.notification == null) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -31,6 +31,10 @@ class _messageRecieverState extends State<messageReciever> {
           ),
         ),
       );
+      globals.refreshActivities = message.data.containsKey('refresh');
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      globals.refreshActivities = message.data.containsKey('refresh');
     });
   }
 

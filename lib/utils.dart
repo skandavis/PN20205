@@ -23,12 +23,21 @@ void snackBarMessage(String message,{Color color = const Color.fromARGB(255, 255
   );
 }
 
+void snackBarAboveMessage(String message,{Color color = const Color.fromARGB(255, 255, 51, 0)}) {
+  Flushbar(
+    backgroundColor: color,
+    message: message,
+    duration: Duration(seconds: 4),
+  ).show(globals.navigatorKey.currentState!.context);
+}
+
+
 void logout() async {
   await NetworkService().getRoute("auth/logout", true);
   final SharedPreferencesAsync prefs = SharedPreferencesAsync();
   await prefs.remove('loggedIn');
-  for(ValueNotifier<bool> controller in homePage.pageControllers){
-      controller.value = false;
+  for(ValueNotifier<int> controller in homePage.pageControllers){
+      controller.value = 0;
   }
   NetworkService().clearCache();
   Navigator.pushReplacement(
@@ -37,14 +46,6 @@ void logout() async {
       builder: (context) => const introPage(),
     ),
   );
-}
-
-void snackBarAboveMessage(String message,{Color color = const Color.fromARGB(255, 255, 51, 0)}) {
-  Flushbar(
-    backgroundColor: color,
-    message: message,
-    duration: Duration(seconds: 2),
-  ).show(globals.navigatorKey.currentState!.context);
 }
 
 Future<bool> requestCalendarPermission() async {
