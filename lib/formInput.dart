@@ -33,6 +33,7 @@ class _formInputState extends State<formInput> {
         fontSize: globals.paraFontSize
       ),
       decoration: InputDecoration(
+        floatingLabelStyle: TextStyle(fontSize: globals.paraFontSize),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: globals.iceBlue,
@@ -52,7 +53,7 @@ class _formInputState extends State<formInput> {
           widget.label,
           style: TextStyle(
             color: widget.focusNode.hasFocus? globals.iceBlue:widget.controller.text.isEmpty? Colors.red:  globals.secondaryColor,
-            fontSize: globals.subTitleFontSize,
+            fontSize: globals.bodyFontSize,
             fontWeight: FontWeight.bold
           ),
         ),

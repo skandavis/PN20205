@@ -1,78 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:another_flushbar/flushbar.dart';
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: SnackOverDialog(),
-    );
-  }
-}
-
-class SnackOverDialog extends StatefulWidget {
-  SnackOverDialog({Key? key}) : super(key: key);
-
-  @override
-  _SnackOverDialogState createState() => _SnackOverDialogState();
-}
-
-class _SnackOverDialogState extends State<SnackOverDialog> {
-  
-  ///* show snack
-  void _snackbar(BuildContext context) {
-      Flushbar(
-        backgroundColor: Colors.red,
-        message: 'S.of(context).choose_date',
-        duration: Duration(seconds: 12),
-      ).show(context);
-  }
-
-  ///* dialog
-  void _dialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Dialog'),
-        content: GestureDetector(
-          onTap: () {
-            _snackbar(context); // Use the parent context for SnackBar
-          },
-          child: const Center(
-            child: Text('Show SnackBar!'),
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("SnackBar Over Dialog"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'Press the button to show dialog',
-            ),
-          ],
+    // 1. Get the current MediaQuery data for the device
+    final mediaQuery = MediaQuery.of(context);
+
+    // 2. Wrap your entire application (MaterialApp) with a new MediaQuery
+    return MediaQuery(
+      // 3. Copy the existing data and apply the clamping logic to textScaler
+      data: mediaQuery.copyWith(
+        textScaler: mediaQuery.textScaler.clamp(
+          minScaleFactor: 0.9,
+          maxScaleFactor: 1.2,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _dialog(context),
-        tooltip: 'Show Dialog',
-        child: const Icon(Icons.add),
+      // 4. Place your main app widget as the child
+      child: MaterialApp( // or CupertinoApp
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Container(),
+        // Add other properties like routes, etc.
       ),
     );
   }

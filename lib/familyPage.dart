@@ -42,11 +42,11 @@ class _familyPageState extends State<familyPage> {
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (nameController.text.isEmpty || emailController.text.isEmpty || relationController.text.isEmpty) {
-      emailController.text = 'john@c.com';
-      nameController.text = 'Johnny'; 
-      relationController.text = 'Brother';
-      // utils.snackBarAboveMessage('Please enter name, email and relation');
-      // return;
+      // emailController.text = 'john@c.com';
+      // nameController.text = 'Johnny'; 
+      // relationController.text = 'Brother';
+      utils.snackBarAboveMessage('Please enter name, email and relation');
+      return;
     }
 
     if (!utils.isValidEmail(emailController.text)) {
