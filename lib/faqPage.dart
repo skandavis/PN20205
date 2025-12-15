@@ -11,7 +11,6 @@ class faqPage extends StatefulWidget {
   State<faqPage> createState() => _faqPageState();
 }
 
-
 class _faqPageState extends State<faqPage> {
 static List<dynamic>? questions;
   @override
@@ -34,7 +33,7 @@ static List<dynamic>? questions;
     }
   }
 
-  clearFaqs() {
+  void clearFaqs() {
     questions = null;
   }
 

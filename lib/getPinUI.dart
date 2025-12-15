@@ -68,8 +68,7 @@ class _getPinUIState extends State<getPinUI> {
     if (utils.isValidEmail(email)) {
       registerUser(email).then((response) 
       {
-        switch(response.statusCode)
-        {
+        switch(response.statusCode){
           case 200:
             User.instance.setEmail(email);
             prefs.setBool('gotEmail', true);

@@ -112,7 +112,6 @@ class _familyPageState extends State<familyPage> {
       emailController.text = family![index].email;
       relationController.text = family![index].relation;
     }
-
     showDialog(
       context: context,
       useSafeArea: true,

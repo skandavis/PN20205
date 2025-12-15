@@ -1,4 +1,3 @@
-
 class EventInfo {
   static final EventInfo instance = EventInfo._internal();
 
@@ -20,7 +19,6 @@ class EventInfo {
   bool isLoaded = false;
 
   EventInfo._internal();
-  /// Load event info from a JSON map
   void fromJson(Map<String, dynamic> json) {
     id = json["id"];
     name = json["name"];

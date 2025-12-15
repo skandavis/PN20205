@@ -20,7 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Duration of the splash screen before navigating to the main screen
     Timer(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,

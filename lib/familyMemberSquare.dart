@@ -30,12 +30,10 @@ class _familyMemberSquareState extends State<familyMemberSquare> {
       random.nextInt(256),
     );
 
-    // Determine brightness of the color
     textColor = _getContrastingTextColor(bgColor);
   }
 
   Color _getContrastingTextColor(Color background) {
-    // Use luminance to determine if the color is light or dark
     final double luminance = background.computeLuminance();
     return luminance > 0.5 ? Colors.black : Colors.white;
   }

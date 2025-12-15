@@ -33,11 +33,9 @@ class _dropDownState extends State<dropDown> {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(10);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// Label
         Text(
           widget.label,
           style: TextStyle(
@@ -47,8 +45,6 @@ class _dropDownState extends State<dropDown> {
           ),
         ),
         const SizedBox(height: 8),
-
-        /// Modern container + soft shadow
         Container(
           decoration: BoxDecoration(
             borderRadius: radius,
@@ -66,12 +62,10 @@ class _dropDownState extends State<dropDown> {
             dropdownColor: globals.backgroundColor,
             borderRadius: radius,
             elevation: 8,
-
             style: TextStyle(
               color: Colors.white,
               fontSize: globals.paraFontSize,
             ),
-
             decoration: InputDecoration(
               filled: true,
               fillColor: globals.backgroundColor,
@@ -85,10 +79,7 @@ class _dropDownState extends State<dropDown> {
                 borderRadius: radius,
               ),
             ),
-
             icon: const Icon(Icons.expand_more_rounded, color: Colors.white),
-
-            /// ⭐ Prevent shifting by forcing identical selected-item UI
             selectedItemBuilder: (_) {
               return widget.options.map((value) {
                 return Align(
@@ -103,13 +94,11 @@ class _dropDownState extends State<dropDown> {
                 );
               }).toList();
             },
-
             onChanged: (value) {
               if (value == null) return;
               setState(() => dropdownValue = value);
               widget.onChanged(widget.options.indexOf(value));
             },
-
             items: widget.options.map((value) {
               return DropdownMenuItem<String>(
                 value: value,

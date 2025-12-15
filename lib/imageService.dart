@@ -1,8 +1,6 @@
 import 'dart:typed_data';
-
 import 'package:NagaratharEvents/cacheManager.dart';
 import 'package:dio/dio.dart';
-
 import 'globals.dart' as globals;
 
 class ImageService {

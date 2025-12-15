@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:NagaratharEvents/actionButton.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:dio/dio.dart';
@@ -287,13 +288,14 @@ class _imageLoaderState extends State<imageLoader> {
   Widget _buildUploadButton() {
     return Align(
       alignment: Alignment.bottomRight,
-      child: _buildActionButton(
+      child: actionButton(
         onTap: () async{
           bool granted = await _handlePermissions();
           if (!granted) return;
           _showImageSourceDialog();
         },
         color: globals.secondaryColor,
+        buttonSize: widget.buttonSize,
         icon: Icons.add,
         iconColor: globals.backgroundColor,
       ),
@@ -303,31 +305,12 @@ class _imageLoaderState extends State<imageLoader> {
   Widget _buildDeleteButton() {
     return Align(
       alignment: Alignment.topLeft,
-      child: _buildActionButton(
+      child: actionButton(
         onTap: deleteImage,
         color: Colors.red,
+        buttonSize: widget.buttonSize,
         icon: Icons.close,
         iconColor: Colors.white,
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required VoidCallback onTap,
-    required Color color,
-    required IconData icon,
-    required Color iconColor,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: widget.buttonSize ?? 25,
-        width: widget.buttonSize ?? 25,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-        ),
-        child: Icon(icon, color: iconColor, size: 24),
       ),
     );
   }

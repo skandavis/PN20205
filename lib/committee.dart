@@ -13,5 +13,4 @@ class committee {
       name: json['name'],
     );
   }
-
 }

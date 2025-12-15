@@ -27,11 +27,9 @@ class _enterPinUIState extends State<enterPinUI> {
     widget.updateLoading();
     final response = await NetworkService().postRoute(
     {
-      // "email": "viswanathanmanickam5@gmail.com",
       "deviceID":widget.deviceID,
       "deviceAPN":  globals.ApnsToken,
       "passcode": pin,
-      // "eventId": "37af1ea2-282a-42fb-91f4-4c63188507be",
     }, 'auth/verify-otp',
     skipIntercept: true);
     if(response.statusCode == 200){

@@ -88,8 +88,7 @@ class _contactUsPageState extends State<contactUsPage> {
     });
   }
 
-  Future<void> submitForm()
-  async {
+  Future<void> submitForm() async {
     FocusScope.of(context).unfocus();
     if (messageController.text.isNotEmpty &&
         nameController.text.isNotEmpty &&

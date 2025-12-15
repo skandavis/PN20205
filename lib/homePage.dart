@@ -10,9 +10,7 @@ import 'package:NagaratharEvents/globals.dart' as globals;
 
 class homePage extends StatefulWidget {
   int selectedIndex = 0;
-
   static final pageControllers = List.generate(6, (_) => ValueNotifier<int>(0));
-
   static final pages = {
     "Home" : mainPage(isVisible: pageControllers[0]),
     "Activities" : activitiesPage(isVisible: pageControllers[1],),

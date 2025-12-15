@@ -64,7 +64,6 @@ class _gradientTextFieldState extends State<gradientTextField> {
                   builder: (context, value, child) {
                     final Color startColor = Color.lerp(Colors.grey.shade400, globals.accentColor, value)!;
                     final Color endColor = Color.lerp(Colors.grey.shade400, globals.highlightColor, value)!;
-        
                     return ShaderMask(
                       shaderCallback: (Rect bounds) {
                         return LinearGradient(

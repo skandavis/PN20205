@@ -48,14 +48,14 @@ class _activityCardState extends State<activityCard> {
               alignment: Alignment.topLeft,
               children: [
                 if (widget.activity.images.isNotEmpty)
-                  Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
-                    clipBehavior: Clip.hardEdge,
-                    height: MediaQuery.sizeOf(context).height*.3,
-                    child: ImageCarousel(
-                      imageUrls: widget.activity.images,
-                    ),
+                Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+                  clipBehavior: Clip.hardEdge,
+                  height: MediaQuery.sizeOf(context).height*.3,
+                  child: ImageCarousel(
+                    imageUrls: widget.activity.images,
                   ),
+                ),
                 Container(
                   height: MediaQuery.sizeOf(context).height*.075,
                   width: MediaQuery.sizeOf(context).height*.075,

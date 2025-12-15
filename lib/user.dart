@@ -1,11 +1,8 @@
 class User {
-  // Singleton instance
   static final User instance = User._internal();
 
-  // Private constructor
   User._internal();
 
-  // Properties
   String id = '';
   String role = '';
   bool firstTime = false;

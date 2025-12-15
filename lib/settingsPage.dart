@@ -30,7 +30,7 @@ class _settingsPageState extends State<settingsPage> {
 
   void _onVisibilityChanged() {
     if (widget.isVisible.value == 1) {
-      // is visible;
+      // is visible
     } else if(widget.isVisible.value == 0) {
       // is killed
     }
@@ -55,7 +55,7 @@ class _settingsPageState extends State<settingsPage> {
             name: "Account",
           ),
         ),
-      if(User.instance.isPrimaryUser())
+        if(User.instance.isPrimaryUser())
         GestureDetector(
           onTap: () {
             Navigator.push(
@@ -71,17 +71,17 @@ class _settingsPageState extends State<settingsPage> {
           ),
         ),
         if(User.instance.isPrimaryUser())
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const familyPage(),
-                ),
-              );
-            },
-            child: settingsOption(icon: Icons.family_restroom, name: "Family"),
-          ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const familyPage(),
+              ),
+            );
+          },
+          child: settingsOption(icon: Icons.family_restroom, name: "Family"),
+        ),
         GestureDetector(
           onTap: utils.logout,
           child: settingsOption(

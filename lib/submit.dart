@@ -17,12 +17,13 @@ class submitButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           gradient: const LinearGradient(
-              colors: [
-                Color.fromARGB(255, 24, 19, 118),
-                Colors.black,
-              ],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight),
+            colors: [
+              Color.fromARGB(255, 24, 19, 118),
+              Colors.black,
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight
+          ),
         ),
         child: Text(
           text,

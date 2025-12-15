@@ -45,7 +45,6 @@ class Activity {
   @override
   int get hashCode => name.hashCode;
 
-  // Factory constructor to create Activity from a JSON map
   factory Activity.fromJson(Map<String, dynamic> json) {
     List<String> images = [];
     for (var photo in json["photos"]) {

@@ -6,7 +6,6 @@ class Check extends StatefulWidget {
   final String name;
   final Function() onChange;
   final Color color;
-
   Check({
     super.key,
     required this.name,
@@ -25,7 +24,7 @@ class _CheckState extends State<Check> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Transform.scale(
-          scale: 1.25, // 🔧 Increase this value to make checkbox bigger
+          scale: 1.25,
           child: Checkbox(
             autofocus: true,
             activeColor: widget.color,

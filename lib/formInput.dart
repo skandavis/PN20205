@@ -20,9 +20,7 @@ class _formInputState extends State<formInput> {
     return TextField(
       keyboardType: widget.inputType ?? TextInputType.text,
       onChanged: (value) {
-        setState(() {
-          
-        });
+        setState(() {});
       },
       inputFormatters: widget.formatters,
       maxLines: widget.lines,

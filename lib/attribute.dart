@@ -74,26 +74,26 @@ class _attributeState extends State<attribute> {
                           });
                           Navigator.pop(context, controller.text);
                         },
-                      child: Container(
-                        width: 130,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: globals.secondaryColor,
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Save",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: globals.subTitleFontSize,
+                        child: Container(
+                          width: 130,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: globals.secondaryColor,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Save",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: globals.subTitleFontSize,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                if (isLoading)
+                    ],
+                  ),
+                  if (isLoading)
                   Positioned.fill(
                     child: Container(
                       decoration: BoxDecoration(
@@ -144,7 +144,6 @@ class _attributeState extends State<attribute> {
                                 setDialogState(() {
                                   _isLoading = true;
                                 });
-            
                                 if (widget.onValueChange != null) {
                                   final statusCode = await widget.onValueChange!(
                                     null,

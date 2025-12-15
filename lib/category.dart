@@ -1,8 +1,6 @@
 class ActivityCategory {
   String name;
   String photoUrl;
-
-
   ActivityCategory({
     required this.name,
     required this.photoUrl
@@ -22,7 +20,6 @@ class ActivityCategory {
     );
   }
 
-  // Method to convert Category to JSON
   Map<String, dynamic> toJson() {
     return {
       'category': name,

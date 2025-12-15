@@ -32,7 +32,6 @@ void snackBarAboveMessage(String message,{Color color = const Color.fromARGB(255
   ).show(globals.navigatorKey.currentState!.context);
 }
 
-
 void logout() async {
   await NetworkService().getRoute("auth/logout", true);
   final SharedPreferencesAsync prefs = SharedPreferencesAsync();

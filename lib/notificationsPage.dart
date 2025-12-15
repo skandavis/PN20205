@@ -107,7 +107,6 @@ class _notificationsPageState extends State<notificationsPage> {
               loadNewMessages();
             },
             child: ListView.builder(
-              // reverse: true,
               controller: scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               itemCount: messages!.length,
