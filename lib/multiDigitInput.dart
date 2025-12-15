@@ -27,7 +27,6 @@ class _multiDigitInputState extends State<multiDigitInput> {
     controller = TextEditingController();
     focusNode = FocusNode();
     
-    // Auto-focus when widget loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       focusNode.requestFocus();
     });
@@ -53,7 +52,6 @@ class _multiDigitInputState extends State<multiDigitInput> {
       },
       child: Stack(
         children: [
-          // Invisible TextField
           Opacity(
             opacity: 0.0,
             child: SizedBox(
@@ -73,14 +71,12 @@ class _multiDigitInputState extends State<multiDigitInput> {
               ),
             ),
           ),
-          // Visual digit boxes
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(widget.digits, (index) {
               final digits = digitsList;
               final hasDigit = index < controller.text.length;
               final digit = hasDigit ? digits[index] : '';
-              
               return Row(
                 children: [
                   if (index != 0) const SizedBox(width: 5),
@@ -90,11 +86,11 @@ class _multiDigitInputState extends State<multiDigitInput> {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: focusNode.hasFocus && index == controller.text.length
-                            ? Colors.blue
-                            : Colors.grey,
+                          ? Colors.blue
+                          : Colors.grey,
                         width: focusNode.hasFocus && index == controller.text.length
-                            ? 2
-                            : 1,
+                          ? 2
+                          : 1,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),

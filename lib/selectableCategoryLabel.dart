@@ -30,11 +30,10 @@ class _selectableCategoryLabelState extends State<selectableCategoryLabel> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal:10),
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.black, width: 2),
-            borderRadius: BorderRadius.circular(15),
-            color: widget.chosen
-                ? globals.secondaryColor
-                : Colors.white),
+          border: Border.all(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.circular(15),
+          color: widget.chosen ? globals.secondaryColor : Colors.white
+        ),
         child: Center(
           child: Text(
             widget.category.name,

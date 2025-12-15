@@ -299,82 +299,81 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                     borderRadius: BorderRadius.vertical(bottom: Radius.circular(25)),
                     color: Color.fromARGB(255, 31, 53, 76),
                   ),
-                  child: isEditing
-                      ? Container(
-                          padding: EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: resetFields,
-                                  icon: Icon(Icons.close, size: 18),
-                                  label: Text(
-                                    "Cancel",
-                                    style: TextStyle(fontSize: globals.bodyFontSize),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey[700],
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
+                  child: isEditing ? Container(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: resetFields,
+                            icon: Icon(Icons.close, size: 18),
+                            label: Text(
+                              "Cancel",
+                              style: TextStyle(fontSize: globals.bodyFontSize),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[700],
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: (){
-                                    saveChanges(context);
-                                  },
-                                  icon: Icon(Icons.check, size: 18),
-                                  label: Text(
-                                    "Save",
-                                    style: TextStyle(fontSize: globals.bodyFontSize),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: globals.secondaryColor,
-                                    foregroundColor: Colors.black,
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: (){
+                              saveChanges(context);
+                            },
+                            icon: Icon(Icons.check, size: 18),
+                            label: Text(
+                              "Save",
+                              style: TextStyle(fontSize: globals.bodyFontSize),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: globals.secondaryColor,
+                              foregroundColor: Colors.black,
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            ],
+                            ),
                           ),
-                        )
-                      : Row(
-                        children: [
-                          participantDetailTile(
-                            icon: Icons.wc,
-                            title: "Gender",
-                            value: participant.gender,
-                          ),
-                          VerticalDivider(
-                            thickness: 2,
-                            color: const Color.fromARGB(100, 0, 0, 0),
-                            width: 1,
-                          ),
-                          participantDetailTile(
-                            icon: Icons.location_on,
-                            title: "Location",
-                            value: participant.city,
-                          ),
-                          VerticalDivider(
-                            thickness: 2,
-                            color: const Color.fromARGB(100, 0, 0, 0),
-                            width: 1,
-                          ),
-                          participantDetailTile(
-                            icon: Icons.cake,
-                            title: "Age",
-                            value: participant.age.toString(),
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  )
+                  : Row(
+                    children: [
+                      participantDetailTile(
+                        icon: Icons.wc,
+                        title: "Gender",
+                        value: participant.gender,
                       ),
+                      VerticalDivider(
+                        thickness: 2,
+                        color: const Color.fromARGB(100, 0, 0, 0),
+                        width: 1,
+                      ),
+                      participantDetailTile(
+                        icon: Icons.location_on,
+                        title: "Location",
+                        value: participant.city,
+                      ),
+                      VerticalDivider(
+                        thickness: 2,
+                        color: const Color.fromARGB(100, 0, 0, 0),
+                        width: 1,
+                      ),
+                      participantDetailTile(
+                        icon: Icons.cake,
+                        title: "Age",
+                        value: participant.age.toString(),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

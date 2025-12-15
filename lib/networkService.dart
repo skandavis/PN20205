@@ -108,7 +108,7 @@ class NetworkService {
           if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-            showMessage('Internet connection timed out. Check your connection and try again.',e.requestOptions.extra['showAboveSnackBar'] == true);
+            showMessage('Internet connection timed out. Check your connection and try again.', e.requestOptions.extra['showAboveSnackBar'] == true);
           }
           return handler.next(e);
         },

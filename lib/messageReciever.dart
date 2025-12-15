@@ -88,7 +88,6 @@ Future<String> requestNotificationPermission(BuildContext context, bool shouldSh
           },
         );
       }
-
       return "";
     default:
       return "";
