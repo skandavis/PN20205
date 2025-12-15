@@ -110,7 +110,7 @@ class _loginPageState extends State<loginPage> {
               Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                color: Colors.black54,
+                color: Colors.black45,
                 child: const Center(
                   child: CircularProgressIndicator(color: Colors.white,),
                 ),

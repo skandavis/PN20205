@@ -274,11 +274,11 @@ class _imageLoaderState extends State<imageLoader> {
     return Container(
       decoration: BoxDecoration(
         shape: widget.circle ? BoxShape.circle : BoxShape.rectangle,
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black45,
       ),
       child: const Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          color: Colors.white,
         ),
       ),
     );

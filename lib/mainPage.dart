@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:NagaratharEvents/accountPage.dart';
 import 'package:NagaratharEvents/eventInfo.dart';
 import 'package:NagaratharEvents/expandableHighlightext.dart';
@@ -11,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/imageCarousel.dart';
 import 'package:NagaratharEvents/locationTimeScrollableWidget.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
 class mainPage extends StatefulWidget {
@@ -45,53 +42,11 @@ class _mainPageState extends State<mainPage> {
 
   void _onVisibilityChanged() {
     if (widget.isVisible.value == 1) {
-      // WidgetsBinding.instance.addPostFrameCallback((_) {
-      //   loadInitialData();
-      // });
     } else if(widget.isVisible.value == 0){
       eventInfo.clear(); 
       user.clear();
     }
   }
-
-Future<bool> requestCalendarPermission(BuildContext context) async {
-  var status = await Permission.calendarFullAccess.status;
-
-  if (status.isGranted) {
-    return true;
-  }
-  (status.toString());
-  if (status.isPermanentlyDenied||status.isDenied) {
-    bool openSettings = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Permission Required"),
-        content: Text(
-            "Calendar permission is permanently denied. Please enable it in Settings."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text("Open Settings"),
-          ),
-        ],
-      ),
-    );
-
-    if (openSettings == true) {
-      await openAppSettings();
-    }
-
-    return false;
-  }
-
-  // Request permission normally
-  status = await Permission.calendarFullAccess.request();
-  return status.isGranted;
-}
   void loadInitialData() async {
     if(!eventInfo.isLoaded)
     {
@@ -116,7 +71,6 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
 
   void geocode() async{
     String fullAddress = "${eventInfo.address}, ${eventInfo.city}, ${eventInfo.state} ${eventInfo.zip}";
-    (fullAddress);
     try {
       List<Location> locations = await locationFromAddress(fullAddress);
       (locations.toString());
@@ -146,46 +100,41 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
           padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.05),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: (){
-                  requestCalendarPermission(context);
-                },
-                child: Row(
-                  children: [
-                    Stack(
-                      children: List.generate(
-                        (eventInfo.userCount > 5) ? 5 : eventInfo.userCount,
-                        (index) {
-                          return Row(
-                            children: [
-                              SizedBox(
-                                width: (10 * index).toDouble(),
+              Row(
+                children: [
+                  Stack(
+                    children: List.generate(
+                      (eventInfo.userCount > 5) ? 5 : eventInfo.userCount,
+                      (index) {
+                        return Row(
+                          children: [
+                            SizedBox(
+                              width: (10 * index).toDouble(),
+                            ),
+                            Container(
+                              height: 50,
+                              width: 50,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black, width: 1),
+                                borderRadius: BorderRadius.circular(50),
                               ),
-                              Container(
-                                height: 50,
-                                width: 50,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black, width: 1),
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Image.asset("assets/genericAccount.png",),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                              child: Image.asset("assets/genericAccount.png",),
+                            ),
+                          ],
+                        );
+                      },
                     ),
-                    Text(
-                      " +${eventInfo.userCount} Going",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: globals.bodyFontSize,
-                        fontWeight: FontWeight.bold
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                  Text(
+                    " +${eventInfo.userCount} Going",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: globals.bodyFontSize,
+                      fontWeight: FontWeight.bold
+                    ),
+                  )
+                ],
               ),
               Text(
                 eventInfo.description,
@@ -200,6 +149,7 @@ Future<bool> requestCalendarPermission(BuildContext context) async {
               height: MediaQuery.sizeOf(context).height*.025,
               ),
               Locationtimescrollablewidget(
+                name: eventInfo.name,
                 description: (eventInfo.description ),
                 geolocation: center,
                 startTime: eventInfo.startDate,

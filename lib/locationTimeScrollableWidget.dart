@@ -11,7 +11,8 @@ class Locationtimescrollablewidget extends StatefulWidget {
   String location;
   LatLng geolocation;
   String description;
-  Locationtimescrollablewidget({super.key,required this.startTime,required this.endTime,required this.location,required this.geolocation, required this.description});
+  String name;
+  Locationtimescrollablewidget({super.key,required this.startTime,required this.endTime,required this.location,required this.geolocation, required this.description, required this.name});
 
   @override
   State<Locationtimescrollablewidget> createState() => _LocationtimescrollablewidgetState();
@@ -27,17 +28,14 @@ class _LocationtimescrollablewidgetState extends State<Locationtimescrollablewid
         children: [
           GestureDetector(
             onTap: () {
-              
-              utils.addEventToCalendar("Nagarathar Pillayar Nombu", "Description TBD", widget.location, widget.startTime, widget.endTime, context);
-              // final event = Event(
-              //   title: "Nagarathar Pillayar Nombu",
-              //   description: "Description TBD",
-              //   location: widget.location,
-              //   startDate: widget.startTime,
-              //   endDate: widget.endTime,
-              //   allDay: false,
-              // );
-              // Add2Calendar.addEvent2Cal(event);
+              utils.addEventToCalendar(
+                widget.name, 
+                widget.description, 
+                widget.location, 
+                widget.startTime, 
+                widget.endTime, 
+                context
+              );
             },
             child: const Icon(
               Icons.calendar_month,

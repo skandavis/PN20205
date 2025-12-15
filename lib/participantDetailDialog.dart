@@ -382,7 +382,7 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black45,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: const Center(

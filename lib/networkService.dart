@@ -69,7 +69,23 @@ class NetworkService {
           } else if (response.statusCode == 413) {
             showMessage(response.data ?? 'Image way too large!', showAboveSnackBar);
           } else if (response.statusCode == 498) {
-            return handler.resolve(await refresh(response.requestOptions));
+            await dio.get('auth/refresh-token');
+            if (response.requestOptions.data is FormData) {
+              FormData formData = response.requestOptions.data as FormData;
+              FormData newFormData = FormData.fromMap({
+                formData.fields[0].key: formData.fields[0].value,
+                formData.files[0].key: formData.files[0].value.clone()
+              });
+              return handler.resolve(await dio.post(
+                response.requestOptions.path,
+                data: newFormData,
+                options: Options(headers: {'Content-Type': 'multipart/form-data'})
+              ));
+            } else {
+              final newOptions = response.requestOptions.copyWith();
+              newOptions.headers.remove('cookie');
+              return handler.resolve(await dio.fetch(newOptions));
+            }
           } else if (response.statusCode == 500) {
             showMessage('Something Went Wrong! Try again later.', showAboveSnackBar);
           } else if (response.statusCode == 404) {
@@ -108,15 +124,9 @@ class NetworkService {
     }
   }
 
-  Future<Response> refresh(RequestOptions options) async
-  {
+  Future<bool> refresh(RequestOptions options) async {
     await dio.get('auth/refresh-token');
-    if(options.data is FormData)
-    {
-      FormData formData = options.data as FormData;
-      return await dio.post(options.path, data: formData,options: Options(headers: {'Content-Type': 'multipart/form-data'}));
-    }
-    return dio.fetch(options);
+    return options.data is FormData;
   }
 
   Future<Response<dynamic>> getRoute(String route, bool forceRefresh) async {

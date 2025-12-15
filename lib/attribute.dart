@@ -97,7 +97,7 @@ class _attributeState extends State<attribute> {
                   Positioned.fill(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.45),
+                        color: Colors.black45,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Center(
@@ -207,10 +207,10 @@ class _attributeState extends State<attribute> {
                 if (_isLoading)
                 Positioned.fill(
                   child: Container(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black45,
                     child: const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        color: Colors.white,
                       ),
                     ),
                   ),

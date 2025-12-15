@@ -174,7 +174,7 @@ class _familyPageState extends State<familyPage> {
                   Positioned.fill(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.45),
+                        color: Colors.black45,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Center(

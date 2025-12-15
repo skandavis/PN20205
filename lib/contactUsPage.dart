@@ -236,7 +236,7 @@ class _contactUsPageState extends State<contactUsPage> {
           ),
           if(loading)
           Container(
-            color: Color.fromARGB(120, 0, 0, 0),
+            color: Colors.black45,
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: Center(
