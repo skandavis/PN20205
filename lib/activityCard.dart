@@ -10,10 +10,8 @@ import 'package:intl/intl.dart';
 
 class activityCard extends StatefulWidget {
   Activity activity;
-  Function callback;
   activityCard({
     super.key,
-    required this.callback,
     required this.activity,
   });
 
@@ -36,7 +34,6 @@ class _activityCardState extends State<activityCard> {
           ),
         ).then((value){
           setState(() {});
-          widget.callback();
         });
       },
       child: Container(

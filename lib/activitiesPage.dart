@@ -252,9 +252,6 @@ class activitiesPageState extends State<activitiesPage> {
           itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: activityCard(
-              callback: (){
-                _loadData();
-              },
               activity: activities[index], 
             ),
           ),
