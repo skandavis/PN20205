@@ -22,6 +22,8 @@ class _notificationsPageState extends State<notificationsPage> {
   static Set<String> newMessageIds = {};
   User user = User.instance;
   bool isLoading = false;
+  bool isConnected = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,10 +49,30 @@ class _notificationsPageState extends State<notificationsPage> {
   }
 
   void loadMessages() {
-    NetworkService().getMultipleRoute('notifications').then((value) {
-      if (value == null) return;
+    if(messages != null)
+    {
       setState(() {
-        messages = value.map((item) => Notification.fromJson(item)).toList();
+        isConnected = true;
+      });
+      return;
+    } 
+    setState(() {
+      isLoading = true;
+    });
+    NetworkService().getMultipleRoute('notifications').then((notification) {
+      if(notification == null)
+      {
+        setState(() {
+          isConnected = false;
+        });
+      }else{
+        setState(() {
+          messages = notification.map((item) => Notification.fromJson(item)).toList();
+          isConnected = true;
+        });
+      }
+      setState(() {
+        isLoading = false;
       });
     });
   }
@@ -99,7 +121,8 @@ class _notificationsPageState extends State<notificationsPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        messages!=null ? Container(
+        if(isConnected && !isLoading)
+        Container(
           height: MediaQuery.sizeOf(context).height,
           padding: const EdgeInsets.all(20),
           child: RefreshIndicator(
@@ -138,22 +161,17 @@ class _notificationsPageState extends State<notificationsPage> {
               },
             ),
           ),
-        ):loadingScreen(),
+        ),
         if (user.isAdmin)
         Positioned(
           bottom: 25,
           right:25,
           child: createNotificationButton(sendMessage: sendMessage,route: 'notifications',),
         ),
+        if(!isConnected)
+        Center(child: const Text("No Internet Connection!", style: TextStyle(color: Colors.white, fontSize: 20),)),
         if(isLoading)
-        Container(
-          height: MediaQuery.sizeOf(context).height,
-          width: MediaQuery.sizeOf(context).width,
-          color: Colors.black45,
-          child: Center(
-            child: const CircularProgressIndicator(color: Colors.white,)
-          ),
-        )
+        loadingScreen(),
       ],
     );
   }

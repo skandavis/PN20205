@@ -166,6 +166,7 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                               onValueChange: updateActivity,
                               attributeTitle: "Location",
                               attributeValue: widget.activity.location,
+                              // attributeValue: "Main Hall",
                             ),
                             const myVerticaldivider(),
                             attribute(

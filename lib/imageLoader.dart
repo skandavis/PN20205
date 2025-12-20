@@ -163,7 +163,13 @@ class _imageLoaderState extends State<imageLoader> {
     if (response.statusCode == 200) {
       _handleUploadSuccess(imageFile);
     }
-  
+    if(response.statusCode == 500){
+      if(widget.showAboveSnackBar){
+        utils.snackBarAboveMessage("You are not connected to the internet");
+      }else{
+        utils.snackBarMessage("You are not connected to the internet");
+      }
+    }
     setState(() => _isUploading = false);
   }
 

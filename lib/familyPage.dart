@@ -3,6 +3,7 @@ import 'package:NagaratharEvents/familyMember.dart';
 import 'package:NagaratharEvents/familyMemberSquare.dart';
 import 'package:NagaratharEvents/gradientTextField.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/loadingScreen.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:NagaratharEvents/utils.dart' as utils;
@@ -21,6 +22,7 @@ class _familyPageState extends State<familyPage> {
   final TextEditingController relationController = TextEditingController();
   static List<FamilyMember>? family;
   bool isLoading = false;
+  bool isConnected = false;
 
   @override
   void initState() {
@@ -29,11 +31,30 @@ class _familyPageState extends State<familyPage> {
   }
 
   void loadFamily() {
-    if(family != null) return;
-    NetworkService().getMultipleRoute("users/family-users", forceRefresh: true).then((response) {
-      if(response == null) return;
+    if(family != null)
+    {
       setState(() {
-        family = response.map((item) => FamilyMember.fromJson(item)).toList();
+        isConnected = true;
+      });
+      return;
+    } 
+    setState(() {
+      isLoading = true;
+    });
+    NetworkService().getMultipleRoute("users/family-users", forceRefresh: true).then((members) {
+      if(members == null)
+      {
+        setState(() {
+          isConnected = false;
+        });
+      }else{
+        setState(() {
+          family = members.map((item) => FamilyMember.fromJson(item)).toList();
+          isConnected = true;
+        });
+      }
+      setState(() {
+        isLoading = false;
       });
     });
   }
@@ -42,9 +63,6 @@ class _familyPageState extends State<familyPage> {
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (nameController.text.isEmpty || emailController.text.isEmpty || relationController.text.isEmpty) {
-      // emailController.text = 'john@c.com';
-      // nameController.text = 'Johnny'; 
-      // relationController.text = 'Brother';
       utils.snackBarAboveMessage('Please enter name, email and relation');
       return;
     }
@@ -210,72 +228,81 @@ class _familyPageState extends State<familyPage> {
         ),
         backgroundColor: globals.backgroundColor,
       ),
-      body: GridView.count(
-        crossAxisCount: 2,
-        padding: EdgeInsets.all(16.0),
-        crossAxisSpacing: 25.0,
-        mainAxisSpacing: 25.0,
-        children: List.generate(count, (index) {
-          if (index == 0) {
-            return familyMemberSquare(
-              familyMember: FamilyMember(id: "1", name: User.instance.name, email: User.instance.email, relation: "You"),
-            );
-          } else if (index == count - 1) {
-            return GestureDetector(
-              onTap: () {
-                showFamilyMemberDialog();
-              },
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Color.fromARGB(255, 149, 235, 252), width: 1),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Icon(
-                  Icons.add, 
-                  color: Colors.white, 
-                  size: 64
-                ),
-              ),
-            );
-          } else {
-            return Stack(
-              alignment: Alignment.topRight,
-              children: [
-                GestureDetector(
+      body: Stack(
+        children: [
+          if(isConnected && !isLoading)
+          GridView.count(
+            crossAxisCount: 2,
+            padding: EdgeInsets.all(16.0),
+            crossAxisSpacing: 25.0,
+            mainAxisSpacing: 25.0,
+            children: List.generate(count, (index) {
+              if (index == 0) {
+                return familyMemberSquare(
+                  familyMember: FamilyMember(id: "1", name: User.instance.name, email: User.instance.email, relation: "You"),
+                );
+              } else if (index == count - 1) {
+                return GestureDetector(
                   onTap: () {
-                    showFamilyMemberDialog(index: index - 1);
-                  },
-                  child: familyMemberSquare(
-                    familyMember: family![index - 1],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    final response = await NetworkService().deleteRoute("users/family-users/${family![index - 1].id}");
-                    if(response.statusCode != 200) return;
-                    setState(() {
-                      family!.removeAt(index - 1);
-                    });
+                    showFamilyMemberDialog();
                   },
                   child: Container(
+                    width: double.infinity,
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
+                      border: Border.all(color: Color.fromARGB(255, 149, 235, 252), width: 1),
                       borderRadius: BorderRadius.circular(25),
-                      color: Colors.red,
                     ),
                     child: Icon(
-                      Icons.close, 
+                      Icons.add, 
                       color: Colors.white, 
-                      size: 28
+                      size: 64
                     ),
                   ),
-                ),
-              ],
-            );
-          }
-        }),
+                );
+              } else {
+                return Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        showFamilyMemberDialog(index: index - 1);
+                      },
+                      child: familyMemberSquare(
+                        familyMember: family![index - 1],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        final response = await NetworkService().deleteRoute("users/family-users/${family![index - 1].id}");
+                        if(response.statusCode != 200) return;
+                        setState(() {
+                          family!.removeAt(index - 1);
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: Colors.red,
+                        ),
+                        child: Icon(
+                          Icons.close, 
+                          color: Colors.white, 
+                          size: 28
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            }),
+          ),
+          if(!isConnected)
+          Center(child: const Text("No Internet Connection!", style: TextStyle(color: Colors.white, fontSize: 20),)),
+          if(isLoading)
+          loadingScreen(),
+        ],
       ),
     );
   }

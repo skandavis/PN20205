@@ -40,6 +40,7 @@ void logout() async {
       controller.value = 0;
   }
   NetworkService().clearCache();
+  NetworkService().removeCookies();
   Navigator.pushReplacement(
     globals.navigatorKey.currentState!.context,
     MaterialPageRoute(

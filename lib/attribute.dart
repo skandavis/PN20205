@@ -61,9 +61,9 @@ class _attributeState extends State<attribute> {
                           setDialogState(() => isLoading = true);
                           if (widget.onValueChange != null) {
                             final statusCode = await widget.onValueChange!(controller.text, null);
+                            setDialogState(() => isLoading = false);
                             if (statusCode != 200) return;
 
-                            setDialogState(() => isLoading = false);
                             utils.snackBarMessage(
                               "${widget.attributeTitle} updated!",
                               color: Colors.green,
@@ -149,10 +149,10 @@ class _attributeState extends State<attribute> {
                                     null,
                                     selectedDateTime,
                                   );
-                                  if (statusCode != 200) return;
                                   setDialogState(() {
                                     _isLoading = false;
                                   });
+                                  if (statusCode != 200) return;
                                   utils.snackBarMessage("${widget.attributeTitle} updated!", color: Colors.green,);
                                   setState(() {
                                     widget.attributeValue = selectedDateTime;

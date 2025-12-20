@@ -40,7 +40,7 @@ class _faqQuestionState extends State<faqQuestion> {
                     widget.question,
                     style: TextStyle(
                       fontSize: globals.bodyFontSize,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -60,7 +60,7 @@ class _faqQuestionState extends State<faqQuestion> {
                     child: Text(
                       widget.answer,
                       style: TextStyle(
-                        fontSize: globals.bodyFontSize,
+                        fontSize: globals.paraFontSize,
                       ),
                     ),
                   ),

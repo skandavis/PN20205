@@ -145,10 +145,16 @@ class NetworkService {
         await cacheManager.saveResource(route, response.data, headers);
         return response;
       }
-      
       return Response (requestOptions: RequestOptions(path: route), data: await cacheManager.loadResource(route));
       
     } catch (e) {
+      if(e is DioException && e.error is SocketException) {
+        utils.snackBarMessage("You are not connected to the internet");
+      }
+      // if(e.error is SocketException)
+      // if (response.statusCode == 500) {
+      //   utils.snackBarMessage("You are not connected to the internet");
+      // } 
       return Response (requestOptions: RequestOptions(path: route), data: await cacheManager.loadResource(route));
     }
   }
@@ -159,9 +165,6 @@ class NetworkService {
     
     if (data is List<dynamic>) {
       return data;
-    }
-    
-    if (data is Map<String, dynamic>) {
     }
     
     return null;
@@ -185,6 +188,10 @@ class NetworkService {
     cacheManager.cleanup(deleteAll: true);
   }
 
+  void removeCookies() {
+    dio.options.headers.remove('cookie');
+  }
+
   Future<Response<dynamic>> postRoute(Map<String, dynamic> data, String route, {bool skipIntercept = false, bool showAboveSnackBar = false}) async {
     await _initIfNeeded();
     
@@ -201,6 +208,9 @@ class NetworkService {
       );
       return response;
     } catch (e) {
+      if(e is DioException && e.error is SocketException) {
+        utils.snackBarMessage("You are not connected to the internet");
+      }
       return _createErrorResponse(route, 500);
     }
   }
@@ -220,6 +230,9 @@ class NetworkService {
       );
       return response;
     } catch (e) {
+      if(e is DioException && e.error is SocketException) {
+        utils.snackBarMessage("You are not connected to the internet");
+      }
       return _createErrorResponse(route, 500);
     }
   }
@@ -232,6 +245,9 @@ class NetworkService {
           .patch(route);
       return response;
     } catch (e) {
+      if(e is DioException && e.error is SocketException) {
+        utils.snackBarMessage("You are not connected to the internet");
+      }
       return _createErrorResponse(route, 500);
     }
   }
@@ -251,6 +267,9 @@ class NetworkService {
       return response;
       
     } catch (e) {
+      if(e is DioException && e.error is SocketException) {
+        utils.snackBarMessage("You are not connected to the internet");
+      }
       return _createErrorResponse(route, 500);
     }
   }
@@ -284,6 +303,9 @@ class NetworkService {
       }
       return response;
     } catch (e) {
+      if(e is DioException && e.error is SocketException) {
+        utils.snackBarMessage("You are not connected to the internet");
+      }
       return _createErrorResponse(route, 500);
     }
   }

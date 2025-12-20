@@ -13,6 +13,8 @@ class faqPage extends StatefulWidget {
 
 class _faqPageState extends State<faqPage> {
 static List<dynamic>? questions;
+bool isLoading = false;
+bool isConnected = false;
   @override
   void initState() {
     super.initState();
@@ -38,36 +40,65 @@ static List<dynamic>? questions;
   }
 
   void loadFaqs() {
-    if (questions != null) return;
-    NetworkService().getMultipleRoute('faqs', forceRefresh: true).then((faqs) {
+    if(questions != null)
+    {
       setState(() {
-        questions = faqs;
+        isConnected = true;
+      });
+      return;
+    } 
+    setState(() {
+      isLoading = true;
+    });
+    NetworkService().getMultipleRoute('faqs').then((faqs) {
+      if(faqs == null)
+      {
+        setState(() {
+          isConnected = false;
+        });
+      }else{
+        setState(() {
+          questions = faqs;
+          isConnected = true;
+        });
+      }
+      setState(() {
+        isLoading = false;
       });
     });
   }
   @override
   Widget build(BuildContext context) {
-    return questions!=null?SingleChildScrollView(
-      child: Center(
-        child: Column(
-          children: List.generate(questions!.length, (index) {
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 15,
-                ),
-                faqQuestion(
-                  question: questions![index]["question"],
-                  answer: questions![index]["answer"],
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-              ],
-            );
-          })
+    return Stack(
+      children: [
+        if(isConnected && !isLoading)
+        SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: List.generate(questions!.length, (index) {
+                return Column(
+                  children: [
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    faqQuestion(
+                      question: questions![index]["question"],
+                      answer: questions![index]["answer"],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                  ],
+                );
+              })
+            ),
+          ),
         ),
-      ),
-    ):loadingScreen();
+        if(!isConnected)
+        Center(child: const Text("No Internet Connection!", style: TextStyle(color: Colors.white, fontSize: 20),)),
+        if(isLoading)
+        loadingScreen(),
+      ],
+    );
   }
 }

@@ -103,6 +103,7 @@ class _enterPinUIState extends State<enterPinUI> {
                   children: [
                     TextButton(
                       onPressed: () {
+                        prefs.setBool('gotEmail', false);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

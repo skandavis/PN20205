@@ -168,10 +168,9 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      if (!isEditing)
+                      if (!isEditing && widget.participant.isEditable)
                         IconButton(
                           onPressed: (){
-                            if(!widget.participant.isEditable) return;
                             setState(() {
                               isEditing = true;
                             });
@@ -207,21 +206,19 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                             } : null,
                           ),
                           SizedBox(height: 16),
-                          isEditing
-                            ? gradientTextField(
-                                icon: Icons.email,
-                                label: "Email",
-                                hint: "Email",
-                                controller: emailController,
-                              )
-                            : 
-                            Text(
-                              participant.email,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: globals.bodyFontSize,
-                              ),
+                          isEditing ? gradientTextField(
+                            icon: Icons.email,
+                            label: "Email",
+                            hint: "Email",
+                            controller: emailController,
+                          ): 
+                          Text(
+                            participant.email,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: globals.bodyFontSize,
                             ),
+                          ),
                           SizedBox(height: 8),
                           isEditing
                             ? gradientTextField(

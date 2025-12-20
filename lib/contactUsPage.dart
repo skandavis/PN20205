@@ -1,4 +1,5 @@
 import 'package:NagaratharEvents/committee.dart';
+import 'package:NagaratharEvents/loadingScreen.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +34,8 @@ class _contactUsPageState extends State<contactUsPage> {
   FocusNode subjectFocus = FocusNode();
   FocusNode messageFocus = FocusNode();
   FocusNode departmentFocus = FocusNode();
-  bool loading = false;
-
+  bool isLoading = false;
+  bool isConnected = false;
   @override
   void initState() {
     super.initState();
@@ -97,13 +98,13 @@ class _contactUsPageState extends State<contactUsPage> {
         subjectController.text.isNotEmpty) 
     {
       setState(() {
-        loading = true;                      
+        isLoading = true;                      
       });
       bool success = await sendMessage();
       if(success)
       {
         setState(() {
-          loading = false;                          
+          isLoading = false;                          
         });
         subjectController.clear();
         messageController.clear();
@@ -111,7 +112,7 @@ class _contactUsPageState extends State<contactUsPage> {
       }
       else{
         setState(() {
-          loading = false;                          
+          isLoading = false;                          
         });
         utils.snackBarMessage("Unable to send Message!");
       }
@@ -121,26 +122,42 @@ class _contactUsPageState extends State<contactUsPage> {
   }
 
   void getCommittees() async{
-    if(committees != null) return;
-    setState(() {
-      loading = true;      
-    });
-    NetworkService().getMultipleRoute('committees', forceRefresh: true).then((committeesSent){
-      if(committeesSent == null) return;
+    if(committees != null)
+    {
       setState(() {
-        committees = committeesSent.map((item) => committee.fromJson(item)).toList();
-        loading = false;
+        isConnected = true;
+      });
+      return;
+    } 
+    setState(() {
+      isLoading = true;      
+    });
+    NetworkService().getMultipleRoute('committees').then((committeesSent){
+     if(committeesSent == null)
+      {
+        setState(() {
+          isConnected = false;
+        });
+      }else{
+        setState(() {
+          committees = committeesSent.map((item) => committee.fromJson(item)).toList();
+          isConnected = true;
+        });
+      }
+      setState(() {
+        isLoading = false;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Stack(
-        children: [
-          Container(
+    return Stack(
+      children: [
+        if(isConnected && !isLoading)
+        SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Container(
             padding: const EdgeInsets.all(15),
             child: Column(
               children: [
@@ -231,22 +248,14 @@ class _contactUsPageState extends State<contactUsPage> {
                   ),
                 ),
               ],
-            ),
+            )
           ),
-          if(loading)
-          Container(
-            color: Colors.black45,
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                backgroundColor: globals.accentColor,
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      if(!isConnected)
+      Center(child: const Text("No Internet Connection!", style: TextStyle(color: Colors.white, fontSize: 20),)),
+      if(isLoading)
+      loadingScreen(),
+      ],
     );
   }
 }

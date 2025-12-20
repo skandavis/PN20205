@@ -80,7 +80,8 @@ class _participantRowState extends State<participantRow> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * .6,
                   child: Text(
-                    participant.description,
+                    // participant.description,
+                    "${participant.name} is a young kid who lives in dallas. He loves dancing as well as playing roblox.",
                     style: TextStyle(
                       color: Colors.white, 
                       fontSize: globals.smallFontSize,

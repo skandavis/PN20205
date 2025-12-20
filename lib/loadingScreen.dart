@@ -1,3 +1,4 @@
+import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:flutter/material.dart';
 
 class loadingScreen extends StatelessWidget {
@@ -5,7 +6,10 @@ class loadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Container(
+      color: globals.backgroundColor,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
       child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

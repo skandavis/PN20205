@@ -1,4 +1,3 @@
-
 class Participant {
   String id;
   String name;
@@ -38,6 +37,7 @@ class Participant {
       id: json['id'],
       name: json['name'],
       description: json['about'],
+      // description: "${json['name']} is a young kid who lives in dallas. He loves dancing as well as playing roblox.",
       age: json["age"],
       state: json["state"],
       city: json["city"],
@@ -51,6 +51,7 @@ class Participant {
   void updateInfo(Map<String, dynamic> json)
   {
     name = json['name'] ?? name;
+    email = json['emailId'] ?? email;
     description = json['about'] ?? description;
     age = json["age"] ?? age;
     city = json["city"] ?? city;

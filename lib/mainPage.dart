@@ -23,7 +23,7 @@ class _mainPageState extends State<mainPage> {
   static LatLng center = LatLng(47.3769, 8.5417);
   EventInfo eventInfo = EventInfo.instance; 
   User user = User.instance; 
-
+  bool isConnected = false;
 
   @override
   void initState() {
@@ -48,15 +48,26 @@ class _mainPageState extends State<mainPage> {
     }
   }
   void loadInitialData() async {
-    if(!eventInfo.isLoaded)
+    if(eventInfo.isLoaded)
     {
-      final response = await NetworkService().getSingleRoute("events", forceRefresh: true);
-      if(response == null) return;
       setState(() {
-        user.fromJson(response.remove('user'));
-        eventInfo.fromJson(response);
-        eventInfo.addImages(response["photos"]);
+        isConnected = true;
       });
+    }else{
+      final givenEventInfo = await NetworkService().getSingleRoute("events", forceRefresh: true);
+      if(givenEventInfo == null)
+      {
+        setState(() {
+          isConnected = false;
+        });
+      }else{
+        setState(() {
+          user.fromJson(givenEventInfo.remove('user'));
+          eventInfo.fromJson(givenEventInfo);
+          eventInfo.addImages(givenEventInfo["photos"]);
+          isConnected = true;
+        });   
+      }
     }
     if(user.firstTime)
     {
@@ -90,143 +101,151 @@ class _mainPageState extends State<mainPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return eventInfo.isLoaded ? ListView(
+    return Stack(
       children: [
-        if(eventInfo.images.isNotEmpty)
-        ImageCarousel(
-          imageUrls: eventInfo.images,
-        ),
-        Container(
-          padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.05),
-          child: Column(
-            children: [
-              Row(
+        if(isConnected && eventInfo.isLoaded)
+        ListView(
+          children: [
+            if(eventInfo.images.isNotEmpty)
+            ImageCarousel(
+              imageUrls: eventInfo.images,
+            ),
+            Container(
+              padding: EdgeInsets.all(MediaQuery.sizeOf(context).width*.05),
+              child: Column(
                 children: [
-                  Stack(
-                    children: List.generate(
-                      (eventInfo.userCount > 5) ? 5 : eventInfo.userCount,
-                      (index) {
-                        return Row(
-                          children: [
-                            SizedBox(
-                              width: (10 * index).toDouble(),
-                            ),
-                            Container(
-                              height: 50,
-                              width: 50,
-                              clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black, width: 1),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Image.asset("assets/genericAccount.png",),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  Text(
-                    " +${eventInfo.userCount} Going",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: globals.bodyFontSize,
-                      fontWeight: FontWeight.bold
-                    ),
-                  )
-                ],
-              ),
-              Text(
-                eventInfo.description,
-                style:  TextStyle(
-                  color: Colors.white, 
-                  fontSize: globals.subTitleFontSize,
-                  fontWeight: FontWeight.bold
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-              height: MediaQuery.sizeOf(context).height*.025,
-              ),
-              Locationtimescrollablewidget(
-                name: eventInfo.name,
-                description: (eventInfo.description ),
-                geolocation: center,
-                startTime: eventInfo.startDate,
-                endTime: eventInfo.endDate,
-                location: ("${eventInfo.address}\n ${eventInfo.city}, ${eventInfo.state} ${eventInfo.zip}")
-              ),
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height*.025,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    child: Text(
-                      eventInfo.mainSection,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: globals.bodyFontSize,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.width*.05),
-                  expandableHighlightText(
-                    text:(eventInfo.subSection)
-                  ),
-                  // expandableHighlightText(text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Why do we use it? It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",),  
-                  SizedBox(height: MediaQuery.of(context).size.width*.05),
-                  Container(
-                    padding: EdgeInsets.all(4), // Thickness of the border
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [globals.highlightColor, globals.iceBlue],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.black, // Inner background color
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        eventInfo.aside,
-                        style: TextStyle(color: Colors.white,
-                        fontSize: globals.paraFontSize,
+                  Row(
+                    children: [
+                      Stack(
+                        children: List.generate(
+                          (eventInfo.userCount > 5) ? 5 : eventInfo.userCount,
+                          (index) {
+                            return Row(
+                              children: [
+                                SizedBox(
+                                  width: (10 * index).toDouble(),
+                                ),
+                                Container(
+                                  height: 50,
+                                  width: 50,
+                                  clipBehavior: Clip.hardEdge,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black, width: 1),
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Image.asset("assets/genericAccount.png",),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
+                      Text(
+                        " +${eventInfo.userCount} Going",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: globals.bodyFontSize,
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
+                    ],
+                  ),
+                  Text(
+                    eventInfo.description,
+                    style:  TextStyle(
+                      color: Colors.white, 
+                      fontSize: globals.subTitleFontSize,
+                      fontWeight: FontWeight.bold
                     ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                  height: MediaQuery.sizeOf(context).height*.025,
+                  ),
+                  Locationtimescrollablewidget(
+                    name: eventInfo.name,
+                    description: (eventInfo.description),
+                    geolocation: center,
+                    startTime: eventInfo.startDate,
+                    endTime: eventInfo.endDate,
+                    location: ("${eventInfo.address}\n ${eventInfo.city}, ${eventInfo.state} ${eventInfo.zip}")
+                  ),
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height*.025,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        child: Text(
+                          eventInfo.mainSection,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: globals.bodyFontSize,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.width*.05),
+                      expandableHighlightText(
+                        text:(eventInfo.subSection)
+                      ),
+                      // expandableHighlightText(text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Why do we use it? It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",),  
+                      SizedBox(height: MediaQuery.of(context).size.width*.05),
+                      Container(
+                        padding: EdgeInsets.all(4), // Thickness of the border
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [globals.highlightColor, globals.iceBlue],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.black, // Inner background color
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            eventInfo.aside,
+                            style: TextStyle(color: Colors.white,
+                            fontSize: globals.paraFontSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height*.025,
                   ),
                 ],
               ),
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height*.025,
-              ),
-            ],
-          ),
-        ),
-        if(eventInfo.isLoaded)
-        SizedBox(
-          height: MediaQuery.sizeOf(context).height*.4,
-          child: AbsorbPointer(
-            child: GoogleMap(
-              onMapCreated: onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: center , // Fallback
-                  zoom: 11.0,
-                ),
-              zoomControlsEnabled: false,
             ),
-          ),
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height*.4,
+              child: AbsorbPointer(
+                child: GoogleMap(
+                  onMapCreated: onMapCreated,
+                    initialCameraPosition: CameraPosition(
+                      target: center , // Fallback
+                      zoom: 11.0,
+                    ),
+                  zoomControlsEnabled: false,
+                ),
+              ),
+            ),
+          ],
         ),
+        if(!isConnected)
+        Center(child: const Text("No Internet Connection!", style: TextStyle(color: Colors.white, fontSize: 20),)),
+        if(!eventInfo.isLoaded)
+        loadingScreen(),
       ],
-    ):loadingScreen();
+    );
   }
 }

@@ -61,9 +61,8 @@ class _getPinUIState extends State<getPinUI> {
   }
   void sendPin(String email, BuildContext context) async{
     if (email.isEmpty ) {
-      email = "viswanathanmanickam5@gmail.com";
-      // utils.snackBarMessage('Please enter email');
-      // return;
+      utils.snackBarMessage('Please enter email');
+      return;
     } 
     if (utils.isValidEmail(email)) {
       registerUser(email).then((response) 
