@@ -24,9 +24,8 @@ class _participantRowState extends State<participantRow> {
     });
   }
 
-  void displayParticipantDetails() {
-    showDialog(
-      useRootNavigator: false,
+  void displayParticipantDetails() async{
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return ParticipantDetailDialog(

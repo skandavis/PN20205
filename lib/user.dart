@@ -24,13 +24,13 @@ class User {
     firstTime = json['isFirstTime'];
     name = json['name'] ?? name;
     city = json['city'] ?? city;
-    phone = json['phoneNumber'] ?? phone;
+    phone = json['phoneNumber'].replaceAll('-', '') ?? phone;
   }
 
   void setPersonalInfo(Map<String, dynamic> json) {
     name = json['name'];
     city = json['city'];
-    phone = json['phone'];
+    phone = json['phoneNumber'].replaceAll('-', '');
   }
   void setEmail(String email) {
     this.email = email;

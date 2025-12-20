@@ -13,20 +13,20 @@ import 'package:another_flushbar/flushbar.dart';
 
 final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
 
-void snackBarMessage(String message,{Color color = const Color.fromARGB(255, 255, 51, 0)})
+void snackBarMessage(String message,{Color? color})
 {
   ScaffoldMessenger.of(globals.navigatorKey.currentState!.context).showSnackBar(
     SnackBar(
-      backgroundColor: color,
+      backgroundColor: color ?? Colors.red,
       content:
           Text(message),
     ),
   );
 }
 
-void snackBarAboveMessage(String message,{Color color = const Color.fromARGB(255, 255, 51, 0)}) {
+void snackBarAboveMessage(String message,{Color? color}) {
   Flushbar(
-    backgroundColor: color,
+    backgroundColor: color ?? Colors.red,
     message: message,
     duration: Duration(seconds: 4),
   ).show(globals.navigatorKey.currentState!.context);

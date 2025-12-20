@@ -127,19 +127,14 @@ class _accountPageState extends State<accountPage> {
                       return;
                     }
                   }
-                  final response = await  NetworkService().patchRoute({
-                    // "email": "viswanathanmanickam5@gmail.com",
+                  Map<String, dynamic> data = {
                     "name": controllers[0].text,
                     "phoneNumber":controllers[1].text,
                     "city": controllers[2].text,
-
-                  }, 'users');
+                  };
+                  final response = await  NetworkService().patchRoute(data, 'users');
                   if(response.statusCode != 200) return;
-                  user.setPersonalInfo({
-                    'name':controllers[0].text,
-                    'phone':controllers[1].text,
-                    'city':controllers[2].text
-                  });
+                  user.setPersonalInfo(data);
                   utils.snackBarMessage("Account Details Updated!",color: Colors.green);
                   if(widget.firstTime){
                     user.firstTime = false;

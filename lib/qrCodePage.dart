@@ -18,25 +18,6 @@ class qrCodePage extends StatefulWidget {
 }
 
 class _qrCodePageState extends State<qrCodePage> {
-  Map<String, dynamic> qrData = {};
-
-  @override
-  void initState() {
-    super.initState();
-    getQrCode();
-  }
-  void getQrCode() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Uint8List? pin = utf8.encode(prefs.getInt("PIN").toString());
-    var hmacSha256 = Hmac(sha256, pin); 
-    final digest = hmacSha256.convert(utf8.encode(user.email));
-    final Map<String, dynamic> data = {
-      "Email": user.email,
-      "Signature": digest.toString()
-    };
-    qrData = data;
-  }
-
   @override
   Widget build(BuildContext context) {
     return messageReciever(
@@ -57,7 +38,7 @@ class _qrCodePageState extends State<qrCodePage> {
         ),
         body: Center(
           child: QrImageView(
-            data: jsonEncode(qrData),
+            data: User.instance.phone,
             version: QrVersions.auto,
             size: 250.0,
             backgroundColor: Colors.white,
