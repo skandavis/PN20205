@@ -32,7 +32,6 @@ class NetworkService {
       sendTimeout: const Duration(seconds: 10),
       baseUrl: globals.url
     ));
-    // dio = AppDio.getInstance();
   }
 
   Future<void> _initIfNeeded() async {
@@ -43,7 +42,6 @@ class NetworkService {
     cacheManager = CacheManager(dir);
     await cacheManager.init();
     
-    // cacheManager.cleanup();
     imageService = ImageService(dio, cacheManager);
     _initialized = true;
   }
@@ -137,7 +135,7 @@ class NetworkService {
     }
 
     try {
-      final response = await dio
+      final response = await dio 
           .get(route);
 
       if (response.statusCode == 200 && response.data != null) {
@@ -151,10 +149,6 @@ class NetworkService {
       if(e is DioException && e.error is SocketException) {
         utils.snackBarMessage("You are not connected to the internet");
       }
-      // if(e.error is SocketException)
-      // if (response.statusCode == 500) {
-      //   utils.snackBarMessage("You are not connected to the internet");
-      // } 
       return Response (requestOptions: RequestOptions(path: route), data: await cacheManager.loadResource(route));
     }
   }
@@ -274,24 +268,19 @@ class NetworkService {
     }
   }
   
-  Future<Response> uploadFile(MultipartFile file, String route, String fileName, BuildContext context, {showAboveSnackBar = false}) async {
+  Future<Response> uploadFile(File file, String route, BuildContext context, {showAboveSnackBar = false}) async {
     await _initIfNeeded();
-    
-    final formData = FormData.fromMap({
-      'file': file,
-      'name': fileName.replaceAll(" ", '')
-    });
-
+    Uint8List fileBytes = await file.readAsBytes();
     try {
-      final response = await dio.post(
+      final response = await dio.put(
         route,
-        data: formData,
+        data: fileBytes,
         options: Options(
-          headers: {'Content-Type': 'multipart/form-data'},
+          contentType: 'image/jpeg',
           extra: {
             "showAboveSnackBar": showAboveSnackBar
           }
-        ),
+        )
       );
       if (response.statusCode == 200) {
         if(showAboveSnackBar)
@@ -310,9 +299,9 @@ class NetworkService {
     }
   }
   
-  Future<Uint8List?> getImage(String route) async {
+  Future<Uint8List?> getImage(String route, String id) async {
     await _initIfNeeded();
-    return await imageService.getImage(route);
+    return await imageService.getImage(route, id);
   }
   
   Response<dynamic> _createErrorResponse(String route, int statusCode) {

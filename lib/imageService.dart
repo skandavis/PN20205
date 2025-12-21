@@ -1,17 +1,15 @@
 import 'dart:typed_data';
 import 'package:NagaratharEvents/cacheManager.dart';
 import 'package:dio/dio.dart';
-import 'globals.dart' as globals;
 
 class ImageService {
   final Dio dio;
   final CacheManager cacheManager;
   ImageService(this.dio, this.cacheManager);
   
-  Future<Uint8List?> getImage(String route) async {
-    final url = '${globals.baseUrl}$route';
-    
-    final cached = await cacheManager.loadImage(url);
+  Future<Uint8List?> getImage(String route, String id) async {
+    String url = route;
+    final cached = await cacheManager.loadImage(id);
     if (cached != null) return cached;
     try {
       final response = await dio.get(
@@ -21,7 +19,7 @@ class ImageService {
 
       if (response.statusCode == 200 && response.data is Uint8List) {
         final headers = _normalizeHeaders(response.headers.map);
-        await cacheManager.saveImage(url, response.data, headers);
+        await cacheManager.saveImage(id, response.data, headers);
         return response.data;
       }
       

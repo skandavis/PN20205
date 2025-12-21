@@ -1,18 +1,19 @@
+import 'package:NagaratharEvents/imageInfo.dart';
 import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:flutter/material.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
 
-class ImageCarousel extends StatefulWidget {
+class imageCarousel extends StatefulWidget {
   String? uploadPath;
   String? fileName;
-  List<String> imageUrls;
-  ImageCarousel({super.key, required this.imageUrls, this.uploadPath, this.fileName});
+  List<imageInfo> imageUrls;
+  imageCarousel({super.key, required this.imageUrls, this.uploadPath, this.fileName});
 
   @override
-  _ImageCarouselState createState() => _ImageCarouselState();
+  _imageCarouselState createState() => _imageCarouselState();
 }
 
-class _ImageCarouselState extends State<ImageCarousel> {
+class _imageCarouselState extends State<imageCarousel> {
   int currentIndex = 0;
   late List<imageLoader> _imageLoaders;
 
@@ -30,7 +31,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
       _initializeImageLoaders();
     } 
     for (int i = 0; i < widget.imageUrls.length; i++) {
-      if (widget.imageUrls[i] != _imageLoaders[i].imageRoute)
+      if (widget.imageUrls[i] != _imageLoaders[i].givenImage)
       {
         _initializeImageLoaders();
       }
@@ -40,22 +41,19 @@ class _ImageCarouselState extends State<ImageCarousel> {
   void _initializeImageLoaders() {
     _imageLoaders = widget.imageUrls.map((imageUrl) {
       return imageLoader(
-        fileName: widget.fileName == null ? null : widget.imageUrls.indexOf(imageUrl).toString() + widget.fileName!,
         buttonSize: 45,
         key: ValueKey(imageUrl),
         dontReplace: true,
         shouldExpand: false,
-        imageRoute: imageUrl,
-        uploadRoute: widget.uploadPath,
+        givenImage: imageUrl,
+        uploadRouteRoute: widget.uploadPath,
         onUpload: (image) {
           setState(() {
-            if(widget.imageUrls[0].startsWith('img')|| widget.imageUrls.length >= 3)
+            if(widget.imageUrls[0].id.startsWith('Category_')|| widget.imageUrls.length >= 3)
             {
               widget.imageUrls.removeAt(0);
-              widget.imageUrls.add(image.path);
-            } else {
-              widget.imageUrls.add(image.path);
             }
+            widget.imageUrls.add(imageInfo(id: 'local', url: image.path));
             _initializeImageLoaders();
           });
         },

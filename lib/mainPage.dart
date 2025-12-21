@@ -107,7 +107,7 @@ class _mainPageState extends State<mainPage> {
         ListView(
           children: [
             if(eventInfo.images.isNotEmpty)
-            ImageCarousel(
+            imageCarousel(
               imageUrls: eventInfo.images,
             ),
             Container(

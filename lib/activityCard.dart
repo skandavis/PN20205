@@ -52,7 +52,7 @@ class _activityCardState extends State<activityCard> {
                   decoration: BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
                   clipBehavior: Clip.hardEdge,
                   height: MediaQuery.sizeOf(context).height*.3,
-                  child: ImageCarousel(
+                  child: imageCarousel(
                     imageUrls: widget.activity.images,
                   ),
                 ),

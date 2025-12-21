@@ -1,3 +1,5 @@
+import 'package:NagaratharEvents/imageInfo.dart';
+
 class Participant {
   String id;
   String name;
@@ -6,7 +8,7 @@ class Participant {
   String city;
   String gender;
   String description;
-  String? image;
+  imageInfo? image;
   String email;
   bool isEditable;
   Participant({
@@ -30,21 +32,19 @@ class Participant {
   @override
   int get hashCode => name.hashCode;
 
-  // Factory constructor to create Participant from a JSON map
   factory Participant.fromJson(Map<String, dynamic> json) {
     
     return Participant(
       id: json['id'],
       name: json['name'],
       description: json['about'],
-      // description: "${json['name']} is a young kid who lives in dallas. He loves dancing as well as playing roblox.",
       age: json["age"],
       state: json["state"],
       city: json["city"],
       gender: json["gender"],
       email: json["emailId"] ?? '',
       isEditable: json["isEditable"],
-      image: json["photo"] == null ? null :json["photo"]["url"].substring(1) 
+      image: json["photo"] == null ? null : imageInfo.fromJson(json["photo"])
     );
   }
 

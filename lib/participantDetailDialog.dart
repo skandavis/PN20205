@@ -1,5 +1,6 @@
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/gradientTextField.dart';
+import 'package:NagaratharEvents/imageInfo.dart';
 import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/participant.dart';
@@ -188,20 +189,19 @@ class _ParticipantDetailDialogState extends State<ParticipantDetailDialog> {
                       child: Column(
                         children: [
                           imageLoader(
-                            fileName: "${participant.name}Profile.jpg",
                             buttonSize: 35,
                             circle: true,
                             size: 150,
                             showAboveSnackBar: true,
-                            imageRoute: participant.image,
-                            uploadRoute: isEditing ? "participants/${participant.id}/photo" : null,
+                            givenImage: participant.image,
+                            uploadRouteRoute: isEditing ? "participants/${participant.id}/upload-photo" : null,
                             deleteRoute: isEditing ? "participants/${participant.id}/photo" : null,
                             onDelete: isEditing ? () {
                               participant.image = null;
                               widget.onImageUpdated(null);
                             } : null,
                             onUpload: isEditing ? (file) {
-                              participant.image = file.path;
+                              participant.image = imageInfo(url: file.path, id: 'local');
                               widget.onImageUpdated(file.path);
                             } : null,
                           ),

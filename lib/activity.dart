@@ -1,3 +1,6 @@
+import 'package:NagaratharEvents/category.dart';
+import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/imageInfo.dart';
 import 'package:NagaratharEvents/participant.dart';
 
 class Activity {
@@ -15,7 +18,7 @@ class Activity {
   bool favoritized;
   bool liked;
   bool isActivityAdmin;
-  List<String> images;
+  List<imageInfo> images;
   List<Participant> participants;
 
   Activity({
@@ -46,17 +49,29 @@ class Activity {
   int get hashCode => name.hashCode;
 
   factory Activity.fromJson(Map<String, dynamic> json) {
-    List<String> images = [];
-    for (var photo in json["photos"]) {
-          images.add(photo["url"].substring(1)); 
+    List<imageInfo> images = [];
+    bool categoryImage = false;
+    if (json["photos"] == null) {
+      categoryImage = true;
+      for(ActivityCategory currentCategory in globals.allCategories!)
+      {
+        if(currentCategory.name == json["main"])
+        {
+          images = [imageInfo(id: "Category_${currentCategory.id}", url: currentCategory.photoUrl)];
+          break;
+        }
+      }
+    } else{
+      for (var photo in json["photos"]) {
+        images.add(imageInfo.fromJson(photo)); 
+      }
     }
+    
     return Activity(
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      // description: "The Tharu maru boys are a group of incredible young kids who are going to perfom amazing dances to famous tamil hits from all eras. While watching try to see if you can catch all the songs they dance to and enjoy the performance.",
       location: json['location'],
-      // location: "Main Hall",
       duration: json['duration'],
       startTime: DateTime.parse(json['startTime']).toLocal(),
       main: json['main'],
@@ -72,24 +87,6 @@ class Activity {
     );
   }
 
-  // Method to convert Activity to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'location': location,
-      'duration': duration,
-      'startTime': startTime.toString(),
-      'category': category,
-      'favoritized': favorites,
-      'liked': likes,
-      'favorite':favoritized,
-      'likes': liked,
-      'photos': {"url": images} 
-    };
-  }
-
   void toogleFavorite()
   {
     favoritized = !favoritized;
@@ -100,10 +97,5 @@ class Activity {
   {
     liked = !liked;
     likes += liked ? 1 : -1;
-  }
-
-  void addImage(String image)
-  {
-    images.add(image);
   }
 }

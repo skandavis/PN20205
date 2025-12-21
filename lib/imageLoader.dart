@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:NagaratharEvents/actionButton.dart';
 import 'package:NagaratharEvents/globals.dart' as globals;
+import 'package:NagaratharEvents/imageInfo.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'utils.dart' as utils;
 
 class imageLoader extends StatefulWidget {
-  final String? imageRoute;
-  final String? uploadRoute;
+  final imageInfo? givenImage;
+  final String? uploadRouteRoute;
   final String? deleteRoute;
   final Function(File)? onUpload;
   final Function()? onDelete;
@@ -21,22 +22,20 @@ class imageLoader extends StatefulWidget {
   final double? buttonSize;
   final bool showAboveSnackBar;
   final bool shouldExpand;
-  final String? fileName;
 
   const imageLoader({
     super.key,
-    this.imageRoute,
-    this.fileName,
     this.buttonSize,
     this.dontReplace = false,
     this.deleteRoute,
-    this.uploadRoute,
+    this.uploadRouteRoute,
     this.onDelete,
     this.onUpload,
     this.shouldExpand = true,
     this.circle = false,
     this.showAboveSnackBar = false,
     this.size,
+    this.givenImage,
   });
 
   @override
@@ -59,32 +58,33 @@ class _imageLoaderState extends State<imageLoader> {
   @override
   void didUpdateWidget(imageLoader oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.imageRoute != widget.imageRoute) _loadImage();
+    if (oldWidget.givenImage != widget.givenImage) _loadImage();
   }
 
   Future<void> _loadImage() async {
-    final route = widget.imageRoute;
-    if (route == null) return _setPlaceholderImage();
+    if (widget.givenImage == null) return _setPlaceholderImage();
+    final id = widget.givenImage!.id;
+    final route = widget.givenImage!.url;
 
     if (_isNetworkRoute(route)) {
-      await _loadNetworkImage(route);
+      await _loadNetworkImage(route,id);
     } else {
       _setImage(FileImage(File(route)), false);
     }
   }
 
   bool _isNetworkRoute(String route) => 
-      route.startsWith('api') || route.startsWith('img');
+      route.startsWith('https');
 
-  Future<void> _loadNetworkImage(String route) async {
-    if (_imageCache.containsKey(route)) {
-      return _setImage(MemoryImage(_imageCache[route]!), false);
+  Future<void> _loadNetworkImage(String route, String id) async {
+    if (_imageCache.containsKey(id)) {
+      return _setImage(MemoryImage(_imageCache[id]!), false);
     }
 
     try {
-      final data = await NetworkService().getImage(route);
+      final data = await NetworkService().getImage(route, id);
       if (data != null) {
-        _imageCache[route] = data;
+        _imageCache[id] = data;
         _setImage(MemoryImage(data), false);
       } else {
         _setPlaceholderImage();
@@ -118,10 +118,13 @@ class _imageLoaderState extends State<imageLoader> {
 
     setState(() => _isUploading = true);
 
-    final response = await NetworkService().uploadFile(
-      await MultipartFile.fromFile(pickedFile.path),
-      widget.uploadRoute!,
-      widget.fileName ?? "Profile.jpg",
+    Response<dynamic> response = await NetworkService().getRoute(widget.uploadRouteRoute!, true);
+    String uploadRoute = response.data["url"];
+    String name = response.data["name"];
+
+    response = await NetworkService().uploadFile(
+      File(pickedFile.path),
+      uploadRoute,
       context,
       showAboveSnackBar: widget.showAboveSnackBar,
     );
@@ -130,6 +133,10 @@ class _imageLoaderState extends State<imageLoader> {
 
     if (response.statusCode == 200) {
       _handleUploadSuccess(File(pickedFile.path));
+      response = await NetworkService().postRoute(
+        {"name": name},
+        widget.uploadRouteRoute!,
+      );
     } else if (response.statusCode == 500) {
       _showSnackBar("You are not connected to the internet");
     }
@@ -146,7 +153,7 @@ class _imageLoaderState extends State<imageLoader> {
 
   void _handleUploadSuccess(File imageFile) {
     if (!widget.dontReplace) {
-      _imageCache.remove(widget.imageRoute);
+      _imageCache.remove(widget.givenImage);
       _setImage(FileImage(imageFile), false);
     }
     widget.onUpload?.call(imageFile);
@@ -164,7 +171,7 @@ class _imageLoaderState extends State<imageLoader> {
 
     if (response.statusCode == 200) {
       if (!widget.dontReplace) {
-        _imageCache.remove(widget.imageRoute);
+        _imageCache.remove(widget.givenImage);
         _setPlaceholderImage();
         _showSnackBar('Image deleted successfully', Colors.green);
       }
@@ -187,7 +194,7 @@ class _imageLoaderState extends State<imageLoader> {
         children: [
           _buildImage(),
           if (_isUploading) _buildLoadingOverlay(),
-          if (widget.uploadRoute != null && !_isUploading) _buildButton(
+          if (widget.uploadRouteRoute != null && !_isUploading) _buildButton(
             Alignment.bottomRight,
             globals.secondaryColor,
             Icons.add,

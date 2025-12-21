@@ -57,12 +57,11 @@ class CacheManager {
   String _sanitizeFilename(String route) {
     return route
         .replaceAll('/', '_')
-        .replaceAll('?', '_')
-        .replaceAll('&', '_');
+        .replaceAll('-', '_');
   }
 
-  Future<void> saveImage(String url, Uint8List data, Map<String, dynamic> headers) async {
-    final baseFile = _getImageCacheBasePath(url);
+  Future<void> saveImage(String id, Uint8List data, Map<String, dynamic> headers) async {
+    final baseFile = _getImageCacheBasePath(id);
     
     // Ensure parent directory exists
     await baseFile.parent.create(recursive: true);
@@ -78,9 +77,9 @@ class CacheManager {
   }
 
 
-  Future<Uint8List?> loadImage(String url) async {
+  Future<Uint8List?> loadImage(String id) async {
     try {
-      final basePath = _getImageCacheBasePath(url);
+      final basePath = _getImageCacheBasePath(id);
       final dataFile = File('${basePath.path}.data');
       final metaFile = File('${basePath.path}.meta');
 
@@ -100,15 +99,13 @@ class CacheManager {
     }
   }
 
-  File _getImageCacheBasePath(String url) {
-    // Use URL-safe base64 and remove padding
-    final safeFilename = base64Url.encode(utf8.encode(url)).replaceAll('=', '');
+  File _getImageCacheBasePath(String id) {
+    final safeFilename = base64Url.encode(utf8.encode(id)).replaceAll('-', '_');
     return File('${cacheDir.path}/$safeFilename');
   }
 
 
   bool _isExpired(Map<String, dynamic> jsonData) {
-    // return true;
     final timestamp = jsonData['timestamp'];
     if (timestamp == null || timestamp is! int) return false;
 
@@ -182,7 +179,6 @@ class CacheManager {
           print('Failed to process ${entity.path}: $e');
         }
       }
-
       print('Cache cleanup completed');
     } catch (e) {
       print('Cache cleanup failed: $e');

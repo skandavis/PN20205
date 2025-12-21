@@ -1,12 +1,8 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:NagaratharEvents/globals.dart' as globals;
 import 'package:NagaratharEvents/messageReciever.dart';
 import 'package:NagaratharEvents/user.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:crypto/crypto.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 User user = User.instance;
 
@@ -38,7 +34,7 @@ class _qrCodePageState extends State<qrCodePage> {
         ),
         body: Center(
           child: QrImageView(
-            data: User.instance.phone,
+            data: User.instance.phone.replaceAll('-', ''),
             version: QrVersions.auto,
             size: 250.0,
             backgroundColor: Colors.white,

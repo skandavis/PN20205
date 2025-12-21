@@ -1,4 +1,5 @@
 import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/imageInfo.dart';
 import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/participant.dart';
 import 'package:NagaratharEvents/participantDetailDialog.dart';
@@ -17,10 +18,10 @@ class participantRow extends StatefulWidget {
 class _participantRowState extends State<participantRow> {
   late int activityIndex = globals.totalActivities!.indexOf(widget.activity);
   late Participant participant = widget.activity.participants[widget.participantIndex];
-  void onImageUpdated(String? image) {
+  void onImageUpdated(String? imageUrl) {
     setState(() {
-      globals.totalActivities![activityIndex].participants[widget.participantIndex].image = image;
-      participant.image = image;
+      globals.totalActivities![activityIndex].participants[widget.participantIndex].image = imageInfo(id: 'local', url: imageUrl!);
+      participant.image = imageInfo(id: 'local', url: imageUrl);
     });
   }
 
@@ -51,7 +52,7 @@ class _participantRowState extends State<participantRow> {
         children: [
           imageLoader(
             buttonSize: 5,
-            imageRoute: participant.image,
+            givenImage: participant.image,
             circle: true,
             key: ValueKey(participant.image),
             size: 75,

@@ -1,3 +1,5 @@
+import 'package:NagaratharEvents/imageInfo.dart';
+
 class User {
   static final User instance = User._internal();
 
@@ -11,14 +13,14 @@ class User {
   String city = '';
   String phone = '';
   String email = '';
-  String? photo;
+  imageInfo? photo;
   String? primaryUser;
 
   void fromJson(Map<String, dynamic> json) {
     id = json['id'];
     role = json['role'];
     primaryUser = json['primaryUserId'];
-    photo = json["photo"] == null ? null : json["photo"]["url"].substring(1);
+    photo = json["photo"] == null ? null : imageInfo.fromJson(json["photo"]);
     email = json["email"];
     isAdmin = json["isAdmin"];
     firstTime = json['isFirstTime'];
@@ -30,7 +32,7 @@ class User {
   void setPersonalInfo(Map<String, dynamic> json) {
     name = json['name'];
     city = json['city'];
-    phone = json['phoneNumber'].replaceAll('-', '');
+    phone = json['phoneNumber'];
   }
   void setEmail(String email) {
     this.email = email;

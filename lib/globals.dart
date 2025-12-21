@@ -1,12 +1,13 @@
 library;
 import 'package:NagaratharEvents/activity.dart';
+import 'package:NagaratharEvents/category.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 //frontend server
 // String baseUrl = "http://192.168.86.38:81/";
 //manickam server
-// String baseUrl = "http://192.168.86.38:8081/";
-String baseUrl = "https://nagaratharEvents.skandasoft.com/";
+String baseUrl = "http://192.168.86.38:8081/";
+// String baseUrl = "https://nagaratharEvents.skandasoft.com/";
 // String baseUrl = "https://nagaratharEvents-sbx/";
 // String baseUrl = "http://nagaratharEvents.skandasoft.com:81/";
 
@@ -29,6 +30,7 @@ double titleFontSize = 36;
 
 bool refreshActivities = false;
 List<Activity>? totalActivities;
+List<ActivityCategory>? allCategories;
 String ApnsToken = "";
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

@@ -1,4 +1,5 @@
 import 'package:NagaratharEvents/homePage.dart';
+import 'package:NagaratharEvents/imageInfo.dart';
 import 'package:NagaratharEvents/imageLoader.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:NagaratharEvents/user.dart';
@@ -62,18 +63,17 @@ class _accountPageState extends State<accountPage> {
           child: Column(
             children: [
               imageLoader(
-                fileName: "${user.name}Profile.jpg",
                 buttonSize: 25,
                 size: 100,
                 circle: true,
-                imageRoute: user.photo,
-                uploadRoute: "users/photo",
+                givenImage: user.photo,
+                uploadRouteRoute: "users/upload-photo",
                 deleteRoute: "users/photo",
                 onDelete: () {
                   user.photo = null;
                 },
                 onUpload: (file) {
-                  user.photo = file.path;                    
+                  user.photo = imageInfo(url: file.path, id: "local");                    
                 },
               ),
               const SizedBox(

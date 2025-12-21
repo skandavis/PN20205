@@ -1,6 +1,7 @@
 import 'package:NagaratharEvents/activity.dart';
 import 'package:NagaratharEvents/category.dart';
 import 'package:NagaratharEvents/backgroundDynamicIcon.dart';
+import 'package:NagaratharEvents/imageInfo.dart';
 import 'package:NagaratharEvents/loadingScreen.dart';
 import 'package:NagaratharEvents/networkService.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,6 @@ class activitiesPage extends StatefulWidget {
 
 class activitiesPageState extends State<activitiesPage> {
   final searchController = TextEditingController();
-  static List<ActivityCategory>? allCategories;
   
   Set<String> selectedCategories = {};
   String searchQuery = "";
@@ -42,14 +42,12 @@ class activitiesPageState extends State<activitiesPage> {
 
   void clearData() {
     globals.totalActivities = null;
-    allCategories = null;
+    globals.allCategories = null;
   }
 
   Future<void> _loadData() async {
-    await Future.wait([
-      if (globals.totalActivities == null || globals.refreshActivities) _loadActivities(globals.refreshActivities),
-      if (allCategories == null) _loadCategories(),
-    ]);
+    if (globals.allCategories == null) await _loadCategories();
+    if (globals.totalActivities == null || globals.refreshActivities) await _loadActivities(globals.refreshActivities);
     if (mounted) setState(() => isLoading = false);
   }
 
@@ -69,15 +67,14 @@ class activitiesPageState extends State<activitiesPage> {
   Future<void> _loadCategories() async {
     final data = await NetworkService().getMultipleRoute('categories');
     if (data != null) {
-      allCategories = data
+      globals.allCategories = data
         .map((item) => ActivityCategory.fromJson(item))
         .fold<Map<String, ActivityCategory>>({}, (map, category) {
           map[category.name] = category;
           return map;
         })
-    .values
-    .toList();
-
+      .values
+      .toList();
     }
   }
 
@@ -124,7 +121,7 @@ class activitiesPageState extends State<activitiesPage> {
       children: [
         _buildSearchBar(),
         _buildFilterRow(),
-        if (allCategories != null) _buildCategoryList(),
+        if (globals.allCategories != null) _buildCategoryList(),
         Expanded(child: isLoading ? loadingScreen() : _buildActivityList()),
       ],
     );
@@ -201,10 +198,10 @@ class activitiesPageState extends State<activitiesPage> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.all(8),
-        itemCount: allCategories!.length,
+        itemCount: globals.allCategories!.length,
         separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final cat = allCategories![index];
+          final cat = globals.allCategories![index];
           return selectableCategoryLabel(
             category: cat,
             chosen: selectedCategories.contains(cat.name),

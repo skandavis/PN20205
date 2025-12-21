@@ -82,11 +82,11 @@ class _expandedActivityPageState extends State<expandedActivityPage> {
                     ).createShader(bounds);
                   },
                   blendMode: BlendMode.dstIn,
-                  child: widget.activity.isActivityAdmin ? ImageCarousel(
+                  child: widget.activity.isActivityAdmin ? imageCarousel(
                     imageUrls: widget.activity.images,
-                    uploadPath: 'activities/${widget.activity.id}/photo',
+                    uploadPath: 'activities/${widget.activity.id}/upload-photo',
                     fileName: "${widget.activity.name}ActivityImage.jpg",
-                  ): ImageCarousel(
+                  ): imageCarousel(
                     imageUrls: widget.activity.images,
                   ),
                 ),

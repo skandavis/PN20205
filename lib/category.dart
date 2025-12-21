@@ -1,7 +1,9 @@
 class ActivityCategory {
   String name;
   String photoUrl;
+  String id;
   ActivityCategory({
+    required this.id,
     required this.name,
     required this.photoUrl
   });
@@ -15,6 +17,7 @@ class ActivityCategory {
 
   factory ActivityCategory.fromJson(Map<String, dynamic> json) {
     return ActivityCategory(
+      id: json['id'],
       name: json['main'],
       photoUrl: json["photoUrl"]
     );

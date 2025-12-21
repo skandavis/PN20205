@@ -1,3 +1,5 @@
+import 'package:NagaratharEvents/imageInfo.dart';
+
 class EventInfo {
   static final EventInfo instance = EventInfo._internal();
 
@@ -15,7 +17,7 @@ class EventInfo {
   String subSection = "";
   String aside = "";
   int userCount = 0;
-  List<String> images = [];
+  List<imageInfo> images = [];
   bool isLoaded = false;
 
   EventInfo._internal();
@@ -40,8 +42,8 @@ class EventInfo {
   void addImages(List<dynamic> json)
   {
     images = [];
-    for (var element in json) {
-      images.add(element["url"].substring(1));
+    for (var photo in json) {
+      images.add(imageInfo.fromJson(photo));
     }
   }
 
