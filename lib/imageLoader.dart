@@ -103,7 +103,7 @@ class _imageLoaderState extends State<imageLoader> {
   }
 
   void _setPlaceholderImage() {
-    final asset = widget.circle ? 'assets/genericAccount.png' : 'assets/genericPhoto.png';
+    final asset = widget.circle ? 'assets/genericAccount.png' : 'assets/genericPhoto.webp';
     _setImage(AssetImage(asset), true);
   }
 
@@ -119,8 +119,8 @@ class _imageLoaderState extends State<imageLoader> {
     setState(() => _isUploading = true);
 
     Response<dynamic> response = await NetworkService().getRoute(widget.uploadRouteRoute!, true);
-    String uploadRoute = response.data["url"];
     String name = response.data["name"];
+    String uploadRoute = response.data["url"];
 
     response = await NetworkService().uploadFile(
       File(pickedFile.path),
@@ -136,7 +136,7 @@ class _imageLoaderState extends State<imageLoader> {
       response = await NetworkService().postRoute(
         {"name": name},
         widget.uploadRouteRoute!,
-      );
+      );  
     } else if (response.statusCode == 500) {
       _showSnackBar("You are not connected to the internet");
     }
@@ -215,7 +215,7 @@ class _imageLoaderState extends State<imageLoader> {
 
   Widget _buildImage() {
     if (_imageProvider == null) {
-      return const Center(child: CircularProgressIndicator(color: Colors.red));
+      return const Center(child: CircularProgressIndicator(color: Colors.black));
     }
 
     final imageWidget = Image(

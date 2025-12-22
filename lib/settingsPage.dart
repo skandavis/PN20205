@@ -30,6 +30,9 @@ class _settingsPageState extends State<settingsPage> {
 
   void _onVisibilityChanged() {
     if (widget.isVisible.value == 1) {
+      setState(() {
+        
+      });
       // is visible
     } else if(widget.isVisible.value == 0) {
       // is killed

@@ -50,14 +50,12 @@ class Activity {
 
   factory Activity.fromJson(Map<String, dynamic> json) {
     List<imageInfo> images = [];
-    bool categoryImage = false;
     if (json["photos"] == null) {
-      categoryImage = true;
       for(ActivityCategory currentCategory in globals.allCategories!)
       {
         if(currentCategory.name == json["main"])
         {
-          images = [imageInfo(id: "Category_${currentCategory.id}", url: currentCategory.photoUrl)];
+          images = [imageInfo(id: "Category_${currentCategory.name}", url: currentCategory.photoUrl)];
           break;
         }
       }

@@ -26,7 +26,7 @@ class User {
     firstTime = json['isFirstTime'];
     name = json['name'] ?? name;
     city = json['city'] ?? city;
-    phone = json['phoneNumber'].replaceAll('-', '') ?? phone;
+    phone = json['phoneNumber'] ?? phone;
   }
 
   void setPersonalInfo(Map<String, dynamic> json) {

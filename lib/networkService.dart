@@ -61,7 +61,7 @@ class NetworkService {
         onResponse: (response, handler) async {
           bool showAboveSnackBar = response.requestOptions.extra['showAboveSnackBar'] == true;
           if (response.statusCode == 403) {
-            showMessage("You're not authorized!", showAboveSnackBar);
+            showMessage("Try Again!", showAboveSnackBar);
           } else if (response.statusCode == 422) {
             showMessage(response.data, showAboveSnackBar);
           } else if (response.statusCode == 413) {
@@ -106,7 +106,7 @@ class NetworkService {
           if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-            showMessage('Internet connection timed out. Check your connection and try again.', e.requestOptions.extra['showAboveSnackBar'] == true);
+            showMessage('Connection timed out. Check your connection and try again.', e.requestOptions.extra['showAboveSnackBar'] == true);
           }
           return handler.next(e);
         },

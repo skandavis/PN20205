@@ -20,7 +20,13 @@ class _participantRowState extends State<participantRow> {
   late Participant participant = widget.activity.participants[widget.participantIndex];
   void onImageUpdated(String? imageUrl) {
     setState(() {
-      globals.totalActivities![activityIndex].participants[widget.participantIndex].image = imageInfo(id: 'local', url: imageUrl!);
+      if(imageUrl == null)
+      {
+        globals.totalActivities![activityIndex].participants[widget.participantIndex].image = null;
+        participant.image = null;
+        return;
+      }
+      globals.totalActivities![activityIndex].participants[widget.participantIndex].image = imageInfo(id: 'local', url: imageUrl);
       participant.image = imageInfo(id: 'local', url: imageUrl);
     });
   }
@@ -80,8 +86,7 @@ class _participantRowState extends State<participantRow> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * .6,
                   child: Text(
-                    // participant.description,
-                    "${participant.name} is a young kid who lives in dallas. He loves dancing as well as playing roblox.",
+                    participant.description,
                     style: TextStyle(
                       color: Colors.white, 
                       fontSize: globals.smallFontSize,
